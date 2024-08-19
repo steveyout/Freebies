@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docs on Freebies</title>
+    <link>http://localhost:1313/docs/</link>
+    <description>Recent content in Docs on Freebies</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 19 Aug 2024 12:24:30 +0300</lastBuildDate>
+    <atom:link href="http://localhost:1313/docs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Downloading</title>
+      <link>http://localhost:1313/docs/downloading/</link>
+      <pubDate>Mon, 19 Aug 2024 12:24:30 +0300</pubDate>
+      <guid>http://localhost:1313/docs/downloading/</guid>
+      <description>► Download Directories link&#xD;check_circle&#xD;Note - Some Open Directories grab IP&amp;rsquo;s, so use a VPN or Tor when accessing them.&#xA;🌐 /r/opendirectories - Open Directories Subreddit / Telegram / /u/ODScanner ↪️ Open Directory Search String Builders, 2, 3, 4 ↪️ Google Piracy Groups ⭐ Directory Lister - Open Directory Explorer ⭐ EyeDex, ODCrawler, ODS or mmnt - Open Directory Search Engines mega.archive (Discord) / Chat - Megadrive Archive GDrive Server Napalm FTP, Mamont or Search-22 - FTP Search dedigger - GDrive File Search Sala De Espera - Drive Sharing Community Open Directory Downloader - Open Directory Indexer Pastebin CSE - Search Pastebin Directories CD.</description>
+    </item>
+    <item>
+      <title>Torrenting</title>
+      <link>http://localhost:1313/docs/torrenting/</link>
+      <pubDate>Mon, 19 Aug 2024 12:23:57 +0300</pubDate>
+      <guid>http://localhost:1313/docs/torrenting/</guid>
+      <description>► Torrent Sites link&#xD;warning&#xD;Warning - It&amp;rsquo;s best to avoid sites that allow anyone to make accounts when getting both software and games. Avoid users in the Unsafe or Untrusted lists.&#xA;⭐ RuTracker, 2, 3 - Video / Audio / Games / Software / Android / Comics / Magazines ⭐ RuTracker Tools - Addon / Wiki / Rules / Translator ⭐ TorrentGalaxy - Video / Audio / NSFW / .</description>
+    </item>
+    <item>
+      <title>Ai</title>
+      <link>http://localhost:1313/docs/ai/</link>
+      <pubDate>Mon, 19 Aug 2024 12:23:42 +0300</pubDate>
+      <guid>http://localhost:1313/docs/ai/</guid>
+      <description>► AI Chatbots link 🌐 Awesome ChatGPT - ChatGPT Resources 🌐 Every ChatGPT GUI - ChatGPT GUI Index 🌐 RevAPIs - Freemium AI Proxy APIs ⭐ ChatPDF or Ask Your PDF - Turn Books into Chatbots ⭐ TypeSet - Research Paper Chatbot GPT Crawler - Turn Websites into Chatbots ChatGPTBox, ChatGPT Apps, KeepChatGPT or Merlin / Unlimited - Extensions Humata, Sharly, Docalysis, DAnswer, DocsGPT or ChatDOC - Turn Documents into Chatbots PrivateGPT - Offline Document Chatbots SallyBot - ChatGPT Discord Bot TGPT - ChatGPT TUIs LLM - ChatGPT CLI Lobe Chat - Desktop App Noi - Desktop App Chatbot-UI - Desktop App / GitHub ChatRTX - Desktop App / RTX 30+ Series GPU Only ChatGPT DeMod - Block ChatGPT Moderation Checks ParallelGPT - Data Processing AI Voice Control - ChatGPT Voice Control ChatGPT Exporter - Export Chats GPThemes - ChatGPT Themes ▷ Online Chatbots link 🌐 Awesome Free ChatGPT or ChinaGPT - Online GPT Indexes ⭐ ChatGPT - GPT-4o Chatbot / Discord ⭐ Microsoft Copilot - GPT-4/3.</description>
+    </item>
+    <item>
+      <title>Movies / TV / Anime</title>
+      <link>http://localhost:1313/docs/streaming/</link>
+      <pubDate>Fri, 16 Aug 2024 21:24:25 +0300</pubDate>
+      <guid>http://localhost:1313/docs/streaming/</guid>
+      <description>Streaming Sites link ▷ Multi Server link ⭐⭐⭐ Youplex - Movies / TV / Anime / 4K / 1080p / No ads / Telegram / Discord ⭐⭐⭐ StreamWatch - Movies / TV / Anime / 4K / 1080p / No ads / Telegram / Discord ⭐⭐⭐ StreamerFlix - Movies / TV / Anime / 4K / 1080p / No ads / Telegram / Discord ⭐⭐⭐ Rivestream - Movies / TV / Anime / 4K / 1080p / No ads / Telegram / Discord ⭐ movie-web, 2 - Movies / TV / Anime / 4K / 1080p / Ad-Free / Add Sources / Docs ⭐ Braflix - Movies / TV / Anime / 4K / 1080p / Discord ⭐ Binged, 2, 3 - Movies / TV / Anime / 4K / 1080p / Discord ⭐ FBOX - Movies / TV / Anime / 1080p / Clones ⭐ watch.</description>
+    </item>
+  </channel>
+</rss>
