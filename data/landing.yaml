@@ -34,7 +34,7 @@ hero:
   ctaButton:
     icon: rocket_launch
     btnText: "Show me"
-    url: "/docs/"
+    url: "/Freebies/docs/"
   cta2Button:
     icon: face
     btnText: "Reddit"
