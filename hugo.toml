@@ -44,7 +44,7 @@ twitter = ""       # YOUR_TWITTER_ID
 # rss = true                    # show rss icon with link
 
 [params.docs] # Parameters for the /docs 'template'
-title           = "Freebies-a collection of free stuff on the internet"           # default html title for documentation pages/sections
+title           = "Freebies - a collection of free stuff on the internet"           # default html title for documentation pages/sections
 
 # pathName        = "docs"                            # path name for documentation site | default "docs"
 
@@ -139,7 +139,7 @@ intLinkTooltip  = true                                # Enable a tooltip for int
 
 [[menu.primary]]
      name  = "Contribute"
-     url = "/showcase"
+     url = "https://github.com/steveyout/Freebies"
      identifier = "contribute"
      weight = 20
 

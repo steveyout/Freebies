@@ -21,13 +21,13 @@ hero:
   titleLogo:
     path: "images/logos"
     filename: "logo.png"
-    alt: "Lotus Docs Logo"
+    alt: "Freebies Logo"
     height: 80px
 
   image:
     path: "images" # path to image under configured assets directory. default 'images'
-    filename: "lotus_docs_screenshot.png" # filename of your hero image (including file extension)
-    alt: "Lotus Docs Screenshot" # Optional but recommended
+    filename: "screenshot.png" # filename of your hero image (including file extension)
+    alt: "Freebies Screenshot" # Optional but recommended
     boxShadow: true # default 'false' (excludes .svg images)
     rounded: true # round the image corners? default 'false' (excludes .svg images)
 
