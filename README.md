@@ -18,6 +18,11 @@ Please adhere to this project's `code of conduct`.
 - [@steveyout](https://github.com/steveyout)
 
 
+## Donations
+
+- [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](steveyout@yahoo.com)
+
+
 ## Licenses
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
