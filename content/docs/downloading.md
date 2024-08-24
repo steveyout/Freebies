@@ -13,7 +13,7 @@ toc: true
 # ► Download Directories
 
 {{% alert context="success" %}}
-* **Note** - Some Open Directories grab IP's, so use a VPN or Tor when accessing them.
+**Note** - Some Open Directories grab IP's, so use a VPN or Tor when accessing them.
 {{% /alert %}}
 
 ***

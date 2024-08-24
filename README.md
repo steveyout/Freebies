@@ -8,19 +8,17 @@ A collection of free things on the internet
 
 Contributions are always welcome!
 
-See `contributing.md` for ways to get started.
+See [`contributing.md`](https://github.com/steveyout/Freebies/blob/main/contributing.md) for ways to get started.
 
 Please adhere to this project's `code of conduct`.
 
 
 ## Authors
 
-- [@octokatherine](https://www.github.com/octokatherine)
+- [@steveyout](https://github.com/steveyout)
 
 
-## Badges
-
-Add badges from somewhere like: [shields.io](https://shields.io/)
+## Licenses
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
