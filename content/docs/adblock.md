@@ -1,8 +1,8 @@
 ---
 weight: 999
 title: "Adblock"
-description: ""
-icon: "article"
+description: "Adblocking, Privacy, VPN's, Proxies, Antivirus"
+icon: "ads_click"
 date: "2024-08-24T13:25:40+03:00"
 lastmod: "2024-08-24T13:25:40+03:00"
 draft: false
