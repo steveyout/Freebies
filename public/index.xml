@@ -6,8 +6,22 @@
     <description>Recent content on Freebies</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 19 Aug 2024 12:24:30 +0300</lastBuildDate>
+    <lastBuildDate>Sat, 24 Aug 2024 13:26:37 +0300</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gaming</title>
+      <link>http://localhost:1313/docs/gaming/</link>
+      <pubDate>Sat, 24 Aug 2024 13:26:37 +0300</pubDate>
+      <guid>http://localhost:1313/docs/gaming/</guid>
+      <description>► Gaming Tools link ↪️ Media Posters / Covers ↪️ Game Soundtracks ⭐ Library of Codexes - Game Codex Library ⭐ HowLongToBeat, 2 - Find Average Game Lengths ⭐ /r/tipofmyjoystick - Find Games via Screenshot or Description ⭐ Game Pauser - Pause Unpausable Cutscenes ⭐ Valve Archive - Rare Valve Data Archive NIWA - Nintendo Independent Wiki Alliance / Discord humble-cli - Humble Bundle CLI Gog To Free - Add Piracy Site Links to GOG Store Moonlight Stream / Server - Remote Desktop Client The Models Resource - Game Models The Spriters Resource - Video Game Sprites MiiCharacters - Famous Mii Creation Guides Buzz In - Online Buzzer System Challonge - Tournament Creator / Manager Archipelago - Multi-Game Randomizer Medal - Shadowplay for non Nvidia Cards / Premium Bypass RePlays - Game Recording Manager Moments - Game Clip Tool Scanlines for Windows - Add Scanlines to Games / Discord Keystrokes - Keystrokes Overlay PSNProfiles - Trophy Guide / PSN Profile Viewer Achievement Watcher - Achievement File Parser, Notifications &amp;amp; Playtime Tracker - Note Shmuplations - Japanese Developer Interviews Wiki.</description>
+    </item>
+    <item>
+      <title>Adblock</title>
+      <link>http://localhost:1313/docs/adblock/</link>
+      <pubDate>Sat, 24 Aug 2024 13:25:40 +0300</pubDate>
+      <guid>http://localhost:1313/docs/adblock/</guid>
+      <description>► Adblocking link Note - Don&amp;rsquo;t run multiple general adblockers (e.g., uBlock Origin and Adblock Plus) simultaneously to avoid breakage. Combining general adblockers with tools like SponsorBlock is fine. ↪️ Spotify Adblockers ↪️ Twitch Adblockers ↪️ Bypass Article Paywalls ⭐ uBlock Origin - Adblocker ⭐ uBO Resources - Guides / Advanced / Redundant Extensions ⭐ Report Issues - uAssets / Hosts / AdGuardFilters / EasyList / DandelionSprout ⭐ SponsorBlock - Skip Sponsored YouTube Ads / Script, 2 ⭐ Disblock Origin or Discord Adblock - Hide Discord Nitro / Boost Ads ⭐ BehindTheOverlay - Hide Website Overlays ⭐ OpenVideo or Stream-Bypass - Play Videos in Ad-Free Player uBO Lite - MV3 Compatible AdBlocker for Chromium-based browsers / Note Ad Blitz - Speed Up YouTube Ads instead of Skipping to Support Creators Popupblocker All, PopUpOFF or PopupBlocker - Popup / New Tab Blockers Adguard - Adblocker Test Ad Block or Adblock Tester - Adblocking Tests 12ft.</description>
+    </item>
     <item>
       <title>Downloading</title>
       <link>http://localhost:1313/docs/downloading/</link>

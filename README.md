@@ -20,7 +20,7 @@ Please adhere to this project's `code of conduct`.
 
 ## Donations
 
-- [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](steveyout@yahoo.com)
+- [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=TE8KU2866FAS8)
 
 
 ## Licenses
