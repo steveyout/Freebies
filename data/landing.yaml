@@ -13,7 +13,7 @@ hero:
   badge:
     text: v0.1.0
     color: primary # primary, secondary, success, danger, warning, info, light, dark
-    pill: false # boolean
+    pill: true # boolean
     soft: true # boolean
 
   title: "Freebies"

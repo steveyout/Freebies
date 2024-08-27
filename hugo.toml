@@ -39,7 +39,7 @@ copyright = "© :YEAR: Freebies. Built with ❤ by [**Steveyout**](https://githu
 
 [params.social]
 github = "steveyout/Freebies"        # YOUR_GITHUB_ID or YOUR_GITHUB_URL
-twitter = ""       # YOUR_TWITTER_ID
+#twitter = ""       # YOUR_TWITTER_ID
 # instagram = "colinwilson"     # YOUR_INSTAGRAM_ID
 # rss = true                    # show rss icon with link
 
@@ -48,7 +48,7 @@ title           = "Freebies - a collection of free stuff on the internet"       
 
 # pathName        = "docs"                            # path name for documentation site | default "docs"
 
-# themeColor      = "cyan"                            # (optional) - Set theme accent colour. Options include: blue (default), green, red, yellow, emerald, cardinal, magenta, cyan
+# themeColor      = "red"                            # (optional) - Set theme accent colour. Options include: blue (default), green, red, yellow, emerald, cardinal, magenta, cyan
 
 darkMode        = true                                # enable dark mode option? default false
 
