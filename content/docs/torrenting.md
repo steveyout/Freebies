@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Torrent Sites
+## ► Torrent Sites
 
 {{% alert context="warning" %}}
 **Warning** - It's best to avoid sites that allow anyone to make accounts when getting both software and games. Avoid users in the [Unsafe](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/unsafe-sites/) or [Untrusted](https://rentry.org/pgames#untrusted-uploaders) lists.
@@ -100,7 +100,7 @@ toc: true
 
 ***
 
-# ► Torrent Clients
+## ► Torrent Clients
 
 **Warning** - Make sure you [BIND](https://redd.it/ssy8vv) your [VPN](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/adblock-vpn-privacy#wiki_.25BA_vpn) to your client to avoid ISP letters.
 
@@ -170,7 +170,7 @@ toc: true
 
 ***
 
-# ► Tracker Invites
+## ► Tracker Invites
 
 * 🌐 **[Private Trackers General](https://rentry.co/private-trackers)** or [Private Trackers Guide](https://wiki.installgentoo.com/wiki/Private_trackers) - Private Tracker Guides
 * 🌐 **[Scene Related](https://opentrackers.org/links/warez-scene/#scenerelated)** - Warez / Scene Site Index
@@ -187,7 +187,7 @@ toc: true
 
 ***
 
-# ► Helpful Sites / Apps
+## ► Helpful Sites / Apps
 
 * 🌐 **[ngosang](https://ngosang.github.io/trackerslist/)** / [2](https://ngosang.github.io/trackerslist/trackers_all.txt) / [3](https://github.com/ngosang/trackerslist), [trackerslist](https://trackerslist.com/) / [GitHub](https://github.com/XIU2/TrackersListCollection) or [NewTrackOn](https://newtrackon.com/list) - Tracker Lists
 * 🌐 **[Auto Torrent Tools List](https://redd.it/hbwnb2)** / [2](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/video#wiki_.25BA_torrent_apps)

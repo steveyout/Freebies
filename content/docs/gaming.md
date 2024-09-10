@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Gaming Tools
+## ► Gaming Tools
 
 * ↪️ **[Media Posters / Covers](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/storage#wiki_covers_.2F_posters)**
 * ↪️ **[Game Soundtracks](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/audio#wiki_.25B7_game_soundtracks)**
@@ -310,7 +310,7 @@ toc: true
 
 ***
 
-# ► Multiplayer Tools
+### ► Multiplayer Tools
 
 * ⭐ **[Nucleus Co-op](https://github.com/SplitScreen-Me/splitscreenme-nucleus)** - Local Split-Screen PC Multiplayer / [Subreddit](https://www.reddit.com/r/nucleuscoop/)
 * [Liquipedia](https://liquipedia.net/) - Competitve Gaming / Esports Wiki / [Discord](https://discord.com/invite/liquipedia)
@@ -375,7 +375,7 @@ toc: true
 
 ***
 
-# ► Homebrew
+### ► Homebrew
 
 * 🌐 **[Darthsternie](https://darthsternie.net/)** - Console Firmware / Exploit Archive
 * 🌐 **[Emulators on Consoles](https://emulation.gametechwiki.com/index.php/Category:Emulators_on_consoles)** - List of Emulators for Consoles
@@ -472,7 +472,7 @@ toc: true
 
 ***
 
-# ► Minecraft Tools
+### ► Minecraft Tools
 
 * 🌐 **[MCDOC](https://mcdoc.openm.tech/)** - Minecraft Tools & Unlockers / [Discord](https://dsc.gg/open-m)
 * 🌐 **[Awesome Minecraft](https://github.com/bs-community/awesome-minecraft)** or [Birdflop](https://www.birdflop.com/resources/) - Minecraft Resources
@@ -622,7 +622,7 @@ toc: true
 
 ***
 
-# ► Game Specific
+### ► Game Specific
 
 * 🌐 **[Awesome Trackmania](https://github.com/EvoEsports/awesome-trackmania)** - Trackmania Resources
 * [Half Life Project Beta](https://hl2-beta.ru/?language=english) - Unreleased / Cut Half-Life Content

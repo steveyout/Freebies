@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► AI Chatbots
+## ► AI Chatbots
 
 * 🌐 **[Awesome ChatGPT](https://github.com/uhub/awesome-chatgpt)** - ChatGPT Resources
 * 🌐 **[Every ChatGPT GUI](https://github.com/billmei/every-chatgpt-gui)** - ChatGPT GUI Index
@@ -182,7 +182,7 @@ toc: true
 ***
 ***
 
-# ► AI Indexes
+## ► AI Indexes
 
 * 🌐 **[LMSYS Arena](https://chat.lmsys.org/?leaderboard)** - Chatbot Leaderboards / Benchmarks
 * 🌐 **[LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard)** - Chatbot Leaderboards / Benchmarks
@@ -216,7 +216,7 @@ toc: true
 ***
 ***
 
-# ► Text Generators
+## ► Text Generators
 
 * ⭐ **[TextFX](https://textfx.withgoogle.com/)** or [rytr](https://rytr.me/) - AI Creative Writing Tools
 * [Scrip AI](https://scripai.com/), [InkForAll](https://app.inkforall.com/tools), [QuickPenAI](https://quickpenai.com/) - Online AI Text Tools
@@ -237,7 +237,7 @@ toc: true
 
 ***
 
-# ► Video Generation
+## ► Video Generation
 
 * ⭐ **[PixVerse](https://pixverse.ai/)** - Video Generator / [Discord](https://discord.com/invite/MXHErdJHMg)
 * [Synthesis Colab](https://github.com/camenduru/text-to-video-synthesis-colab) - Video Generator
@@ -254,7 +254,7 @@ toc: true
 
 ***
 
-# ► Image Generation
+## ► Image Generation
 
 * **Note** - Because Stable Diffusion works so well, most innovation in image generation is happening using it as the base model. As such, almost all sections and links are based on SD, unless stated otherwise.
 
@@ -364,7 +364,7 @@ toc: true
 
 ***
 
-# ► Audio Generation
+## ► Audio Generation
 
 * ⭐ **[MusicGen](https://huggingface.co/spaces/facebook/MusicGen)** - Text to Music AI
 * ⭐ **[Riffusion](https://www.riffusion.com/)**

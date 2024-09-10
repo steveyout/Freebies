@@ -358,7 +358,7 @@ toc: true
 
 ***
 
-# ► Live TV / Sports
+## ► Live TV / Sports
 
 ## ▷ Live TV
 
@@ -512,19 +512,19 @@ toc: true
 
 ***
 
-# ► [Smart TV / Firestick](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/android#wiki_.25B7_smart_tv_.2F_firestick)
+## ► [Smart TV / Firestick](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/android#wiki_.25B7_smart_tv_.2F_firestick)
 
 ***
 
-# ► [Android Streaming](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/android#wiki_.25BA_android_streaming)
+## ► [Android Streaming](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/android#wiki_.25BA_android_streaming)
 
 ***
 
-# ► [iOS Streaming](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/android#wiki_.25BA_ios_streaming)
+## ► [iOS Streaming](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/android#wiki_.25BA_ios_streaming)
 
 ***
 
-# ► Download Sites
+## ► Download Sites
 
 * **Note** - Use **[redirect bypassers](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/adblock-vpn-privacy#wiki_.25B7_redirect_bypass)** to skip link shorteners
 
@@ -645,7 +645,7 @@ toc: true
 
 ***
 
-# ► Torrent Apps
+## ► Torrent Apps
 
 * **Note** - Remember to get a [VPN](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/adblock-vpn-privacy#wiki_.25BA_vpn) before torrenting
 
@@ -687,7 +687,7 @@ toc: true
 
 ***
 
-# ► Torrent Sites
+## ► Torrent Sites
 
 * ↪️ **[General Torrent Sites](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/torrent)**
 * ⭐ **[1337x Movies](https://1337x.to/movie-library/1/)** - Movies / TV / Anime
@@ -737,7 +737,7 @@ toc: true
 
 ***
 
-# ► Tracking / Discovery
+## ► Tracking / Discovery
 
 ## ▷ Database / Tracking
 
@@ -826,7 +826,7 @@ toc: true
 
 ***
 
-# ► Subtitles
+## ► Subtitles
 
 * 🌐 **[elSubtitle](https://www.elsubtitle.com/)**, [SubConverter](https://subconverter.com/) or [Subtitle Tools](https://subtitletools.com/) - Subtitle Tools
 * ⭐ **[Substital](https://substital.com/)** or [Movie-Subtitles](https://github.com/gignupg/Movie-Subtitles) - External Subtitle Extensions
@@ -874,7 +874,7 @@ toc: true
 
 ***
 
-# ► Helpful Sites / Tools
+## ► Helpful Sites / Tools
 
 * 🌐 **[/r/Animepiracy Wiki](https://thewiki.moe/)** or [Awesome ACG](https://github.com/soruly/awesome-acg) - Anime Tool Indexes
 * ↪️ **[Video Players / Servers](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/video-tools)**

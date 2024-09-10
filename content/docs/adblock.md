@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Adblocking
+## ► Adblocking
 
 * **Note** - Don't run multiple general adblockers (e.g., uBlock Origin and Adblock Plus) simultaneously to [avoid breakage](https://twitter.com/gorhill/status/1033706103782170625). Combining general adblockers with tools like SponsorBlock is fine.
 
@@ -115,7 +115,7 @@ toc: true
 
 ***
 
-# ► Antivirus / Malware
+## ► Antivirus / Malware
 
 * 🌐 **[/r/Antivirus Index](https://www.reddit.com/r/antivirus/wiki/index/)** - Antivirus Tools Index
 * 🌐 **[Awesome Malware Analysis](https://github.com/rshipp/awesome-malware-analysis)** - Malware Analysis Resources
@@ -155,7 +155,7 @@ toc: true
 
 ***
 
-# ► Privacy
+## ► Privacy
 
 * 🌐 **[Awesome Vehicle Security](https://github.com/jaredthecoder/awesome-vehicle-security)** - Vehicle Security Resources
 * ↪️ **[SMS Verification Sites](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/storage#wiki_sms_verification_sites)**
@@ -236,7 +236,7 @@ toc: true
 
 ***
 
-# ► Web Privacy
+## ► Web Privacy
 
 * 🌐 **[Google Alt List](https://www.techspot.com/article/2752-all-google-alternatives/)**, [/r/DeGoogle](https://www.reddit.com/r/degoogle), [Degoogle](https://tycrek.github.io/degoogle/) or [No More Google](https://nomoregoogle.com/) - Google App Alternatives
 * ↪️ **[Chat Service Comparisons](https://docs.google.com/spreadsheets/u/0/d/1-UlA4-tslROBDS9IqHalWVztqZo7uxlCeKPQ-8uoFOU)**
@@ -408,7 +408,7 @@ toc: true
 
 ***
 
-# ► VPN
+## ► VPN
 
 * **Note** - For torrenting, it's recommended to use a paid rather than free VPN. Free VPNs are only really useful for things like viewing sites blocked by your ISP / country.
 
@@ -449,7 +449,7 @@ toc: true
 
 ***
 
-# ► Proxy
+## ► Proxy
 
 ## ▷ Proxy Apps
 

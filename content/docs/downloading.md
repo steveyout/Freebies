@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Download Directories
+### ► Download Directories
 
 {{% alert context="success" %}}
 **Note** - Some Open Directories grab IP's, so use a VPN or Tor when accessing them.
@@ -35,7 +35,7 @@ toc: true
 
 ***
 
-# ► Download Sites
+### ► Download Sites
 
 * **Note** - General DDL sites use a lot of different sources, so it's best to avoid them for anything you install, like software, games or APKs. You can also use **[redirect bypassers](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/adblock-vpn-privacy#wiki_.25B7_redirect_bypass)** to skip link shorteners.
 
@@ -135,7 +135,7 @@ toc: true
 
 ***
 
-# ► Software Sites
+### ► Software Sites
 
 * **Note** - Remember to always scan software before installing with tools like **[VirusTotal](https://www.virustotal.com/)** or use it in **[Sandboxie](https://rentry.co/sandboxie-guide)**.
 
@@ -220,7 +220,7 @@ toc: true
 
 ***
 
-# ► File Sharing Apps
+### ► File Sharing Apps
 
 * ⭐ **[Soulseek](https://slsknet.org/)** or [Nicotine+](https://nicotine-plus.org/) - File Sharing App / [Stats](https://github.com/mrusse/Slsk-Upload-Stats-Tracker) / [Server App](https://github.com/slskd/slskd)
 * [DC++](https://dcplusplus.sourceforge.io/index.html) - File Sharing App / [Hubs](https://dchublists.com/), [2](https://dchublist.org/), [3](https://dchublist.biz/)
@@ -241,7 +241,7 @@ toc: true
 
 ***
 
-# ► Usenet
+### ► Usenet
 
 * 🌐 **[Usenet Tools / Services](https://curlie.org/en/Computers/Usenet)** or [UsenetTools](http://www.usenettools.net/)
 * ⭐ **[Usenet Guide / Automation Setup](https://docs.google.com/document/d/1TwUrRj982WlWUhrxvMadq6gdH0mPW0CGtHsTOFWprCo/mobilebasic)** / [2](https://redd.it/4x2mc9) / [3](https://www.iitk.ac.in/LDP/HOWTO/Usenet-News-HOWTO/x27.html) / [4](https://graph.org/EVERYTHING-YOU-NEED-TO-KNOW-ABOUT-USENET-09-04) / [5](https://www.reddit.com/r/usenet/wiki/index/) / [6](https://blog.decryption.net.au/t/a-fully-automated-usenet-piracy-machine-with-plex-sabnzbd-and-sonarr/130)
@@ -295,7 +295,7 @@ toc: true
 
 ***
 
-# ► Leeches / Debrid
+### ► Leeches / Debrid
 
 * 🌐 **[Free Premium Leech Wiki](https://filehostlist.miraheze.org/wiki/Free_Premium_Leeches)** or [leechlisting](https://www.leechlisting.com/) - Leech Lists
 * [@Transload](https://t.me/transload) - Telegram Leech Bots
