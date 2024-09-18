@@ -1,3 +1,5 @@
+![Logo](
+https://freeebies.site/favicon.svg)
 
 # Freebies
 
