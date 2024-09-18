@@ -20,6 +20,7 @@ toc: true
 * ⭐⭐⭐ **[StreamWatch](https://streamwatch.online/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[StreamerFlix](https://streamerflix.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[Rivestream](https://rivestream.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
+* ⭐⭐⭐ **[YoYoMovies](https://yoyomovies.net/)** - Movies / TV / Anime / 4K / 1080p / No ads
 * 
 * ⭐ **[movie-web](https://erynith.github.io/movie-web-instances/)**, [2](https://docs.undi.rest/instances) - Movies / TV / Anime / 4K / 1080p / Ad-Free / [Add Sources](https://pastebin.com/w8Brq2UA) / [Docs](https://docs.undi.rest/)
 * ⭐ **[Braflix](https://www.braflix.ru/)** - Movies / TV / Anime / 4K / 1080p / [Discord](https://discord.com/invite/dexBcDVdEk)
