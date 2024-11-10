@@ -20,7 +20,7 @@ toc: true
 * ⭐⭐⭐ **[StreamWatch](https://streamwatch.online/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[StreamerFlix](https://streamerflix.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[Rivestream](https://rivestream.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
-* 
+* * ⭐⭐⭐ **[Kaido](https://kaido.cc/)** -  Anime / 4K / 1080p / No ads /dub /sub [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐ **[movie-web](https://erynith.github.io/movie-web-instances/)**, [2](https://docs.undi.rest/instances) - Movies / TV / Anime / 4K / 1080p / Ad-Free / [Add Sources](https://pastebin.com/w8Brq2UA) / [Docs](https://docs.undi.rest/)
 * ⭐ **[Braflix](https://www.braflix.ru/)** - Movies / TV / Anime / 4K / 1080p / [Discord](https://discord.com/invite/dexBcDVdEk)
 * ⭐ **[Binged](https://binged.live/)**, [2](https://binge.lol/), [3](https://binged.in/) - Movies / TV / Anime / 4K / 1080p / [Discord](https://discord.gg/f2SvhcKCKS)
