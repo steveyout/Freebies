@@ -191,6 +191,7 @@ toc: true
 * 🌐 **[Toolify](https://www.toolify.ai/)** - AI Directory
 * 🌐 **[Phygital Library](https://library.phygital.plus/)** - AI Directory / Workflow Builder
 * 🌐 **[LifeArchitect](https://lifearchitect.ai/models-table/)** - LLM Index
+* 🌐 **[Beyond AI Tools](https://www.beyondaitools.com/)** - Multilingual AI Directory
 * [Glif](https://glif.app/) or [perchance](https://perchance.org/generators) - Simple AI Builders
 * [WildBench](https://huggingface.co/spaces/allenai/WildBench) - Chatbot Benchmarks
 * [ArtificialAnalysis](https://artificialanalysis.ai/) - Chatbot Benchmarks
