@@ -313,6 +313,12 @@ toc: true
 
 ***
 
+## ► Image Recognition
+
+* ⭐ **[AI Face Shape Detector](https://www.faceshapedetectors.org/)** - AI face recognition and shape detection.
+
+***
+
 ## ▷ Local Frontends
 
 * ⭐ **[Stability Matrix](https://lykos.ai/)** / [GitHub](https://github.com/LykosAI/StabilityMatrix)
