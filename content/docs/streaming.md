@@ -936,3 +936,9 @@ toc: true
 * [VidSrc.pro](https://vidsrc.pro/) - Movies / TV / Anime / API / 4K / 1080p
 * [SmashyStream API](https://embed.smashystream.com/)  - Movies / TV / Anime / API / 1080p
 * [MoviesAPI](https://moviesapi.club/) - Movies / TV / Anime / API / 1080p  / [Telegram](https://t.me/moviesapi_club)
+* [vidsrc.vip](https://vidsrc.vip/) - Movies / TV / Anime / API / 1080p / [Telegram](https://t.me/vidsrcvip)
+* [vidlink](https://vidlink.pro/) - Movies / TV / Anime / API / 1080p
+* [vidsrc.su](https://vidsrc.su/) - Movies / TV / Anime / API / 1080p / No ads / [Telegram](https://t.me/vidsrcsu)
+* [vidfast](https://vidfast.pro/) - Movies / TV / Anime / API / 4K / 1080p
+* [videasy](https://www.videasy.net/) - Movies / TV / Anime / API / 4K / 1080p
+* [vidzee](https://vidzee.wtf/) - Movies / TV / Anime / API / 4K / 1080p
