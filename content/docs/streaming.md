@@ -35,6 +35,7 @@ toc: true
 * ⭐ **[VidPlay](https://vidplay.org/)** - Movies / TV / Anime / 1080p / [Note](https://pastebin.com/kXrVBceh)
 * ⭐ **[Rive](https://rivestream.live/)**, [2](https://rivestream.netlify.app/), [3](https://rivestream.xyz/), [4](https://cinemaos-v2.vercel.app/) - Movies / TV / Anime / 4K / 1080p / Ad-Free / [Mirrors](https://github.com/Developabile/rive-next/blob/dev/Domains.md) / [GitHub](https://github.com/Developabile/rive-next) / [Discord](https://discord.gg/6xJmJja8fV)
 * ⭐ **[YoYoMovies](https://yoyomovies.net/)** - Movies / TV / Anime / Drama / 4K / 1080p
+* ⭐ **[Popflix](https://popflix.to/)** - Movies / TV / Anime / Drama / 4K / 1080p
 * [Autoembed](https://watch.autoembed.cc/) - Movies / TV / Anime / Drama / 4K / 1080p / [API Docs](https://autoembed.cc/#api/) / [Discord](https://discord.gg/BWDSXV9aX4)
 * [PopCornMovies](https://popcornmovies.to/) - Movies / TV / Anime / Drama / Live Broadcasts / 4K / 1080p
 * [Cinebook](https://www.cinebook.xyz/) - Movies / TV / Anime / Drama / 1080p  / [Discord](https://discord.gg/WtJzmFgscT)
@@ -933,3 +934,7 @@ toc: true
 * [VidSrc.pro](https://vidsrc.pro/) - Movies / TV / Anime / API / 4K / 1080p
 * [SmashyStream API](https://embed.smashystream.com/)  - Movies / TV / Anime / API / 1080p
 * [MoviesAPI](https://moviesapi.club/) - Movies / TV / Anime / API / 1080p  / [Telegram](https://t.me/moviesapi_club)
+* [Vidora](https://vidora.su) - Movies / TV / API / 1080p
+* [videasy](https://player.videasy.net) - Movies / TV / Anime / API / 4K / 1080p
+* [Vidfast](https://vidfast.pro) - Movies / TV / Anime / API / 1080p
+
