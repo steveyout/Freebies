@@ -2,7 +2,6 @@ baseURL = 'https://freeebies.site'
 languageCode = 'en-us'
 title = 'Freebies'
 github="steveyout"
-googleAnalytics = 'G-HHK1B8QGWH'
 
 [module]
 # uncomment line below for temporary local development of module
@@ -105,31 +104,35 @@ intLinkTooltip  = true                                # Enable a tooltip for int
 # plausibleURL    = "/docs/s" # (or set via env variable HUGO_PARAM_ANALYTICS_plausibleURL)
 # plausibleAPI    = "/docs/s" # optional - (or set via env variable HUGO_PARAM_ANALYTICS_plausibleAPI)
 # plausibleDomain = ""      # (or set via env variable HUGO_PARAM_ANALYTICS_plausibleDomain)
+[services]
+  [services.googleAnalytics]
+    id = 'G-HHK1B8QGWH'
 
-# [params.feedback]
-#     enabled = true
-#     emoticonTpl = true
-#     eventDest = ["plausible","google"]
-#     emoticonEventName = "Feedback"
-#     positiveEventName = "Positive Feedback"
-#     negativeEventName = "Negative Feedback"
-#     positiveFormTitle = "What did you like?"
-#     negativeFormTitle = "What went wrong?"
-#     successMsg = "Thank you for helping to improve Lotus Docs' documentation!"
-#     errorMsg = "Sorry! There was an error while attempting to submit your feedback!"
-#     positiveForm = [
-#       ["Accurate", "Accurately describes the feature or option."],
-#       ["Solved my problem", "Helped me resolve an issue."],
-#       ["Easy to understand", "Easy to follow and comprehend."],
-#       ["Something else"]
-#     ]
-#     negativeForm = [
-#       ["Inaccurate", "Doesn't accurately describe the feature or option."],
-#       ["Couldn't find what I was looking for", "Missing important information."],
-#       ["Hard to understand", "Too complicated or unclear."],
-#       ["Code sample errors", "One or more code samples are incorrect."],
-#       ["Something else"]
-#     ]
+
+[params.feedback]
+     enabled = true
+     emoticonTpl = true
+     eventDest = ["google"]
+     emoticonEventName = "Feedback"
+     positiveEventName = "Positive Feedback"
+     negativeEventName = "Negative Feedback"
+     positiveFormTitle = "What did you like?"
+     negativeFormTitle = "What went wrong?"
+     successMsg = "Thank you for helping to improve Freebies documentation!"
+     errorMsg = "Sorry! There was an error while attempting to submit your feedback!"
+     positiveForm = [
+       ["Accurate", "Accurately describes the feature or option."],
+       ["Solved my problem", "Helped me resolve an issue."],
+       ["Easy to understand", "Easy to follow and comprehend."],
+       ["Something else"]
+     ]
+     negativeForm = [
+       ["Inaccurate", "Doesn't accurately describe the feature or option."],
+       ["Couldn't find what I was looking for", "Missing important information."],
+       ["Hard to understand", "Too complicated or unclear."],
+       ["Code sample errors", "One or more code samples are incorrect."],
+       ["Something else"]
+     ]
 
 [[menu.primary]]
     name  = "Home"
@@ -145,6 +148,6 @@ intLinkTooltip  = true                                # Enable a tooltip for int
 
 [[menu.primary]]
      name  = "Community"
-     url = "https://github.com/colinwilson/lotusdocs/discussions"
+     url = "https://discord.gg/V85c4wvB5a"
      identifier = "community"
      weight = 30
