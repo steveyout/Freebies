@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/docs/miscellaneous/</loc>
+    <lastmod>2025-08-16T15:09:37+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docs/non-english/</loc>
+    <lastmod>2025-08-16T15:08:50+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docs/android-ios/</loc>
+    <lastmod>2025-08-16T15:08:30+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docs/reading/</loc>
+    <lastmod>2025-08-16T15:07:32+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docs/educational/</loc>
+    <lastmod>2025-08-16T15:07:21+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/docs/devtools/</loc>
+    <lastmod>2025-08-16T14:47:38+03:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/docs/linux/</loc>
     <lastmod>2024-09-19T15:48:22+03:00</lastmod>
   </url><url>
@@ -30,10 +48,10 @@
     <lastmod>2024-08-16T21:24:25+03:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/docs/</loc>
-    <lastmod>2024-09-19T15:48:22+03:00</lastmod>
+    <lastmod>2025-08-16T15:09:37+03:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2024-09-19T15:48:22+03:00</lastmod>
+    <lastmod>2025-08-16T15:09:37+03:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
   </url><url>
