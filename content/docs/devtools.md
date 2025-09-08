@@ -651,7 +651,7 @@ toc: true
 * [pylyzer](https://github.com/mtshiba/pylyzer) - Static Code Analyzer
 * [Online Python Compiler](https://www.onlinegdb.com/online_python_compiler) - Online Python Editor & Tester
 * [ClipRun](https://cliprun.com/) - Run Python Code in Browser / Chrome Extension
-* [Online Python Tools](https://pythonium.net/) - Online Python Tools
+* [Pythonium](https://pythonium.net/) - Online Python Tools
 
 ***
 
