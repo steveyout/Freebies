@@ -657,6 +657,7 @@ toc: true
 
 ## ▷ MOBA Tools
 
+* ⭐ **[MetaBot.GG](https://metabot.gg)** - LoL Meta Stats, Builds, and In-Depth Analysis.
 * ⭐ **[OP.GG](https://www.op.gg/)** - LoL Player Background Check
 * ⭐ **[U.GG](https://u.gg/)**, [LoLTheory](https://loltheory.gg/ ) or [LoLAlytics](https://lolalytics.com/) / [Discord](https://discord.com/invite/zKyaZ6w) - LoL Champion Builds / Tiers
 * ⭐ **[Gol.gg](https://gol.gg/esports/home/)** - LoL Competitive Stats, All Regions
