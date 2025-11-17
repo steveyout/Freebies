@@ -442,6 +442,7 @@ toc: true
 * [Moe TTS](https://huggingface.co/spaces/skytnt/moe-tts)
 * [TTS Paper](https://github.com/coqui-ai/TTS-papers) - Text to Speech Papers
 * [AI Speaker](https://ai-speaker.net/)
+* [Microsoft Sam TTS](https://samtts.net/)
 
 ***
 
