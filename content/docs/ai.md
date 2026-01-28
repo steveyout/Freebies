@@ -192,6 +192,7 @@ toc: true
 * 🌐 **[Phygital Library](https://library.phygital.plus/)** - AI Directory / Workflow Builder
 * 🌐 **[LifeArchitect](https://lifearchitect.ai/models-table/)** - LLM Index
 * 🌐 **[Beyond AI Tools](https://www.beyondaitools.com/)** - Multilingual AI Directory
+* [300 AI Directories](https://300aidirectories.com/) - AI directory submission service
 * [Glif](https://glif.app/) or [perchance](https://perchance.org/generators) - Simple AI Builders
 * [WildBench](https://huggingface.co/spaces/allenai/WildBench) - Chatbot Benchmarks
 * [ArtificialAnalysis](https://artificialanalysis.ai/) - Chatbot Benchmarks
@@ -442,6 +443,7 @@ toc: true
 * [Moe TTS](https://huggingface.co/spaces/skytnt/moe-tts)
 * [TTS Paper](https://github.com/coqui-ai/TTS-papers) - Text to Speech Papers
 * [AI Speaker](https://ai-speaker.net/)
+* [Microsoft Sam TTS](https://samtts.net/)
 
 ***
 

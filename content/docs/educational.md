@@ -64,6 +64,7 @@ toc: true
 * [Video Lectures](https://videolectures.net/) - Lectures
 * [Gresham College](https://www.gresham.ac.uk/) - Lectures / [YouTube](https://www.youtube.com/@GreshamCollege/videos)
 * [Crash Course](https://thecrashcourse.com/) - Topic Crash Courses
+* [HPI Lecture Videos](https://www.tele-task.de/series/type/lecture/) - Lectures
 
 ***
 
