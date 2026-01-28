@@ -11,8 +11,8 @@ hero:
       mobile: "gradient-mobile.webp"
 
   badge:
-    text: v0.1.0
-    color: primary # primary, secondary, success, danger, warning, info, light, dark
+    text: v0.2.0
+    color: danger # primary, secondary, success, danger, warning, info, light, dark
     pill: true # boolean
     soft: true # boolean
 
@@ -41,6 +41,7 @@ hero:
     url: "https://www.reddit.com/r/Freeebiess/"
 
   info: "**Open Source** MIT Licensed."
+
 
 # Feature Grid
 featureGrid:

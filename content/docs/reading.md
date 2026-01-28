@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Ebooks
+## ▷ Ebooks
 
 * 🌐 **[Open Slum](https://open-slum.org/)** - Book Site Index / Uptime Tracking
 * ⭐ **[Anna's Archive](https://annas-archive.org/)**, [2](https://annas-archive.li/), [3](https://annas-archive.se/) - Books / Comics / [Frontend](https://welib.org/) / [Auto-Expand](https://greasyfork.org/en/scripts/494262) / [Matrix](https://matrix.to/#/#annas:archivecommunication.org) / [Subreddit](https://www.reddit.com/r/Annas_Archive/)
@@ -320,7 +320,7 @@ toc: true
 
 ***
 
-# ► Audiobooks
+## ▷ Audiobooks
 
 ## ▷ Downloading
 
@@ -374,7 +374,7 @@ toc: true
 
 ***
 
-# ► Visual Media
+## ▷ Visual Media
 
 ## ▷ Comics
 
@@ -568,7 +568,7 @@ toc: true
 
 ***
 
-# ► Educational Books
+## ▷ Educational Books
 
 * 🌐 **[IvyPanda](https://ivypanda.com/blog/1000-open-textbooks-and-learning-resources-for-all-subjects/)** - Educational Book Site Index
 * ↪️ **[Language Learning Resources](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/edu/#wiki_.25BA_language_learning)**
@@ -864,7 +864,7 @@ toc: true
 
 ***
 
-# ► Tracking / Database
+## ▷ Tracking / Database
 
 * ⭐ **[GoodReads](https://www.goodreads.com/)** - Ratings / Tracking / Reviews / Recommendations / [Ratings Filter](https://www.book-filter.com/) / [Frontend](https://github.com/nesaku/BiblioReads)
 * ⭐ **[StoryGraph](https://www.thestorygraph.com/)** - Tracking / Recommendations
@@ -937,7 +937,7 @@ toc: true
 
 ***
 
-# ► Helpful Sites / Apps
+## ▷ Helpful Sites / Apps
 
 * 🌐 **[Ebook Converters Wiki](https://wiki.mobileread.com/wiki/E-book_conversion)**, [Ebook-Converter](https://ebook-converter.com/) or [Ebook-Online-Convert](https://ebook.online-convert.com/) - Ebook Converter Indexes
 * 🌐 **[DeDRM_tools](https://github.com/noDRM/DeDRM_tools)** - Ebook DRM Removal Tools

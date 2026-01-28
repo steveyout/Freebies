@@ -2,6 +2,8 @@ baseURL = 'https://freeebies.site'
 languageCode = 'en-us'
 title = 'Freebies'
 github="steveyout"
+enableEmoji = true
+enableGitInfo = true
 
 [module]
 # uncomment line below for temporary local development of module
@@ -47,7 +49,7 @@ title           = "Freebies - a collection of free stuff on the internet"       
 
 # pathName        = "docs"                            # path name for documentation site | default "docs"
 
-# themeColor      = "red"                            # (optional) - Set theme accent colour. Options include: blue (default), green, red, yellow, emerald, cardinal, magenta, cyan
+themeColor      = "red"                            # (optional) - Set theme accent colour. Options include: blue (default), green, red, yellow, emerald, cardinal, magenta, cyan
 
 darkMode        = true                                # enable dark mode option? default false
 
@@ -57,7 +59,7 @@ prismTheme      = "solarized-light"                           # (optional) - Set
 
 # gitinfo
 repoURL         = "https://github.com/steveyout/Freebies"  # Git repository URL for your site [support for GitHub, GitLab, and BitBucket]
-repoBranch      = "release"
+repoBranch      = "main"
 editPage        = true                                # enable 'Edit this page' feature - default false
 lastMod         = true                                # enable 'Last modified' date on pages - default false
 lastModRelative = true                                # format 'Last modified' time as relative - default true
@@ -147,7 +149,13 @@ intLinkTooltip  = true                                # Enable a tooltip for int
      weight = 20
 
 [[menu.primary]]
-     name  = "Community"
+     name  = "Discord"
      url = "https://discord.gg/V85c4wvB5a"
-     identifier = "community"
+     identifier = "discord"
      weight = 30
+
+[[menu.primary]]
+name  = "Reddit"
+url = "https://www.reddit.com/r/Freeebiess/"
+identifier = "reddit"
+weight = 30

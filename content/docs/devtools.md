@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Dev Communities
+## ▷ Dev Communities
 
 * ⭐ **[StackOverflow](https://stackoverflow.com/)** - Developer Forum
 * ⭐ **[XDA](https://xdaforums.com/)** - App Development Forum / [Discord](https://discord.com/invite/e4v8qtkcBw)
@@ -29,7 +29,7 @@ toc: true
 
 ***
 
-# ► Dev News
+## ▷ Dev News
 
 * ⭐ **[KrebsOnSecurity](https://krebsonsecurity.com/)** - Cybersecurity News
 * ⭐ **[Lobsters](https://lobste.rs/)** - Dev News / [Highlighter](https://greasyfork.org/en/scripts/40906)
@@ -43,11 +43,11 @@ toc: true
 
 ***
 
-# ► [Developer Learning](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/edu#wiki_.25BA_developer_learning)
+## ▷ [Developer Learning](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/edu#wiki_.25BA_developer_learning)
 
 ***
 
-# ► Developer Tools
+## ▷ Developer Tools
 
 * ↪️ **[Data Visualization Tools](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/storage/#wiki_data_visualization_tools)**
 * ⭐ **[DevToys](https://devtoys.app/)** - Dev Multi-Tool App / [GitHub](https://github.com/DevToys-app/DevToys)
@@ -399,7 +399,7 @@ toc: true
 
 ***
 
-# ► Game Dev Tools
+## ▷ Game Dev Tools
 
 * 🌐 **[List of Game Engines](https://en.wikipedia.org/wiki/List_of_game_engines)**, [Awesome Game Engine](https://github.com/stevinz/awesome-game-engine-dev) or [Game-Engines](https://rentry.co/Game-Engines) - Game Engine Development Resources
 * 🌐 **[EnginesDatabase](https://enginesdatabase.com/)** - Game Engines Database
@@ -464,7 +464,7 @@ toc: true
 
 ***
 
-# ► IDEs / Code Editors
+## ▷ IDEs / Code Editors
 
 * ↪️ **[Text Editors / Notes](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/text-tools/#wiki_.25BA_text_editors)**
 * ⭐ **[VSCodium](https://vscodium.com/)** or **[Visual Studio Code](https://code.visualstudio.com/)**, [2](https://vscode.dev/), [3](https://cs50.dev/) - Code Editor / [Extensions](https://www.vsixhub.com/) / [Extensions Marketplace](https://rentry.co/vscodiumguide)
@@ -618,7 +618,7 @@ toc: true
 
 ***
 
-# ► Programming Languages
+## ▷ Programming Languages
 
 * 🌐 **[Awesome Cheatsheets](https://lecoupa.github.io/awesome-cheatsheets/)**, **[QuickRef.me](https://quickref.me/)**, [HowDoI](https://github.com/gleitz/howdoi), [OverApi](https://overapi.com/), [Reference](https://cheatsheets.zip/) / [GitHub](https://github.com/Fechin/reference) or [Cheat Sheets](http://www.cheat-sheets.org/) - Programming Cheat Sheets
 * 🌐 **[Codigo](https://codigolangs.com/)** - Programming Language Repository
@@ -680,7 +680,7 @@ toc: true
 
 ***
 
-# ► Web Development
+## ▷ Web Development
 
 ## ▷ HTML
 
@@ -768,7 +768,7 @@ toc: true
 
 ***
 
-# ► Web Dev Tools
+## ▷ Web Dev Tools
 
 * 🌐 **[Website Creation Resources](https://discourse.32bit.cafe/t/resources-list-for-the-personal-web/49)** - Web Dev Resources
 * 🌐 **[Awesome Tunneling](https://github.com/anderspitman/awesome-tunneling)** - Tunneling Resources
@@ -1033,7 +1033,7 @@ toc: true
 
 ***
 
-# ► Hosting Tools
+## ▷ Hosting Tools
 
 * 🌐 **[Awesome-Web-Hosting](https://nuhmanpk.github.io/Awesome-Web-Hosting/)** - Free Hosting Provider Index / [GitHub](https://github.com/nuhmanpk/Awesome-Web-Hosting)
 * 🌐 **[Awesome Cloudflare](https://github.com/irazasyed/awesome-cloudflare)** - Cloudflare Resources
@@ -1146,7 +1146,7 @@ toc: true
 
 ***
 
-# ► Cybersecurity Tools
+## ▷ Cybersecurity Tools
 
 * ⭐ **[pyWhat](https://github.com/bee-san/pyWhat)** - File Analyzer
 * [Open Source Security Software](https://open-source-security-software.net/) - Cybersecurity Software
@@ -1266,7 +1266,7 @@ toc: true
 
 ***
 
-# ► Markup Tools
+## ▷ Markup Tools
 
 * ⭐ **[Markdown Guide](https://www.markdownguide.org/)** - Guide for Markdown (.md)
 * ⭐ **[generatedata.com](https://generatedata.com/)** - Generate Test Data in Markup Formats

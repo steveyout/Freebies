@@ -13,7 +13,7 @@ toc: true
 {{< alert context="info" text="Use this section for media (movies, music, books). For installing software, games, or APKs, use the English sections unless the source is highly trusted (e.g., m0nkrus)." />}}
 
 ---
-# ► Arabic / العربية
+## ▷ Arabic / العربية
 
 * [Dawin](https://www.dawin.io/) - Markdown Editor
 * [Wudooh](https://wudooh.app/) - Make Arabic Text Clearer
@@ -89,7 +89,7 @@ toc: true
 
 ***
 
-# ► Bangla / বাংলা
+## ▷ Bangla / বাংলা
 
 * ⭐ **[Avro Keyboard](https://www.omicronlab.com/avro-keyboard.html)** - Bangla Typing Tool / Spellcheck / [WebUI](https://avro.im/)
 * [aapathshala](https://aapathshala.com/library/) - Test Practice
@@ -127,7 +127,7 @@ toc: true
 
 ***
 
-# ► Bulgarian / Български
+## ▷ Bulgarian / Български
 
 * [YavkA](https://yavka.net/), [subsunacs](https://subsunacs.net/) or [subs.sab.bz](http://subs.sab.bz/) - Subtitles
 
@@ -149,7 +149,7 @@ toc: true
 
 ***
 
-# ► Chinese / 汉语方言
+## ▷ Chinese / 汉语方言
 
 * 🌐 **[heji](https://233heji.com/)** or [bajins](https://www.bajins.com/) - Chinese Sites / Tools Indexes
 * 🌐 **[Awesome GitHub Repo](https://github.com/Wechat-ggGitHub/Awesome-GitHub-Repo)** - Programming Resources Index
@@ -348,7 +348,7 @@ toc: true
 
 ***
 
-# ► Czech / Čeština
+## ▷ Czech / Čeština
 
 * [uschovna](https://www.uschovna.cz/) or [posilej](https://posilej.cz/) - Czech File Hosts
 
@@ -384,7 +384,7 @@ toc: true
 
 ***
 
-# ► Filipino / Pinoy
+## ▷ Filipino / Pinoy
 
 ## ▷ Streaming / Nanonood
 
@@ -395,7 +395,7 @@ toc: true
 
 ***
 
-# ► Finnish / Suomi
+## ▷ Finnish / Suomi
 
 * [finna.fi](https://www.finna.fi/) - Media Archive / Library Card Required
 * [Sanuli](https://sanuli.fi/) - Finnish Wordle
@@ -416,7 +416,7 @@ toc: true
 
 ***
 
-# ► French / Français
+## ▷ French / Français
 
 * 🌐 **[FrancePirate Wiki](https://francepirate.gitbook.io/wikitipiak/tipiakeries)** - Piracy Site Mega Thread / [Subreddit](https://www.reddit.com/r/FrancePirate/)
 * [SubSynchro](https://www.subsynchro.com/), [Sous-Titres](https://www.sous-titres.eu/) or [SubFactory](https://subfactory.fr/) - Subtitles
@@ -516,7 +516,7 @@ toc: true
 
 ***
 
-# ► German / Deutsch
+## ▷ German / Deutsch
 
 * 🌐 **[Awesome German Piracy](https://github.com/SeppPenner/awesome-german-piracy)** - German / Piracy Site Index
 * ⭐ **[Tarnkappe](https://tarnkappe.info/forum/)** - Piracy Discussion / [Telegram](https://t.me/Tarnkappe_info)
@@ -593,7 +593,7 @@ toc: true
 
 ***
 
-# ► Georgian / ქართული ენა
+## ▷ Georgian / ქართული ენა
 
 ## ▷ Downloading
 
@@ -601,7 +601,7 @@ toc: true
 
 ***
 
-# ► Greek / Ελληνικά
+## ▷ Greek / Ελληνικά
 
 ## ▷ Streaming
 
@@ -632,7 +632,7 @@ toc: true
 
 ***
 
-# ► Hebrew / עברית
+## ▷ Hebrew / עברית
 
 * [AB-Maps](https://www.abmaps.com/) - Map Tool
 * [WizdomSubs](https://wizdom.xyz/) or [Ktuvit](https://www.ktuvit.me/) - Subtitles
@@ -654,7 +654,7 @@ toc: true
 
 ***
 
-# ► Hungarian / Magyar
+## ▷ Hungarian / Magyar
 
 * [TorrentEmpire](https://torrent-empire.me/) - Torrent Discussion
 * [Turistautak](https://turistautak.hu/) - Hungarian Maps
@@ -671,7 +671,7 @@ toc: true
 
 ***
 
-# ► Indian Languages
+## ▷ Indian Languages
 
 * [Indic-Keyboard](https://gitlab.com/indicproject/indic-keyboard) - Indian Android Keyboard
 * [Bhashini](https://bhashini.gov.in/) - Live Translation App / Text and Speech
@@ -778,7 +778,7 @@ toc: true
 
 ***
 
-# ► Indonesian / Bahasa Indonesia
+## ▷ Indonesian / Bahasa Indonesia
 
 * [bebasid](https://github.com/bebasid/bebasid) - Indonesian Site Unblock Proxies / [DNS](https://github.com/bebasid/bebasdns) / [Script](https://gist.github.com/mul14/eb05e88fcec5bb195cbb)
 
@@ -819,7 +819,7 @@ toc: true
 
 ***
 
-# ► Italian / Italiano
+## ▷ Italian / Italiano
 
 * 🌐 **[The Italian Corsairs](https://rentry.co/the-italian-corsairs)** - Piracy Sites List
 
@@ -862,7 +862,7 @@ toc: true
 
 ***
 
-# ► Japanese / 日本語
+## ▷ Japanese / 日本語
 
 * [MiniTokyo3D](https://minitokyo3d.com/) - Tokyo Public Transport Map
 * [Poipiku](https://poipiku.com/) - User-Made Images
@@ -947,7 +947,7 @@ toc: true
 
 ***
 
-# ► Korean / 한국어
+## ▷ Korean / 한국어
 
 * ⭐ **[wrtn](https://wrtn.ai/)** - GPT-4 Chatbot / [Android](https://play.google.com/store/apps/details?id=com.wrtn.app) / [iOS](https://apps.apple.com/us/app/%EB%A4%BC%ED%8A%BC-%EB%AA%A8%EB%91%90%EB%A5%BC-%EC%9C%84%ED%95%9C-ai-%ED%8F%AC%ED%84%B8/id6448556170) / No Sign-Up
 * [Arca](https://arca.live/) - Forum
@@ -983,13 +983,13 @@ toc: true
 
 ***
 
-# ► Malay / Bahasa Melayu
+## ▷ Malay / Bahasa Melayu
 
 * [Lowyat](https://forum.lowyat.net/) - Tech Forum
 
 ***
 
-# ► Norwegian / Norsk
+## ▷ Norwegian / Norsk
 
 ## ▷ Streaming
 
@@ -1001,7 +1001,7 @@ toc: true
 
 ***
 
-# ► Persian / فارسی
+## ▷ Persian / فارسی
 
 * 🌐 **[Awesome Freedom](https://github.com/hiddify/awesome-freedom)** - Tools Index
 * 🌐 **[Awesome AI channels](https://github.com/AminTaheri23/Awesome-AI-telegram-gp-and-channel)** - AI Telegram Channels / Groups Index
@@ -1058,7 +1058,7 @@ toc: true
 
 ***
 
-# ► Polish / Polski
+## ▷ Polish / Polski
 
 * [Napisy24](https://napisy24.pl/), [GrupaHatak](https://grupahatak.pl/) or [KickAssSubtitles](https://kickasssubtitles.com/pl) - Subtitles
 * [Tekstowo](https://www.tekstowo.pl/) - Lyrics
@@ -1116,7 +1116,7 @@ toc: true
 
 ***
 
-# ► Portuguese / Português
+## ▷ Portuguese / Português
 
 * **Note** - Brazil is known for having lots of site blocking, try using a [VPN](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/adblock-vpn-privacy#wiki_.25BA_vpn) if you cannot access one.
 
@@ -1265,7 +1265,7 @@ toc: true
 
 ***
 
-# ► Romanian / Limba Română
+## ▷ Romanian / Limba Română
 
 ## ▷ Downloading
 
@@ -1295,7 +1295,7 @@ toc: true
 
 ***
 
-# ► Russian / Русский
+## ▷ Russian / Русский
 
 * ⭐ **[РосКомСвобода](https://t.me/roskomsvoboda_discuss)** / [roskomsvoboda](https://t.me/roskomsvoboda) / [rks_org_Bot](https://t.me/rks_org_bot) or [protocol_vpn](https://t.me/protocol_vpn) - Censorship Discussion Telegrams
 * [Ru.Board](https://forum.ru-board.com/) - Piracy Discussion Forum
@@ -1467,7 +1467,7 @@ toc: true
 
 ***
 
-# ► Slovak / Slovenčina
+## ▷ Slovak / Slovenčina
 
 ## ▷ Streaming
 
@@ -1484,7 +1484,7 @@ toc: true
 
 ***
 
-# ► Spanish / Español
+## ▷ Spanish / Español
 
 * 🌐 **[Awesome Telegram Redcarpet](https://listados.gitlab.io/awesome-telegram-redcarpet/)**, [2](https://gitlab.com/listados/awesome-telegram) - Telegram Channel Index
 * [Minijuegos](https://www.minijuegos.com/) - Browser Games
@@ -1676,7 +1676,7 @@ toc: true
 
 ***
 
-# ► Swedish / Sverige
+## ▷ Swedish / Sverige
 
 * [Eniro](https://www.eniro.se/) - Search
 
@@ -1687,7 +1687,7 @@ toc: true
 
 ***
 
-# ► Thai / ไทย
+## ▷ Thai / ไทย
 
 * [Thai Dictionary](https://dictionary.orst.go.th/)
 
@@ -1698,7 +1698,7 @@ toc: true
 
 ***
 
-# ► Turkish / Türkçe
+## ▷ Turkish / Türkçe
 
 * ⭐ **[caglaryalcin's list](https://github.com/caglaryalcin/ublacklist/)** or [TemizAramaMotorum](https://gitlab.com/fr0stb1rd/temizaramamotorum) - Get rid of low-quality Turkish results
 * [DoğrulukPayı](https://www.dogrulukpayi.com/) - News Verification
@@ -1748,7 +1748,7 @@ toc: true
 
 ***
 
-# ► Ukrainian / Українська
+## ▷ Ukrainian / Українська
 
 ## ▷ Torrenting
 
@@ -1768,7 +1768,7 @@ toc: true
 
 ***
 
-# ► Uzbek / Ўзбек
+## ▷ Uzbek / Ўзбек
 
 ## ▷ Downloading
 
@@ -1785,7 +1785,7 @@ toc: true
 
 ***
 
-# ► Vietnamese / Việt
+## ▷ Vietnamese / Việt
 
 * ⭐ **[Voz.vn](https://voz.vn/)**, [VN-Z](https://vn-z.vn/), [TECHRUM.VN](https://www.techrum.vn/) or [WhiteHat.vn](https://whitehat.vn/) - Tech Forum
 * ⭐ **[J2team](https://www.facebook.com/groups/j2team.community)** - Tech Community
@@ -1902,7 +1902,7 @@ toc: true
 
 ***
 
-# ► Other Languages
+## ▷ Other Languages
 
 * 🌐 **[Non-English Ebook & Audiobook Sites](https://redd.it/gehkl0)**
 * ↪️ **[Asian Drama Sites](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/video#wiki_.25B7_drama_streaming)**

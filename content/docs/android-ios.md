@@ -10,7 +10,7 @@ toc: true
 ---
 
 ---
-# ► Android APKs
+## ▷ Android APKs
 
 ## ▷ Modded APKs
 
@@ -204,7 +204,7 @@ toc: true
 
 ***
 
-# ► Android Device
+## ▷ Android Device
 
 * 🌐 **[Manufacturer Specific](https://rentry.org/ekrw4)** - Manufacturer-Specific Mobile Tools
 * ↪️ **[Device Comparisons](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/misc#wiki_.25B7_electronics)**
@@ -376,7 +376,7 @@ toc: true
 
 ***
 
-# ► Android Tools
+## ▷ Android Tools
 
 ## ▷ Android Utilities
 
@@ -668,7 +668,7 @@ toc: true
 
 ***
 
-# ► Android Emulators
+## ▷ Android Emulators
 
 ***
 
@@ -716,7 +716,7 @@ toc: true
 
 ***
 
-# ► Android Torrenting
+## ▷ Android Torrenting
 
 * **Note** - Remember to get a [VPN](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/adblock-vpn-privacy#wiki_.25BA_vpn) before torrenting and [bind it to your client](https://gist.github.com/VVispy/765c6723436f386ef113040f8fc968b8) if it allows.
 
@@ -736,7 +736,7 @@ toc: true
 
 ***
 
-# ► Android Reading
+## ▷ Android Reading
 
 * ↪️ **[Multi-Platform Readers](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/reading/#wiki_.25B7_ebook_readers)**
 * ⭐ **[KafkaArchives](https://www.getkafka.app/)** - Archive.org Books / Audiobooks
@@ -783,7 +783,7 @@ toc: true
 
 ***
 
-# ► Android Audio
+## ▷ Android Audio
 
 * ↪️ **[Song Identification Apps](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/audio#wiki_.25B7_song_identification)**
 * ⭐ **[ReVanced Manager](https://revanced.app/)** / [Changelog](https://revanced.app/announcements) / [Discord](https://discord.com/invite/rF2YcEjcrT) / [GitHub](https://github.com/ReVanced/revanced-manager), [xManager](https://www.xmanagerapp.com/) / [Discord](https://discord.com/invite/dnpKn5Wufm) or [Modded Spotify](https://rentry.co/FMHYBase64#modded-spotify-apk) - Ad-Free Spotify Patchers / [Warning](https://github.com/fmhy/FMHY/wiki/FMHY%E2%80%90Notes.md#android-spotify-note)
@@ -895,7 +895,7 @@ toc: true
 
 ***
 
-# ► Android Streaming
+## ▷ Android Streaming
 
 * ↪️ **[Android TV](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/video/#wiki_.25B7_android_tv)**
 * ⭐ **[Stremio](https://www.stremio.com/)** - Torrent Streaming / [Tools](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/video/#wiki_.25B7_stremio_tools)
@@ -998,7 +998,7 @@ toc: true
 
 ***
 
-# ► iOS Tools
+## ▷ iOS Tools
 
 * ↪️ **[Safari Extensions](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/internet-tools#wiki_.25B7_safari_extensions)**
 * ⭐ **[Bitwarden](https://bitwarden.com/download/apple-iphone-password-manager/)** / [X](https://twitter.com/bitwarden) / [Subreddit](https://reddit.com/r/bitwarden) / [GitHub](https://github.com/bitwarden), **[Keepassium](https://keepassium.com/)**, [AuthPass](https://authpass.app/) or [Strongbox](https://strongboxsafe.com/) - Password Managers
@@ -1167,7 +1167,7 @@ toc: true
 
 ***
 
-# ► iOS iPAs
+## ▷ iOS iPAs
 
 * 🌐 **[CyPwn](https://ipa.cypwn.xyz/)** - Tweaked App Library / [AltStore](https://ipa.cypwn.xyz/cypwn.json) / [Telegram](https://telegram.me/cypwngroup) / [Discord](https://discord.com/invite/UvHZz3HfN9)
 * 🌐 **[Open-Source iOS Apps](https://github.com/dkhamsing/open-source-ios-apps)** - Open-Source Apps
@@ -1229,7 +1229,7 @@ toc: true
 
 ***
 
-# ► iOS Audio
+## ▷ iOS Audio
 
 * ⭐ **[EeveeSpotify](https://github.com/whoeevee/EeveeSpotifyReborn)** - Ad-Free Spotify / Sideloaded / [Extension](https://github.com/BillyCurtis/OpenSpotifySafariExtension) / [Telegram](https://t.me/SpotilifeIPAs)
 * ⭐ **[SpotC++](https://spotc.yodaluca.dev/)** - Ad-Free Spotify / Sideloaded / [GitHub](https://github.com/SpotCompiled/SpotilifeC/)
@@ -1270,7 +1270,7 @@ toc: true
 
 ***
 
-# ► iOS Streaming
+## ▷ iOS Streaming
 
 * ⭐ **[Stremio](https://apps.apple.com/app/stremio-lite/id6741710156)** or [Web Stremio](https://web.stremio.com/) - Movies / TV / Anime / [Tools](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/video/#wiki_.25B7_stremio_tools)
 * ⭐ **[Sora](https://testflight.apple.com/join/uJPzdTTj)** - Movies / TV / Anime / Extension-Based / [Modules](https://library.cufiy.net/library/) / [Discord](https://discord.gg/XR3SrmUbpd) / [GitHub](https://github.com/cranci1/Sora)
@@ -1308,7 +1308,7 @@ toc: true
 
 ***
 
-# ► iOS Reading
+## ▷ iOS Reading
 
 * ↪️ **[Multi-Platform Readers](https://www.reddit.com/r/FREEMEDIAHECKYEAH/wiki/reading/#wiki_.25B7_ebook_readers)** - Ebook Reader Index
 * ⭐ **[Paperback](https://paperback.moe/)** - Manga Reader / [Extensions](https://discord.gg/rmf6jQpMU9) / [Discord](https://discord.paperback.moe/)
