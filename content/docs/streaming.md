@@ -16,7 +16,7 @@ toc: true
 &nbsp;
 ## ▷ Multi Server
 
-* ⭐⭐⭐ **[Youplex](https://youplex.site/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
+* ⭐⭐⭐ **[Youplex](https://youplex.site/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ) /[Android APP](https://github.com/steveyout/youplex-apk)
 * ⭐⭐⭐ **[StreamWatch](https://streamwatch.online/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[StreamerFlix](https://streamerflix.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[Rivestream](https://rivestream.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
