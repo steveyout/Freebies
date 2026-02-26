@@ -22,6 +22,7 @@ toc: true
 * ⭐⭐⭐ **[Rivestream](https://rivestream.xyz/)** - Movies / TV / Anime / 4K / 1080p / No ads / [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[Kaido](https://kaido.cc/)** -   Movies / TV / Anime / 4K / 1080p / No ads /dub /sub [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
 * ⭐⭐⭐ **[Watchstream](https://watchstream.site/)** -  Anime / 4K / 1080p / No ads /dub /sub [Telegram](https://t.me/youplexannouncments) / [Discord](https://discord.com/invite/5eWu9Vz6tQ)
+* ⭐⭐⭐ **[Popflix](https://popflix.to)** - Movies / TV / Anime / 4K / 1080p / No ads 
 * ⭐ **[movie-web](https://erynith.github.io/movie-web-instances/)**, [2](https://docs.undi.rest/instances) - Movies / TV / Anime / 4K / 1080p / Ad-Free / [Add Sources](https://pastebin.com/w8Brq2UA) / [Docs](https://docs.undi.rest/)
 * ⭐ **[Braflix](https://www.braflix.ru/)** - Movies / TV / Anime / 4K / 1080p / [Discord](https://discord.com/invite/dexBcDVdEk)
 * ⭐ **[Binged](https://binged.live/)**, [2](https://binge.lol/), [3](https://binged.in/) - Movies / TV / Anime / 4K / 1080p / [Discord](https://discord.gg/f2SvhcKCKS)
@@ -72,6 +73,8 @@ toc: true
 * [Seez](https://watchwave-v2.vercel.app/watch) - Movies / TV / 1080p
 * [Movierr](https://movierr.online/) - Movies / TV / Anime / [Discord](https://discord.gg/sxKN424ZYK)
 * [EuroPixHD](https://europixhd.pro/) - Movies / TV / Anime / 1080p
+* [flixbaba](https://flixbaba.com/) - Movies / TV / 1080p
+* [watchug](https://watch.ug/) - Movies / TV / Anime / Drama / 4K / 1080p
 * [EMovies](https://emovies.si/), [2](https://xtv.to/) - Movies / TV / Anime / 1080p
 * [Downloads-Anymovies](https://www.downloads-anymovies.co/) - Movies / 1080p
 * [MoviesLair](https://movielair.cc/) - Movies / TV / 720p / [Discord](https://discord.gg/ZvRTYqTWtZ)
@@ -933,3 +936,9 @@ toc: true
 * [VidSrc.pro](https://vidsrc.pro/) - Movies / TV / Anime / API / 4K / 1080p
 * [SmashyStream API](https://embed.smashystream.com/)  - Movies / TV / Anime / API / 1080p
 * [MoviesAPI](https://moviesapi.club/) - Movies / TV / Anime / API / 1080p  / [Telegram](https://t.me/moviesapi_club)
+* [vidsrc.vip](https://vidsrc.vip/) - Movies / TV / Anime / API / 1080p / [Telegram](https://t.me/vidsrcvip)
+* [vidlink](https://vidlink.pro/) - Movies / TV / Anime / API / 1080p
+* [vidsrc.su](https://vidsrc.su/) - Movies / TV / Anime / API / 1080p / No ads / [Telegram](https://t.me/vidsrcsu)
+* [vidfast](https://vidfast.pro/) - Movies / TV / Anime / API / 4K / 1080p
+* [videasy](https://www.videasy.net/) - Movies / TV / Anime / API / 4K / 1080p
+* [vidzee](https://vidzee.wtf/) - Movies / TV / Anime / API / 4K / 1080p
