@@ -447,9 +447,9 @@ toc: true
 
 ## ▷ Torrenting
 
-* [YGGTorrent](https://www.yggtorrent.top/) - Video / Audio / ROMs / Books / Sign-Up Required
+* [UTOPEER](https://ygg.gratis/) - Video / Audio / ROMs / Books
+* [C411](https://c411.org/) - Video / Audio / ROMs / Books / Sign-Up Required
 * [Torrent9](https://torrent9.to/) - Video / Audio / ROMs / Books
-* [Cpasbien](https://www1.cpasbien.to/) - Video / Audio / ROMs / Books
 * [Sharewood](https://www.sharewood.tv/) - Video / Audio / ROMs / Books / Sign-Up Required
 
 ## ▷ Streaming
