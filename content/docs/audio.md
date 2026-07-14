@@ -565,6 +565,7 @@ toc: true
 * [X-Minus](https://x-minus.pro/) or [karaoke-maker](https://humtools.com/karaoke-maker/) - Create Karaoke Songs
 * [VB Cables](https://rentry.co/FMHYBase64#vb-cables) - Virtual Audio Cables
 * [Librescore Downloader](https://github.com/LibreScore/dl-librescore) - Librescore Downloader
+* [SongFromLink](https://songfromlink.com/) - Find the background song from a TikTok, YouTube Shorts, or Reel link.
 
 ***
 
