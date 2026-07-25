@@ -629,6 +629,7 @@ toc: true
 * [Half Life Project Beta](https://hl2-beta.ru/?language=english) - Unreleased / Cut Half-Life Content
 * [CyberCAT-SimpleGUI](https://github.com/Deweh/CyberCAT-SimpleGUI) - Cyberpunk 2077 Save Editor
 * [Palworld.gg](https://palworld.gg/), [PalworldTrainer.com](https://palworldtrainer.com/) or [Paldb.cc](https://paldb.cc/) - Palworld Databases
+* [PalBreeding.online](https://palbreeding.online/) - Palworld 1.0 Breeding Calculator
 * [Palworld Host Save Fix](https://github.com/xNul/palworld-host-save-fix) - Palworld Save Bug Fix
 * [TrueGameData](https://truegamedata.com/) - COD Leaderboards
 * [Warzone Loadout](https://warzoneloadout.games/) - Warzone Loadouts and Builds
