@@ -114,6 +114,7 @@ toc: true
 * [devina](https://devina.io/)
 * [wangchujiang](https://wangchujiang.com/tools/)
 * [SmallDev.tools](https://smalldev.tools/)
+* [All Tools Verse](https://alltoolsverse.com/) - 1,000+ free browser-based tools for development, files, images, text, data, conversions, and everyday tasks. No signup required.
 * [Coders Tool](https://www.coderstool.com/)
 * [Utilities and Tools](https://utilities-online.info/)
 * [Clean CSS](https://www.cleancss.com/)
