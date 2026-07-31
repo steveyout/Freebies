@@ -1277,6 +1277,7 @@ toc: true
 * [yq](https://mikefarah.gitbook.io/yq/) - Portable YAML Processor / [GitHub](https://github.com/mikefarah/yq)
 * [readme.so](https://readme.so/) - Create README.md Files
 * [Tableconvert](https://tableconvert.com/) - Markdown / Code Converter
+* [Excel to Markdown](https://exceltomd.com/excel-to-markdown) - Convert XLSX / XLS / CSV to Markdown Locally
 * [Linkspector](https://github.com/UmbrellaDocs/action-linkspector) - Check Markdown Files for Dead Links
 * [Table Magic](https://stevecat.net/table-magic/) - Table to Markdown Converters
 * [Clipboard2Markdown](https://euangoddard.github.io/clipboard2markdown/) - Text to Markdown Converter
