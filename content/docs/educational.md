@@ -1291,6 +1291,7 @@ toc: true
 * [Papers.Xtreme](https://papers.xtremepape.rs/) - Test Revision Notes & Answers
 * [AllFreeDumps](https://www.allfreedumps.com/) - Exam Dumps
 * [IELTS69](https://www.ielts69.com/) - Cambridge Practice Tests
+* [IELTS Writing Checker](https://ieltswritingchecker.org/) - IELTS Task 1 and Task 2 scores and feedback
 * [CaieFinder](https://caiefinder.com/) - Previous Cambridge Test Answers
 * [ITExams](https://www.itexams.com/) - IT Exam Collection
 * [Pearson's AP Universe](https://drive.google.com/drive/folders/1kG84_tEPph4bEQqu2GnYx84xUzbdFGLw) - AP Exam Guides / Community / [Discord](https://discord.com/invite/sTanvkAZbN)
