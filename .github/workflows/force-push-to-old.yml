@@ -1,0 +1,30 @@
+name: Force Push to Old Repository
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  force-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Force Push to steveyout/Freebies
+        env:
+          GH_PAT: ${{ secrets.GH_PAT_OLD_REPO }}
+        run: |
+          if [ -z "$GH_PAT" ]; then
+            echo "::error::GH_PAT_OLD_REPO secret is missing! Please set GH_PAT_OLD_REPO in Repository Secrets."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add old-repo https://x-access-token:${GH_PAT}@github.com/steveyout/Freebies.git
+          git push old-repo HEAD:refs/heads/main --force
