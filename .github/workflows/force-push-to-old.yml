@@ -9,7 +9,7 @@ on:
 
 jobs:
   force-push:
-    if: ${{ toLower(github.repository) != 'steveyout/freebies' }}
+    if: github.repository != 'steveyout/Freebies'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
