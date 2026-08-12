@@ -11,7 +11,8 @@ import {
   ShieldCheck, 
   Gift,
   Palette,
-  Activity
+  Activity,
+  Globe
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
@@ -28,6 +29,7 @@ interface HeaderProps {
   onOpenThemeSwitcher?: () => void;
   onOpenLinkHealthAudit?: () => void;
   onOpenGitHubSyncModal?: () => void;
+  onOpenSeoStudio?: () => void;
   isSyncing?: boolean;
   isPollingEnabled?: boolean;
   bookmarkedCount: number;
@@ -45,6 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenThemeSwitcher,
   onOpenLinkHealthAudit,
   onOpenGitHubSyncModal,
+  onOpenSeoStudio,
   isSyncing = false,
   isPollingEnabled = true,
   bookmarkedCount,
@@ -162,6 +165,18 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
                 <span className="hidden xl:inline">Live Poller</span>
                 <Activity className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-emerald-500' : 'text-emerald-600 dark:text-emerald-400'}`} />
+              </button>
+            )}
+
+            {onOpenSeoStudio && (
+              <button
+                onClick={onOpenSeoStudio}
+                id="header-seo-studio-btn"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors"
+                title="SEO Meta & Social Open Graph Studio"
+              >
+                <Globe className="w-3.5 h-3.5 text-indigo-500" />
+                <span className="hidden xl:inline">SEO &amp; Social</span>
               </button>
             )}
 
@@ -291,6 +306,19 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Beginner Setup</span>
             </button>
           </div>
+
+          {onOpenSeoStudio && (
+            <button
+              onClick={() => {
+                onOpenSeoStudio();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900"
+            >
+              <Globe className="w-4 h-4 text-indigo-500" />
+              <span>SEO Meta &amp; Social Studio</span>
+            </button>
+          )}
 
           {onOpenLinkHealthAudit && (
             <button

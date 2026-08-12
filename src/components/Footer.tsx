@@ -2,7 +2,8 @@ import React from 'react';
 import { 
   Github, 
   GitPullRequest, 
-  ShieldCheck 
+  ShieldCheck,
+  Globe
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -11,6 +12,7 @@ interface FooterProps {
   onOpenContribute: () => void;
   onOpenGithubGuide: () => void;
   onOpenBeginnerGuide: () => void;
+  onOpenSeoStudio?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -18,6 +20,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenContribute,
   onOpenGithubGuide,
   onOpenBeginnerGuide,
+  onOpenSeoStudio,
 }) => {
   const { config } = useTheme();
 
@@ -97,6 +100,17 @@ export const Footer: React.FC<FooterProps> = ({
                   <span>Beginner Setup Guide</span>
                 </button>
               </li>
+              {onOpenSeoStudio && (
+                <li>
+                  <button
+                    onClick={onOpenSeoStudio}
+                    className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <Globe className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>SEO Meta &amp; Social Studio</span>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 

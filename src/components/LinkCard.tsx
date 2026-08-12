@@ -43,6 +43,7 @@ export const LinkCard: React.FC<LinkCardProps> = ({
   const { config } = useTheme();
   const { showToast } = useToast();
   const [copied, setCopied] = useState(false);
+  const [isBouncing, setIsBouncing] = useState(false);
   const [userVote, setUserVote] = useState<UserVote>(() => getUserVotes()[item.id] || null);
   const [health, setHealth] = useState<LinkHealthRecord>(() => getLinkHealth(item));
 
@@ -62,6 +63,8 @@ export const LinkCard: React.FC<LinkCardProps> = ({
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleBookmark(item);
+    setIsBouncing(true);
+    setTimeout(() => setIsBouncing(false), 500);
     if (isBookmarked) {
       showToast(`Removed "${item.title}" from saved bookmarks`, 'info');
     } else {
@@ -191,13 +194,17 @@ export const LinkCard: React.FC<LinkCardProps> = ({
         }`}
       >
         <div className="flex items-center gap-3 min-w-0 pr-2">
-          <button
+          <motion.button
             onClick={handleBookmarkToggle}
+            animate={isBouncing ? { scale: [1, 1.45, 0.8, 1.2, 0.9, 1], rotate: [0, -18, 18, -10, 5, 0] } : { scale: 1, rotate: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.85 }}
             className="p-1 rounded text-slate-400 dark:text-zinc-500 hover:text-amber-500 transition-colors shrink-0"
             title={isBookmarked ? 'Remove Bookmark' : 'Bookmark Link'}
           >
             <Star className={`w-3.5 h-3.5 ${isBookmarked || isTopRatedOrRecommended ? 'text-amber-500 fill-amber-400' : ''}`} />
-          </button>
+          </motion.button>
 
           <a
             href={item.url}
@@ -350,14 +357,18 @@ export const LinkCard: React.FC<LinkCardProps> = ({
             <span className="text-[10px] font-mono text-slate-400 dark:text-zinc-500 uppercase">
               {item.safetyRating}
             </span>
-            <button
+            <motion.button
               onClick={handleBookmarkToggle}
               id={`bookmark-btn-${item.id}`}
+              animate={isBouncing ? { scale: [1, 1.45, 0.8, 1.2, 0.9, 1], rotate: [0, -18, 18, -10, 5, 0] } : { scale: 1, rotate: 0 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.85 }}
               className="p-1 rounded-lg text-slate-400 dark:text-zinc-500 hover:text-amber-500 transition-colors"
               title={isBookmarked ? 'Remove Bookmark' : 'Bookmark this link'}
             >
               <Star className={`w-3.5 h-3.5 ${isBookmarked || isTopRatedOrRecommended ? 'text-amber-500 fill-amber-400' : ''}`} />
-            </button>
+            </motion.button>
           </div>
         </div>
 

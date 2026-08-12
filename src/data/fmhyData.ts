@@ -170,9 +170,52 @@ export const FMHY_CATEGORIES: Category[] = [
     name: 'Streaming & Video',
     slug: 'streaming',
     iconName: 'Tv',
-    description: 'Free movie & TV indexers, anime hubs, live sports streaming, and open-source media players.',
+    description: 'Free HD movies, TV shows indexers, FlixHQ, CineJoy, anime hubs, live sports streaming, and media players.',
     githubFile: 'src/data/categories/streaming.md',
     subcategories: [
+      {
+        id: 'movies-tv',
+        name: 'Movies & TV Series (Top Priority)',
+        description: 'Featured top-tier free HD movie & TV show streaming portals with fast playback, no ads, and multi-server mirrors.',
+        items: [
+          {
+            id: 'flixhq',
+            title: 'FlixHQ',
+            url: 'https://flixhq.ink',
+            description: 'Premier top-priority HD movie & TV series streaming platform featuring thousands of high-quality titles, instant fast-loading servers, zero registration, and regular release updates.',
+            category: 'streaming',
+            subcategory: 'movies-tv',
+            tags: ['FlixHQ', 'Movies', 'TV Shows', 'HD Streaming', 'Free Movies', 'No Ads', 'Top Priority'],
+            isStarred: true,
+            isNoAds: true,
+            isNoReg: true,
+            safetyRating: 'Safe',
+            badge: '🔥 Top Priority',
+            lastVerified: '2026-08',
+            dateAdded: '2026-08-12',
+            addedBy: 'steveyout',
+            githubFile: 'src/data/categories/streaming.md'
+          },
+          {
+            id: 'cinejoy',
+            title: 'CineJoy',
+            url: 'https://cinejoy.online',
+            description: 'Ultra-fast online cinema streaming portal offering full HD movies and trending TV series with multi-source backup mirrors, sleek ad-free UI, and smooth playback.',
+            category: 'streaming',
+            subcategory: 'movies-tv',
+            tags: ['CineJoy', 'Cinema', 'Movies', 'HD Stream', 'No Reg', 'Top Streaming', 'Top Priority'],
+            isStarred: true,
+            isNoAds: true,
+            isNoReg: true,
+            safetyRating: 'Safe',
+            badge: '⭐ Top Priority',
+            lastVerified: '2026-08',
+            dateAdded: '2026-08-12',
+            addedBy: 'steveyout',
+            githubFile: 'src/data/categories/streaming.md'
+          }
+        ]
+      },
       {
         id: 'media-players',
         name: 'Media Players & Apps',
@@ -834,6 +877,10 @@ export const FMHY_CATEGORIES: Category[] = [
 ];
 
 export const POPULAR_TAGS = [
+  'FlixHQ',
+  'CineJoy',
+  'HD Streaming',
+  'Free Movies',
   'Open Source',
   'Must Have',
   'Extension',

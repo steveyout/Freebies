@@ -38,6 +38,7 @@ import { ThemeSwitcherModal } from './components/ThemeSwitcherModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { getUserVotes, getEffectiveRating } from './utils/ratings';
 import { getLinkHealth } from './utils/linkHealth';
+import { motion, AnimatePresence } from 'motion/react';
 
 function MainAppContent() {
   const { config, darkMode, setDarkMode } = useTheme();
@@ -284,6 +285,7 @@ function MainAppContent() {
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
   const [isThemeSwitcherOpen, setIsThemeSwitcherOpen] = useState(false);
   const [isHealthAuditOpen, setIsHealthAuditOpen] = useState(false);
+  const [isSeoStudioOpen, setIsSeoStudioOpen] = useState(false);
   const [reportingItem, setReportingItem] = useState<LinkItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedContributor, setSelectedContributor] = useState<string | null>(null);
@@ -394,7 +396,7 @@ function MainAppContent() {
       {/* Scrollbar Progress Indicator */}
       <ScrollProgressBar />
 
-      {/* SEO Head Dynamic Updater */}
+      {/* SEO Head Dynamic Updater & Social Studio */}
       <SeoHeadManager
         activeCategory={activeCategory}
         activeSubcategoryName={
@@ -403,6 +405,8 @@ function MainAppContent() {
             : undefined
         }
         searchQuery={filters.query}
+        isOpen={isSeoStudioOpen}
+        onClose={() => setIsSeoStudioOpen(false)}
       />
 
       {/* Header Bar */}
@@ -417,6 +421,7 @@ function MainAppContent() {
         onOpenBookmarks={() => setIsBookmarksOpen(true)}
         onOpenLinkHealthAudit={() => setIsHealthAuditOpen(true)}
         onOpenGitHubSyncModal={() => setIsGitHubSyncOpen(true)}
+        onOpenSeoStudio={() => setIsSeoStudioOpen(true)}
         isSyncing={syncState.isSyncing}
         isPollingEnabled={isPollingEnabled}
         bookmarkedCount={bookmarkedItems.length}
@@ -661,59 +666,75 @@ function MainAppContent() {
                       </button>
                     </div>
 
-                    {/* Subcategory Content or Collapsed Card Preview */}
-                    {isCollapsed ? (
-                      <div
-                        onClick={() => handleToggleCollapseSubcategory(sub.id)}
-                        className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/80 border border-dashed border-slate-300 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 transition-all cursor-pointer flex items-center justify-between group shadow-xs"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 group-hover:${config.textAccent}`}>
-                            <ChevronDown className="w-4 h-4" />
+                    {/* Subcategory Content or Collapsed Card Preview with Framer Motion */}
+                    <AnimatePresence initial={false} mode="wait">
+                      {isCollapsed ? (
+                        <motion.div
+                          key={`collapsed-${sub.id}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: 'easeInOut' }}
+                          onClick={() => handleToggleCollapseSubcategory(sub.id)}
+                          className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/80 border border-dashed border-slate-300 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 transition-all cursor-pointer flex items-center justify-between group shadow-xs overflow-hidden"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 group-hover:${config.textAccent}`}>
+                              <ChevronDown className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-sm text-slate-800 dark:text-zinc-200 font-mono flex items-center gap-2">
+                                <span>{sub.name}</span>
+                                <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal">
+                                  ({sub.items.length} resources hidden)
+                                </span>
+                              </h3>
+                              {sub.description && (
+                                <p className="text-xs text-slate-500 dark:text-zinc-400 line-clamp-1">
+                                  {sub.description}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-bold text-sm text-slate-800 dark:text-zinc-200 font-mono flex items-center gap-2">
-                              <span>{sub.name}</span>
-                              <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal">
-                                ({sub.items.length} resources hidden)
-                              </span>
-                            </h3>
-                            {sub.description && (
-                              <p className="text-xs text-slate-500 dark:text-zinc-400 line-clamp-1">
-                                {sub.description}
-                              </p>
-                            )}
+                          <button className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono ${config.buttonBg} text-white flex items-center gap-1.5 shadow-xs shrink-0`}>
+                            <span>Expand Section</span>
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key={`expanded-${sub.id}`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div
+                            className={
+                              filters.viewMode === 'grid'
+                                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-1 pb-1'
+                                : filters.viewMode === 'list'
+                                ? 'grid grid-cols-1 gap-3 pt-1 pb-1'
+                                : 'grid grid-cols-1 gap-1.5 pt-1 pb-1'
+                            }
+                          >
+                            {sub.items.map((item) => (
+                              <LinkCard
+                                key={item.id}
+                                item={item}
+                                isBookmarked={bookmarkedIds.has(item.id)}
+                                onToggleBookmark={toggleBookmark}
+                                onOpenSourceModal={() => setIsGithubGuideOpen(true)}
+                                onReportBroken={(itemToReport) => setReportingItem(itemToReport)}
+                                onSelectTag={handleSelectTag}
+                                viewMode={filters.viewMode}
+                              />
+                            ))}
                           </div>
-                        </div>
-                        <button className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono ${config.buttonBg} text-white flex items-center gap-1.5 shadow-xs shrink-0`}>
-                          <span>Expand Section</span>
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        className={
-                          filters.viewMode === 'grid'
-                            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'
-                            : filters.viewMode === 'list'
-                            ? 'grid grid-cols-1 gap-3'
-                            : 'grid grid-cols-1 gap-1.5'
-                        }
-                      >
-                        {sub.items.map((item) => (
-                          <LinkCard
-                            key={item.id}
-                            item={item}
-                            isBookmarked={bookmarkedIds.has(item.id)}
-                            onToggleBookmark={toggleBookmark}
-                            onOpenSourceModal={() => setIsGithubGuideOpen(true)}
-                            onReportBroken={(itemToReport) => setReportingItem(itemToReport)}
-                            onSelectTag={handleSelectTag}
-                            viewMode={filters.viewMode}
-                          />
-                        ))}
-                      </div>
-                    )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                   </section>
                 );
@@ -744,6 +765,7 @@ function MainAppContent() {
         onOpenContribute={() => setIsContributeOpen(true)}
         onOpenGithubGuide={() => setIsGithubGuideOpen(true)}
         onOpenBeginnerGuide={() => setIsBeginnerGuideOpen(true)}
+        onOpenSeoStudio={() => setIsSeoStudioOpen(true)}
       />
 
       {/* Floating Scroll To Top Button */}
