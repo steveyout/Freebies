@@ -1,0 +1,6 @@
+{
+  "name": "freebies",
+  "description": "The ultimate curated mega-directory of free media, tools, streaming, software, dev resources, and privacy guides with animated freebies branding, fast search, and GitHub PR contribution workflow.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

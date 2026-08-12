@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --color-primary: #ef4444;
+  }
+
+  html.dark body {
+    background-color: #09090b;
+    color: #f4f4f5;
+  }
+
+  html:not(.dark) body {
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  body {
+    transition: background-color 0.25s ease, color 0.25s ease;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom scrollbars for both light and dark modes */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Pulsing Border Gradient Keyframes & Utilities for Recommended Links */
+@keyframes pulseGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 14px -1px rgba(245, 158, 11, 0.35), 0 0 6px rgba(236, 72, 153, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 24px 3px rgba(245, 158, 11, 0.6), 0 0 14px rgba(236, 72, 153, 0.4);
+  }
+}
+
+.animate-pulse-gradient {
+  background-size: 200% 200%;
+  animation: pulseGradient 3.5s ease infinite;
+}
+
+.recommended-glow-pulse {
+  animation: pulseGlow 2.8s ease-in-out infinite;
+}
+
+.recommended-gradient-border {
+  position: relative;
+}
+
+.recommended-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 1rem;
+  padding: 2px;
+  background: linear-gradient(110deg, #f59e0b, #f43f5e, #fbbf24, #ec4899, #f59e0b);
+  background-size: 250% 250%;
+  animation: pulseGradient 3.5s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 10;
+}
