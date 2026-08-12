@@ -12,7 +12,8 @@ import {
   Gift,
   Palette,
   Activity,
-  Globe
+  Globe,
+  FileText
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
@@ -30,6 +31,7 @@ interface HeaderProps {
   onOpenLinkHealthAudit?: () => void;
   onOpenGitHubSyncModal?: () => void;
   onOpenSeoStudio?: () => void;
+  onOpenMarkdownEditor?: (fileId?: string) => void;
   isSyncing?: boolean;
   isPollingEnabled?: boolean;
   bookmarkedCount: number;
@@ -48,6 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLinkHealthAudit,
   onOpenGitHubSyncModal,
   onOpenSeoStudio,
+  onOpenMarkdownEditor,
   isSyncing = false,
   isPollingEnabled = true,
   bookmarkedCount,
@@ -177,6 +180,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Globe className="w-3.5 h-3.5 text-indigo-500" />
                 <span className="hidden xl:inline">SEO &amp; Social</span>
+              </button>
+            )}
+
+            {onOpenMarkdownEditor && (
+              <button
+                onClick={() => onOpenMarkdownEditor('streaming.md')}
+                id="header-markdown-editor-btn"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/70 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 transition-colors"
+                title="Edit Category .md Files with Styling Support"
+              >
+                <FileText className="w-3.5 h-3.5 text-rose-500" />
+                <span className="hidden xl:inline">.md Studio</span>
               </button>
             )}
 
@@ -317,6 +332,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Globe className="w-4 h-4 text-indigo-500" />
               <span>SEO Meta &amp; Social Studio</span>
+            </button>
+          )}
+
+          {onOpenMarkdownEditor && (
+            <button
+              onClick={() => {
+                onOpenMarkdownEditor('streaming.md');
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900"
+            >
+              <FileText className="w-4 h-4 text-rose-500" />
+              <span>Markdown Studio (.md Editor)</span>
             </button>
           )}
 

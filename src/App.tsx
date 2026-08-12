@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { FMHY_CATEGORIES } from './data/fmhyData';
+import { FMHY_CATEGORIES, HOME_CATEGORY } from './data/fmhyData';
 import { Category, LinkItem, SearchFilterState } from './types/fmhy';
 import { getCategoryIcon } from './utils/categoryIcons';
 import { RecentlyAddedSection } from './components/RecentlyAddedSection';
@@ -19,6 +19,7 @@ import { BookmarksDrawer } from './components/BookmarksDrawer';
 import { ReportBrokenModal } from './components/ReportBrokenModal';
 import { LinkHealthAuditModal } from './components/LinkHealthAuditModal';
 import { GitHubSyncModal } from './components/GitHubSyncModal';
+import { MarkdownEditorModal } from './components/MarkdownEditorModal';
 import { useGitHubDataPoller } from './hooks/useGitHubDataPoller';
 import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -28,6 +29,7 @@ import {
   GitPullRequest, 
   Search, 
   Code,
+  FileText,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
@@ -102,24 +104,31 @@ function MainAppContent() {
     });
   }, [userContribs, remotePrItems]);
 
+  const allCategories = useMemo(() => {
+    return [HOME_CATEGORY, ...categories];
+  }, [categories]);
+
   // Active Category & Subcategory State
   const [activeCategoryId, setActiveCategoryId] = useState<string>(() => {
     const hash = window.location.hash.replace('#', '');
-    const found = FMHY_CATEGORIES.find((c) => c.slug === hash || c.id === hash);
-    return found ? found.id : FMHY_CATEGORIES[0].id;
+    const found = [HOME_CATEGORY, ...FMHY_CATEGORIES].find((c) => c.slug === hash || c.id === hash);
+    return found ? found.id : 'home';
   });
 
   const [activeSubcategoryId, setActiveSubcategoryId] = useState<string>('all');
 
   const activeCategory = useMemo(() => {
-    return categories.find((c) => c.id === activeCategoryId) || categories[0];
+    if (activeCategoryId === 'home') return HOME_CATEGORY;
+    return categories.find((c) => c.id === activeCategoryId) || HOME_CATEGORY;
   }, [categories, activeCategoryId]);
+
+  const isHome = activeCategoryId === 'home';
 
   // Listen to window hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      const found = categories.find((c) => c.slug === hash || c.id === hash);
+      const found = allCategories.find((c) => c.slug === hash || c.id === hash);
       if (found) {
         setActiveCategoryId(found.id);
         setActiveSubcategoryId('all');
@@ -128,7 +137,7 @@ function MainAppContent() {
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [categories]);
+  }, [allCategories]);
 
   const [collapsedSubcategoryIds, setCollapsedSubcategoryIds] = useState<Set<string>>(new Set());
 
@@ -252,6 +261,7 @@ function MainAppContent() {
   // Filter & Search State
   const [filters, setFilters] = useState<SearchFilterState>({
     query: '',
+    selectedCategory: 'all',
     onlyStarred: false,
     onlyOpenSource: false,
     onlyNoReg: false,
@@ -286,9 +296,16 @@ function MainAppContent() {
   const [isThemeSwitcherOpen, setIsThemeSwitcherOpen] = useState(false);
   const [isHealthAuditOpen, setIsHealthAuditOpen] = useState(false);
   const [isSeoStudioOpen, setIsSeoStudioOpen] = useState(false);
+  const [isMarkdownEditorOpen, setIsMarkdownEditorOpen] = useState(false);
+  const [targetMarkdownFileId, setTargetMarkdownFileId] = useState('streaming.md');
   const [reportingItem, setReportingItem] = useState<LinkItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedContributor, setSelectedContributor] = useState<string | null>(null);
+
+  const handleOpenMarkdownEditor = (fileId: string = 'streaming.md') => {
+    setTargetMarkdownFileId(fileId);
+    setIsMarkdownEditorOpen(true);
+  };
 
   // Keyboard ShortCut: Ctrl+K or Cmd+K to open Search Modal
   useEffect(() => {
@@ -311,11 +328,21 @@ function MainAppContent() {
     return allFlatLinks.length;
   }, [allFlatLinks]);
 
+  // Links for active category (or all if on home)
+  const activeCategoryLinks = useMemo(() => {
+    if (isHome) return allFlatLinks;
+    return activeCategory.subcategories.flatMap((s) => s.items);
+  }, [isHome, allFlatLinks, activeCategory]);
+
   // Compute Displayed Subcategories & Links filtered by search and QuickFilters
   const displayedSubcategories = useMemo(() => {
     const userVotes = getUserVotes();
 
-    let subs = activeCategory.subcategories;
+    const targetSubcategories = isHome 
+      ? categories.flatMap((c) => c.subcategories)
+      : activeCategory.subcategories;
+
+    let subs = targetSubcategories;
 
     // Filter by subcategory tab
     if (activeSubcategoryId !== 'all') {
@@ -384,7 +411,7 @@ function MainAppContent() {
         items: sortedItems,
       };
     }).filter((sub) => sub.items.length > 0);
-  }, [activeCategory, activeSubcategoryId, filters]);
+  }, [isHome, categories, activeCategory, activeSubcategoryId, filters]);
 
   const totalDisplayedItemsCount = useMemo(() => {
     return displayedSubcategories.reduce((acc, sub) => acc + sub.items.length, 0);
@@ -422,6 +449,7 @@ function MainAppContent() {
         onOpenLinkHealthAudit={() => setIsHealthAuditOpen(true)}
         onOpenGitHubSyncModal={() => setIsGitHubSyncOpen(true)}
         onOpenSeoStudio={() => setIsSeoStudioOpen(true)}
+        onOpenMarkdownEditor={handleOpenMarkdownEditor}
         isSyncing={syncState.isSyncing}
         isPollingEnabled={isPollingEnabled}
         bookmarkedCount={bookmarkedItems.length}
@@ -432,7 +460,7 @@ function MainAppContent() {
 
       {/* Category Tabs & Subcategories Bar */}
       <CategoryNav
-        categories={categories}
+        categories={allCategories}
         activeCategory={activeCategory}
         onSelectCategory={handleSelectCategory}
         activeSubcategory={activeSubcategoryId}
@@ -455,10 +483,14 @@ function MainAppContent() {
             </span>
           </div>
 
-          {categories.map((cat) => {
+          {allCategories.map((cat) => {
             const isActive = cat.id === activeCategory.id;
-            const linkCount = cat.subcategories.reduce((acc, s) => acc + s.items.length, 0);
-            const allCatItems = cat.subcategories.flatMap((s) => s.items);
+            const linkCount = cat.id === 'home'
+              ? totalLinksCount
+              : cat.subcategories.reduce((acc, s) => acc + s.items.length, 0);
+            const allCatItems = cat.id === 'home'
+              ? allFlatLinks
+              : cat.subcategories.flatMap((s) => s.items);
             const safeCount = allCatItems.filter((i) => i.safetyRating === 'Safe' || Boolean(i.lastVerified)).length;
             const verifiedPercent = allCatItems.length > 0 ? Math.min(100, Math.max(78, Math.round((safeCount / allCatItems.length) * 100))) : 100;
             const pendingPercent = 100 - verifiedPercent;
@@ -547,6 +579,15 @@ function MainAppContent() {
 
             <div className="flex items-center gap-2 shrink-0">
               <button
+                onClick={() => handleOpenMarkdownEditor(isHome ? 'streaming.md' : `${activeCategory.id}.md`)}
+                className="px-3 py-1.5 text-xs font-bold font-mono bg-rose-600 hover:bg-rose-500 text-white rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                title={`Edit ${isHome ? 'streaming.md' : activeCategory.id + '.md'} with live preview and styling support`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Edit {isHome ? 'streaming.md' : `${activeCategory.id}.md`}</span>
+              </button>
+
+              <button
                 onClick={() => setIsContributeOpen(true)}
                 className={`px-3 py-1.5 text-xs font-semibold ${config.buttonBg} text-white rounded-xl transition-colors flex items-center gap-1.5 shadow-xs`}
               >
@@ -564,30 +605,34 @@ function MainAppContent() {
             </div>
           </div>
 
-          {/* Priority Recommended Links Section */}
+          {/* Priority Recommended Links Section - Specific to active category or global home */}
           <RecommendedSection
-            links={allFlatLinks}
+            links={activeCategoryLinks}
+            categoryTitle={isHome ? undefined : activeCategory.name}
             onToggleBookmark={toggleBookmark}
             bookmarkedItems={bookmarkedItems}
             onOpenContributorProfile={(handle) => setSelectedContributor(handle)}
           />
 
-          {/* Recently Added Section (Top 5) */}
-          <RecentlyAddedSection
-            links={allFlatLinks}
-            onOpenContributorProfile={(handle) => setSelectedContributor(handle)}
-          />
+          {/* Recently Added Section & Top Contributors Section - Rendered on Homepage */}
+          {isHome && (
+            <>
+              <RecentlyAddedSection
+                links={allFlatLinks}
+                onOpenContributorProfile={(handle) => setSelectedContributor(handle)}
+              />
 
-          {/* Top Contributors Section */}
-          <TopContributorsSection
-            allLinks={allFlatLinks}
-            onOpenContributorModal={(handle) => setSelectedContributor(handle)}
-            onOpenContributeForm={() => setIsContributeOpen(true)}
-          />
+              <TopContributorsSection
+                allLinks={allFlatLinks}
+                onOpenContributorModal={(handle) => setSelectedContributor(handle)}
+                onOpenContributeForm={() => setIsContributeOpen(true)}
+              />
+            </>
+          )}
 
           {/* Popular Tag Cloud Visualization */}
           <TagCloudSection
-            allLinks={allFlatLinks}
+            allLinks={activeCategoryLinks}
             selectedQuery={filters.query}
             onSelectTag={handleSelectTag}
             onClearTag={handleClearTag}
@@ -634,7 +679,7 @@ function MainAppContent() {
                         className="cursor-pointer group flex flex-col"
                       >
                         <h2 className="font-bold text-base text-slate-900 dark:text-white font-mono flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${config.dotColor}`} />
+                          <span className={`w-2.5 h-2.5 rounded-full ${config.colorDot}`} />
                           <span className="group-hover:underline">{sub.name}</span>
                           <span className="text-xs font-normal text-slate-500 dark:text-zinc-500 font-mono">
                             ({sub.items.length})
@@ -856,10 +901,20 @@ function MainAppContent() {
         categories={categories}
       />
 
+      {/* Markdown Studio & Document Editor Modal */}
+      <MarkdownEditorModal
+        isOpen={isMarkdownEditorOpen}
+        onClose={() => setIsMarkdownEditorOpen(false)}
+        initialFileId={targetMarkdownFileId}
+      />
+
       {/* Mobile Animated Bottom Navigation */}
       <MobileBottomNav
-        activeCategory={activeCategory}
-        onSelectCategory={handleSelectCategory}
+        activeCategory={activeCategory.id}
+        onSelectCategory={(id) => {
+          const cat = categories.find((c) => c.id === id);
+          if (cat) handleSelectCategory(cat);
+        }}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenBookmarks={() => setIsBookmarksOpen(true)}
         onOpenContribute={() => setIsContributeOpen(true)}

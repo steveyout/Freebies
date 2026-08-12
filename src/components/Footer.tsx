@@ -3,7 +3,8 @@ import {
   Github, 
   GitPullRequest, 
   ShieldCheck,
-  Globe
+  Globe,
+  FileText
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -13,6 +14,7 @@ interface FooterProps {
   onOpenGithubGuide: () => void;
   onOpenBeginnerGuide: () => void;
   onOpenSeoStudio?: () => void;
+  onOpenMarkdownEditor?: (fileId?: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -21,6 +23,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenGithubGuide,
   onOpenBeginnerGuide,
   onOpenSeoStudio,
+  onOpenMarkdownEditor,
 }) => {
   const { config } = useTheme();
 
@@ -108,6 +111,17 @@ export const Footer: React.FC<FooterProps> = ({
                   >
                     <Globe className="w-3.5 h-3.5 text-indigo-500" />
                     <span>SEO Meta &amp; Social Studio</span>
+                  </button>
+                </li>
+              )}
+              {onOpenMarkdownEditor && (
+                <li>
+                  <button
+                    onClick={() => onOpenMarkdownEditor('streaming.md')}
+                    className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Markdown Studio (.md Editor)</span>
                   </button>
                 </li>
               )}

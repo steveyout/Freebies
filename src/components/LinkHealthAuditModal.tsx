@@ -317,7 +317,7 @@ export const LinkHealthAuditModal: React.FC<LinkHealthAuditModalProps> = ({
                         </a>
 
                         <p className="text-slate-500 dark:text-zinc-400 font-mono text-[10px] mt-1">
-                          Reason: {rec.reason || 'Verified'} • {rec.reportsCount} community reports
+                          Reason: {('reason' in rec && rec.reason) || 'Verified'} • {rec.reportsCount} community reports
                         </p>
                       </div>
 

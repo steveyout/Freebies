@@ -16,11 +16,14 @@ import {
   Film,
   Library,
   Compass,
-  Boxes
+  Boxes,
+  Home
 } from 'lucide-react';
 
 export const getCategoryIcon = (iconName: string, className = "w-4 h-4") => {
   switch (iconName) {
+    case 'Home':
+      return <Home className={className} />;
     case 'ShieldCheck':
       return <ShieldCheck className={className} />;
     case 'Tv':

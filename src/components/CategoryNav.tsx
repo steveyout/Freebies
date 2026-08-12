@@ -31,12 +31,17 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
 
   // Count total links in a category
   const getCategoryCount = (category: Category) => {
+    if (category.id === 'home') {
+      return categories.filter((c) => c.id !== 'home').reduce((acc, c) => acc + c.subcategories.reduce((a, s) => a + s.items.length, 0), 0);
+    }
     return category.subcategories.reduce((acc, sub) => acc + sub.items.length, 0);
   };
 
   // Calculate Verified vs Pending ratio for a category
   const getCategorySafetyMetrics = (category: Category) => {
-    const items = category.subcategories.flatMap((sub) => sub.items);
+    const items = category.id === 'home'
+      ? categories.filter((c) => c.id !== 'home').flatMap((c) => c.subcategories.flatMap((sub) => sub.items))
+      : category.subcategories.flatMap((sub) => sub.items);
     if (items.length === 0) return { verifiedPercent: 100, pendingPercent: 0 };
     
     const safeCount = items.filter(

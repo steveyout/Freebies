@@ -9,6 +9,7 @@ interface RecommendedSectionProps {
   onToggleBookmark: (item: LinkItem) => void;
   bookmarkedItems?: LinkItem[];
   onOpenContributorProfile?: (username: string) => void;
+  categoryTitle?: string;
 }
 
 export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
@@ -16,13 +17,14 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
   onToggleBookmark,
   bookmarkedItems = [],
   onOpenContributorProfile,
+  categoryTitle,
 }) => {
   const { showToast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [votes, setVotes] = useState<Record<string, UserVote>>(() => getUserVotes());
 
   // Filter and sort top recommended links (starred or badge with ⭐/🔥/Top/Recommended, or highest rating)
-  const recommendedLinks = [...links]
+  let filteredRecs = [...links]
     .filter((item) => {
       const isStarred = item.isStarred;
       const isBadgeRec = !!(item.badge && (
@@ -33,7 +35,7 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
         item.badge.includes('Recommended')
       ));
       const rating = getEffectiveRating(item, votes[item.id] || null);
-      return isStarred || isBadgeRec || rating.score >= 4.7;
+      return isStarred || isBadgeRec || rating.score >= 4.5;
     })
     .sort((a, b) => {
       if (a.isStarred && !b.isStarred) return -1;
@@ -41,8 +43,13 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
       const ratingA = getEffectiveRating(a, votes[a.id] || null).score;
       const ratingB = getEffectiveRating(b, votes[b.id] || null).score;
       return ratingB - ratingA;
-    })
-    .slice(0, 6);
+    });
+
+  if (filteredRecs.length === 0 && links.length > 0) {
+    filteredRecs = [...links].slice(0, 4);
+  }
+
+  const recommendedLinks = filteredRecs.slice(0, 6);
 
   const handleCopy = (e: React.MouseEvent, item: LinkItem) => {
     e.stopPropagation();
@@ -111,7 +118,7 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
           </div>
           <div>
             <h3 className="text-sm font-bold font-mono flex items-center gap-2 text-slate-900 dark:text-white">
-              <span>PRIORITY RECOMMENDED SOURCES</span>
+              <span>{categoryTitle ? `TOP PRIORITY ${categoryTitle.toUpperCase()} SOURCES` : 'PRIORITY RECOMMENDED SOURCES'}</span>
               <span className="text-[10px] font-mono font-bold uppercase bg-gradient-to-r from-amber-500 to-rose-500 text-white px-2 py-0.5 rounded-full shadow-xs animate-pulse">
                 ⭐ Verified Staff Picks
               </span>

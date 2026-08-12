@@ -1,5 +1,15 @@
 import { Category } from '../types/fmhy';
 
+export const HOME_CATEGORY: Category = {
+  id: 'home',
+  name: 'Home',
+  slug: 'home',
+  iconName: 'Home',
+  description: 'Complete directory overview featuring Top Priority picks, recently added resources, top contributors, and quick category highlights.',
+  githubFile: 'README.md',
+  subcategories: []
+};
+
 export const FMHY_CATEGORIES: Category[] = [
   {
     id: 'adblocking',
