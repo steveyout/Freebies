@@ -91,7 +91,12 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
   const handleOpenGithubIssue = () => {
     const issueTitle = encodeURIComponent(`[Resource Submission]: ${title || 'New Link'}`);
     const issueBody = encodeURIComponent(generatedMarkdown);
-    window.open(`https://github.com/fmhy/FMHY/issues/new?title=${issueTitle}&body=${issueBody}`, '_blank');
+    window.open(`https://github.com/steveyout/Freebies/issues/new?title=${issueTitle}&body=${issueBody}`, '_blank');
+  };
+
+  // Open GitHub Pull Requests
+  const handleOpenGithubPr = () => {
+    window.open('https://github.com/steveyout/Freebies/pulls', '_blank');
   };
 
   // Submit & Test Live in React State
@@ -330,14 +335,25 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
 
             {/* Action buttons */}
             <div className="pt-3 border-t border-slate-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={handleOpenGithubIssue}
-                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-medium text-xs flex items-center gap-2 border border-slate-200 dark:border-zinc-700"
-              >
-                <Github className="w-4 h-4" />
-                <span>Open Issue on GitHub</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleOpenGithubIssue}
+                  className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-medium text-xs flex items-center gap-1.5 border border-slate-200 dark:border-zinc-700"
+                >
+                  <Github className="w-4 h-4" />
+                  <span>Open Issue</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleOpenGithubPr}
+                  className="px-3.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-medium text-xs flex items-center gap-1.5 border border-rose-200 dark:border-rose-800"
+                >
+                  <GitPullRequest className="w-4 h-4 text-rose-500" />
+                  <span>Submit PR on steveyout/Freebies</span>
+                </button>
+              </div>
 
               <button
                 type="submit"

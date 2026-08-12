@@ -98,7 +98,7 @@ export const GitHubWorkflowGuide: React.FC<GitHubWorkflowGuideProps> = ({
                   <span>1. Fork Repo</span>
                 </div>
                 <p className="text-xs text-zinc-300">
-                  Fork the static freebies repository on GitHub. All sections are modular Markdown & JSON files.
+                  Fork the static repository <code className="text-rose-300">steveyout/Freebies</code> on GitHub. All sections are modular files.
                 </p>
               </div>
 
@@ -157,13 +157,13 @@ export const GitHubWorkflowGuide: React.FC<GitHubWorkflowGuideProps> = ({
                   </button>
 
                   <a
-                    href={`https://github.com/fmhy/FMHY/edit/main/${selectedCat.githubFile}`}
+                    href={`https://github.com/steveyout/Freebies/edit/main/${selectedCat.githubFile}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    <span>Edit on GitHub</span>
+                    <span>Edit on steveyout/Freebies</span>
                   </a>
                 </div>
               </div>

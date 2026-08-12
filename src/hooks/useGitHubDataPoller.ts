@@ -70,7 +70,7 @@ export const useGitHubDataPoller = (
     try {
       // Attempt to fetch raw GitHub repository commit/data endpoint with cache-busting
       const timestamp = Date.now();
-      const rawApiUrl = `https://api.github.com/repos/freemediaheckyeah/fmhy/commits?per_page=1&t=${timestamp}`;
+      const rawApiUrl = `https://api.github.com/repos/steveyout/Freebies/commits?per_page=1&t=${timestamp}`;
       
       let fetchedCommitSha = `commit-${Math.floor(timestamp / 60000)}`;
       let isRemoteOnline = false;

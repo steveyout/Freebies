@@ -58,21 +58,34 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <ul className="space-y-1 text-xs font-sans">
               <li>
-                <button
-                  onClick={onOpenContribute}
+                <a
+                  href="https://github.com/steveyout/Freebies/pulls"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
                 >
                   <GitPullRequest className={`w-3.5 h-3.5 ${config.textAccent}`} />
-                  <span>GitHub PR & Submit Link</span>
-                </button>
+                  <span>Submit PR on steveyout/Freebies</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/steveyout/Freebies"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
+                >
+                  <Github className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
+                  <span>View Repository (steveyout/Freebies)</span>
+                </a>
               </li>
               <li>
                 <button
                   onClick={onOpenGithubGuide}
                   className="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1.5"
                 >
-                  <Github className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
-                  <span>GitHub Repository Source</span>
+                  <Github className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Workflow & Source Guide</span>
                 </button>
               </li>
               <li>
