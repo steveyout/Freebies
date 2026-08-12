@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.repository == 'steveyout/Freebies'
+    if: ${{ toLower(github.repository) == 'steveyout/freebies' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,7 +41,7 @@ jobs:
           path: './dist'
 
   deploy:
-    if: github.repository == 'steveyout/Freebies'
+    if: ${{ toLower(github.repository) == 'steveyout/freebies' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
