@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { FMHY_CATEGORIES, HOME_CATEGORY } from './data/fmhyData';
 import { Category, LinkItem, SearchFilterState } from './types/fmhy';
 import { getCategoryIcon } from './utils/categoryIcons';
+import { parseMarkdownToCategories } from './utils/markdownParser';
+import { getStoredMarkdownFiles } from './utils/markdownStorage';
 import { RecentlyAddedSection } from './components/RecentlyAddedSection';
 import { RecommendedSection } from './components/RecommendedSection';
 import { TopContributorsSection } from './components/TopContributorsSection';
@@ -20,6 +22,7 @@ import { ReportBrokenModal } from './components/ReportBrokenModal';
 import { LinkHealthAuditModal } from './components/LinkHealthAuditModal';
 import { GitHubSyncModal } from './components/GitHubSyncModal';
 import { MarkdownEditorModal } from './components/MarkdownEditorModal';
+import { CategoryResourceDistributionChart } from './components/CategoryResourceDistributionChart';
 import { useGitHubDataPoller } from './hooks/useGitHubDataPoller';
 import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -74,16 +77,55 @@ function MainAppContent() {
     }
   });
 
-  // Combine static FMHY categories with remote PR items and user contributed items
+  // Track version to trigger re-renders when markdown files are edited
+  const [markdownVersion, setMarkdownVersion] = useState<number>(0);
+
+  // Combine static FMHY categories with parsed repository markdown files (data/*.md), remote PR items, and user contributions
   const categories: Category[] = useMemo(() => {
+    const storedMarkdown = getStoredMarkdownFiles();
     const allCustomItems = [...remotePrItems, ...userContribs];
-    if (allCustomItems.length === 0) return FMHY_CATEGORIES;
 
     return FMHY_CATEGORIES.map((cat) => {
-      const catItems = allCustomItems.filter((item) => item.category === cat.id);
-      if (catItems.length === 0) return cat;
+      // Check if there is a corresponding repository markdown file in data/*.md
+      const mdFilename = `${cat.id}.md`;
+      const mdFile = storedMarkdown[mdFilename];
+      let baseSubcategories = [...cat.subcategories];
 
-      const updatedSubcategories = cat.subcategories.map((sub) => {
+      if (mdFile && mdFile.content) {
+        const parsedSubs = parseMarkdownToCategories(cat.id, cat.name, mdFile.content);
+        if (parsedSubs.length > 0) {
+          const mergedSubs = [...baseSubcategories];
+          
+          parsedSubs.forEach((parsedSub) => {
+            const existingSubIdx = mergedSubs.findIndex(
+              (s) => s.id === parsedSub.id || s.name.toLowerCase() === parsedSub.name.toLowerCase()
+            );
+
+            if (existingSubIdx >= 0) {
+              const existingSub = mergedSubs[existingSubIdx];
+              const existingUrls = new Set(existingSub.items.map((i) => i.url.toLowerCase()));
+              const uniqueParsedItems = parsedSub.items.filter((i) => !existingUrls.has(i.url.toLowerCase()));
+              mergedSubs[existingSubIdx] = {
+                ...existingSub,
+                items: [...uniqueParsedItems, ...existingSub.items]
+              };
+            } else {
+              mergedSubs.push(parsedSub);
+            }
+          });
+          baseSubcategories = mergedSubs;
+        }
+      }
+
+      const catItems = allCustomItems.filter((item) => item.category === cat.id);
+      if (catItems.length === 0) {
+        return {
+          ...cat,
+          subcategories: baseSubcategories
+        };
+      }
+
+      const updatedSubcategories = baseSubcategories.map((sub) => {
         const subItems = catItems.filter((item) => item.subcategory === sub.id);
         if (subItems.length === 0) return sub;
         
@@ -102,7 +144,7 @@ function MainAppContent() {
         subcategories: updatedSubcategories
       };
     });
-  }, [userContribs, remotePrItems]);
+  }, [userContribs, remotePrItems, markdownVersion]);
 
   const allCategories = useMemo(() => {
     return [HOME_CATEGORY, ...categories];
@@ -605,6 +647,20 @@ function MainAppContent() {
             </div>
           </div>
 
+          {/* Interactive Resource Type Distribution Chart (Recharts) */}
+          <CategoryResourceDistributionChart
+            category={activeCategory}
+            items={activeCategoryLinks}
+            onSelectTag={(tag) => {
+              setFilters((prev) => ({ ...prev, query: tag }));
+              showToast(`Filtered by ${tag}`, 'info');
+            }}
+            onSelectSubcategory={(subId) => {
+              setActiveSubcategoryId(subId);
+              showToast(`Switched to subcategory`, 'info');
+            }}
+          />
+
           {/* Priority Recommended Links Section - Specific to active category or global home */}
           <RecommendedSection
             links={activeCategoryLinks}
@@ -906,6 +962,7 @@ function MainAppContent() {
         isOpen={isMarkdownEditorOpen}
         onClose={() => setIsMarkdownEditorOpen(false)}
         initialFileId={targetMarkdownFileId}
+        onSaved={() => setMarkdownVersion((v) => v + 1)}
       />
 
       {/* Mobile Animated Bottom Navigation */}

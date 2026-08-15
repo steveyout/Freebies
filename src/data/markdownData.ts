@@ -11,13 +11,15 @@ export interface MarkdownFile {
 export const DEFAULT_MARKDOWN_FILES: Record<string, MarkdownFile> = {
   'streaming.md': {
     id: 'streaming.md',
-    filename: 'streaming.md',
+    filename: 'data/streaming.md',
     title: 'Streaming & Media Directory',
     category: 'streaming',
     description: 'Curated guide for movies, TV series, anime, live sports, and media players.',
-    content: `# 🎬 Streaming Mega-Directory (\`streaming.md\`)
+    content: `# 🎬 Streaming Mega-Directory (\`data/streaming.md\`)
 
-Welcome to the **FMHY Streaming Index**. This curated directory lists verified ad-free streaming platforms, high-definition cinema portals, anime hubs, live sports indexers, and media players.
+Welcome to the **FMHY Streaming Index**. This curated repository file lists verified ad-free movie streaming platforms, high-definition cinema portals, anime hubs, live sports indexers, and media players.
+
+> 💡 **Repository Note**: To add a new movie or TV site to this directory, simply edit this \`data/streaming.md\` file in Markdown format! The web application automatically parses table rows, callouts, and lists, rendering them into interactive UI cards with search, filtering, and bookmarking.
 
 ---
 
@@ -33,137 +35,166 @@ Welcome to the **FMHY Streaming Index**. This curated directory lists verified a
 
 ## 📺 High Definition Movies & TV Shows
 
-| Platform Name | Direct URL | Quality | Registration | Key Features |
+| Platform Name | Direct URL | Quality | Registration | Key Features & Notes |
 | :--- | :--- | :---: | :---: | :--- |
-| **FlixHQ** | [flixhq.ink](https://flixhq.ink) | 1080p HD | ❌ Not Needed | Auto-play, Subtitles, Zero Ads |
-| **CineJoy** | [cinejoy.online](https://cinejoy.online) | 1080p HD | ❌ Not Needed | Minimalist UI, Multi-server mirrors |
-| **FMovies** | [fmovies.ps](https://fmovies.ps) | 720p/1080p | ❌ Not Needed | Massive catalog, trending filters |
-| **Bflix** | [bflix.gg](https://bflix.gg) | 1080p | ❌ Not Needed | Quick bookmarks, clean layout |
+| **FlixHQ** | [flixhq.ink](https://flixhq.ink) | 1080p HD | ❌ Not Needed | Auto-play, Subtitles, Zero Ads, Fast Mirrors |
+| **CineJoy** | [cinejoy.online](https://cinejoy.online) | 1080p HD | ❌ Not Needed | Minimalist UI, Multi-server mirrors, Mobile friendly |
+| **FMovies** | [fmovies.ps](https://fmovies.ps) | 1080p | ❌ Not Needed | Massive movie catalog, trending filters |
+| **Bflix** | [bflix.gg](https://bflix.gg) | 1080p | ❌ Not Needed | Quick bookmarks, clean layout, multi-audio |
+| **Sflix** | [sflix.to](https://sflix.to) | 1080p HD | ❌ Not Needed | Fast video player, daily updates, multi-subtitles |
+| **LookMovie** | [lookmovie2.to](https://lookmovie2.to) | 720p/1080p | ❌ Not Needed | Clean interface, minimal ads, verified catalog |
 
 ---
 
-## 💡 Important Streaming Guidelines & Security Callouts
+## 🍿 Anime & Animated Series
+
+| Platform Name | Direct URL | Type | Registration | Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| **AniWave** | [aniwave.to](https://aniwave.to) | Subbed & Dubbed | ❌ Not Needed | Auto-next episode, skip filler, high speed |
+| **GogoAnime** | [gogoanime.cl](https://gogoanime.cl) | Subbed & Dubbed | ❌ Not Needed | Classic anime portal, daily releases |
+| **YugenAnime** | [yugenanime.tv](https://yugenanime.tv) | Subbed & Dubbed | ❌ Not Needed | Modern clean interface, custom watchlists |
+
+---
+
+## ⚽ Live Sports & Event Indexers
+
+| Platform Name | Direct URL | Coverage | Registration | Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| **Streamed.su** | [streamed.su](https://streamed.su) | All Major Sports | ❌ Not Needed | Clean schedule layout, HD streams, zero popups |
+| **MethStreams** | [methstreams.com](https://methstreams.com) | NBA, NFL, UFC, Football | ❌ Not Needed | Multiple stream mirrors, live chat |
+
+---
+
+## 💡 Streaming Guidelines & Security Callouts
 
 > [!WARNING]
 > **Adblocker Requirement:** Always ensure you have **uBlock Origin** or a secure DNS filter enabled when visiting media indexers to prevent unwanted popups or redirects.
 
 > [!TIP]
 > **Performance Tip:** If a stream buffers, click the **Server Switcher** on FlixHQ or CineJoy to select an alternate high-speed mirror.
-
----
-
-## 🎨 Custom Styled Elements Demo
-
-<div class="callout-box bg-slate-900/80 p-4 rounded-2xl border border-rose-500/40 shadow-lg">
-  <h4 class="text-rose-400 font-bold font-mono text-sm flex items-center gap-2">
-    <span>✨ Custom HTML & Tailwind Support</span>
-  </h4>
-  <p class="text-xs text-slate-300 mt-1">
-    You can write raw HTML inside this <code class="bg-slate-800 px-1.5 py-0.5 rounded text-rose-300">streaming.md</code> file with inline Tailwind CSS classes, badges, and custom styled containers!
-  </p>
-  <div class="flex flex-wrap gap-2 mt-3">
-    <span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px] font-mono px-2.5 py-1 rounded-xl">#streaming</span>
-    <span class="bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[11px] font-mono px-2.5 py-1 rounded-xl">#flixhq</span>
-    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-mono px-2.5 py-1 rounded-xl">#cinejoy</span>
-  </div>
-</div>
 `
   },
   'adblocking.md': {
     id: 'adblocking.md',
-    filename: 'adblocking.md',
+    filename: 'data/adblocking.md',
     title: 'Adblocking & Privacy Guide',
     category: 'adblocking',
-    description: 'Comprehensive guide for blocking ads, popups, trackers, and telemetry.',
-    content: `# 🛡️ Adblocking & Privacy Guide (\`adblocking.md\`)
+    description: 'Essential tools, uBlock Origin filterlists, DNS blockers, and privacy configurations.',
+    content: `# 🛡️ Adblocking & Privacy Guide (\`data/adblocking.md\`)
 
-Essential tools, uBlock Origin filterlists, DNS blockers, and privacy configurations for a clean, ad-free web experience.
+Essential tools, uBlock Origin filterlists, DNS blockers, browser extensions, and guides to stay ad-free and secure online.
 
 ---
 
 > [!RECOMMENDED] **Gold Standard Adblocker**
-> **uBlock Origin** is the only open-source adblocker recommended by privacy researchers. Lightweight, efficient, and open source.
-> <span class="badge-emerald">Open Source</span> <span class="badge-sky">Top Rated</span>
+> **uBlock Origin** ([https://ublockorigin.com](https://ublockorigin.com)) is the open-source content blocker recommended by privacy researchers. Lightweight, efficient, and open source.
+> <span class="badge-emerald">Open Source</span> <span class="badge-sky">Top Rated</span> <span class="badge-rose">Must Have</span>
 
 ---
 
-## 🚀 Recommended Extension Setup
+## 🌐 Browser Extensions & Shields
 
-1. Install **uBlock Origin** for Firefox, Brave, or Chrome.
-2. Enable **FMHY Filterlist** in uBlock settings.
-3. Configure **NextDNS** or **AdGuard DNS** for network-wide protection.
+| Tool Name | Direct URL | Type | License | Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| **uBlock Origin** | [ublockorigin.com](https://ublockorigin.com) | Content Blocker | GPLv3 | Gold standard adblocker for Firefox, Chrome, and Edge |
+| **FastForward** | [fastforward.team](https://fastforward.team) | Link Bypasser | Open Source | Automatically bypasses timer countdowns and link shorteners |
+| **SponsorBlock** | [sponsor.ajay.app](https://sponsor.ajay.app) | YouTube Extension | Open Source | Crowdsourced skipping of sponsors, intros, outros, and reminders |
+| **Privacy Badger** | [privacybadger.org](https://privacybadger.org) | Tracker Blocker | Open Source | EFF extension that automatically learns to block invisible trackers |
+| **LocalCDN** | [localcdn.org](https://localcdn.org) | Privacy Utility | Open Source | Emulates remote web frameworks locally to prevent big tech tracking |
 
-> [!NOTE]
-> Avoid Manifest V3 adblockers that restrict network request filtering. Stick to recommended community filters.
+---
+
+## 🛡️ Network & DNS Protection
+
+| Service Name | Direct URL | Type | Features |
+| :--- | :--- | :---: | :--- |
+| **NextDNS** | [nextdns.io](https://nextdns.io) | Cloud DNS | Custom blocklists, analytics, parental controls |
+| **AdGuard DNS** | [adguard-dns.io](https://adguard-dns.io) | Public DNS | Zero-config ad blocking DNS servers |
+| **Pi-hole** | [pi-hole.net](https://pi-hole.net) | Self-Hosted | Network-wide ad blocking for home routers |
 `
   },
   'software.md': {
     id: 'software.md',
-    filename: 'software.md',
+    filename: 'data/software.md',
     title: 'Free & FOSS Software Index',
     category: 'software',
     description: 'Open source desktop software, system utilities, and productive tools.',
-    content: `# 💻 Free & Open Source Software (\`software.md\`)
+    content: `# 💻 Free & Open Source Software (\`data/software.md\`)
 
-Collection of open-source utilities, video editors, media players, and privacy tools for Windows, macOS, and Linux.
+Collection of verified open-source software, media editors, archivers, productivity apps, and utilities for Windows, macOS, and Linux.
 
 ---
 
 > [!TIP]
-> All software listed in this index is verified malware-free and open source.
+> All software listed in this index is verified malware-free, open-source, or non-commercial freeware.
 
-## 📦 Top Utilities
+---
 
-- **VLC Media Player**: Universal open-source media player.
-- **7-Zip**: High compression ratio file archiver.
-- **Obsidian**: Markdown-based knowledge base and note-taking tool.
-- **Handbrake**: Open source video transcoder.
+## 📦 Top Open-Source Software
+
+| Application | Direct URL | Category | License | Key Features |
+| :--- | :--- | :---: | :---: | :--- |
+| **VLC Media Player** | [videolan.org](https://www.videolan.org) | Media Player | GPLv2 | Plays virtually all video formats, codecs, and DVDs |
+| **7-Zip** | [7-zip.org](https://www.7-zip.org) | Archiver | LGPL | Open source file archiver with highest compression ratio |
+| **Obsidian** | [obsidian.md](https://obsidian.md) | Knowledge Base | Freeware | Local-first Markdown note-taking tool with rich plugin ecosystem |
+| **HandBrake** | [handbrake.fr](https://handbrake.fr) | Video Converter | GPLv2 | Open-source video transcoder for all platforms |
+| **ShareX** | [getsharex.com](https://getsharex.com) | Screen Capture | GPLv3 | Screen capture, file sharing, and productivity tool for Windows |
+| **LibreOffice** | [libreoffice.org](https://www.libreoffice.org) | Office Suite | MPLv2 | Powerful free office suite compatible with MS Office files |
 `
   },
   'games.md': {
     id: 'games.md',
-    filename: 'games.md',
+    filename: 'data/games.md',
     title: 'Gaming & Emulators Hub',
     category: 'games',
     description: 'Open source game emulators, preservation tools, and launchers.',
-    content: `# 🎮 Gaming & Emulators Hub (\`games.md\`)
+    content: `# 🎮 Gaming & Emulators Hub (\`data/games.md\`)
 
-Verified tools, emulators, game preservation directories, and open source launchers.
+Verified game emulators, preservation tools, open source launchers, and gaming utilities.
 
 ---
 
 > [!WARNING]
-> Only download game ROMs and preservation files from verified green-rated mirrors.
+> Only download game ROMs and preservation files from verified green-rated community mirrors.
 
-## 🕹️ Emulators & Clients
+---
 
-| System | Emulator | License | Platform |
-| :--- | :--- | :---: | :--- |
-| **Switch** | Ryujinx / Yuzu | GPL-3.0 | Windows, Linux |
-| **PS2** | PCSX2 | GPL-3.0 | Windows, Linux, Mac |
-| **Multi-System** | RetroArch | GPL-3.0 | All Platforms |
+## 🕹️ Top Game Emulators & Launchers
+
+| Emulator Name | Direct URL | Target System | License | Platform |
+| :--- | :--- | :---: | :---: | :--- |
+| **RetroArch** | [retroarch.com](https://www.retroarch.com) | Multi-System | GPLv3 | Frontend for emulators, game engines, and media players |
+| **PCSX2** | [pcsx2.net](https://pcsx2.net) | PlayStation 2 | GPLv3 | Open source PS2 emulator with high-resolution upscaling |
+| **Heroic Games Launcher** | [heroicgameslauncher.com](https://heroicgameslauncher.com) | Epic & GOG | GPLv3 | Native open source game launcher for Epic, GOG, and Prime Gaming |
+| **Dolphin Emulator** | [dolphin-emu.org](https://dolphin-emu.org) | GameCube & Wii | GPLv2+ | High performance emulator for GameCube and Wii consoles |
+| **Lutris** | [lutris.net](https://lutris.net) | Open Gaming | GPLv3 | Open source gaming platform for Linux with one-click installers |
 `
   },
   'ai-tools.md': {
     id: 'ai-tools.md',
-    filename: 'ai-tools.md',
+    filename: 'data/ai-tools.md',
     title: 'Free AI Models & Tools',
     category: 'ai-tools',
     description: 'Free LLMs, image generators, audio tools, and AI utilities.',
-    content: `# 🤖 Free AI Models & Utilities (\`ai-tools.md\`)
+    content: `# 🤖 Free AI Models & Utilities (\`data/ai-tools.md\`)
 
-Directory of free LLM platforms, local model runners, image generation tools, and developer APIs.
+Directory of free LLM platforms, local model runners, image generation tools, and developer AI workspaces.
 
 ---
 
 > [!NOTE]
 > Use local LLMs like **Ollama** or **LM Studio** for offline, private AI assistance.
 
-## ⚡ Recommended Tools
+---
 
-- **Google Gemini Studio**: Fast multimodal AI workbench.
-- **Ollama**: Run Llama, DeepSeek, and Qwen models locally.
-- **Hugging Face**: Open-weight model repository and spaces.
+## ⚡ Free AI Tools & Local Runners
+
+| Platform Name | Direct URL | Type | License / Model | Key Features |
+| :--- | :--- | :---: | :---: | :--- |
+| **Ollama** | [ollama.com](https://ollama.com) | Local LLM Runner | MIT | Get up and running with Llama 3, DeepSeek, and Qwen locally |
+| **Hugging Face** | [huggingface.co](https://huggingface.co) | Model Hub | Open Source | The AI community's hub for datasets, models, and demo spaces |
+| **LM Studio** | [lmstudio.ai](https://lmstudio.ai) | Local LLM GUI | Freeware | Run local LLMs on your Mac or PC with an elegant ChatGPT-like UI |
+| **Pinokio** | [pinokio.computer](https://pinokio.computer) | AI Browser | Open Source | Browser that lets you install, run, and automate AI tools locally |
 `
   }
 };
