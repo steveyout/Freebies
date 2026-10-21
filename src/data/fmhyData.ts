@@ -272,6 +272,21 @@ export const FMHY_CATEGORIES: Category[] = [
             safetyRating: 'Safe',
             lastVerified: '2026-06',
             githubFile: 'src/data/categories/streaming.md'
+          },
+          {
+            id: 'subtitledb',
+            title: 'SubtitleDB',
+            url: 'https://thesubtitledb.org',
+            description: 'Free subtitle API',
+            category: 'streaming',
+            subcategory: 'media-players',
+            tags: ['Open Source', 'Free', 'No Ads'],
+            isOpenSource: true,
+            safetyRating: 'Safe',
+            lastVerified: '2026-10',
+            dateAdded: '2026-10-16',
+            addedBy: 'anonymous',
+            githubFile: 'src/data/categories/streaming.md'
           }
         ]
       },
