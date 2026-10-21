@@ -818,6 +818,20 @@ export const FMHY_CATEGORIES: Category[] = [
             badge: '🎮 Indie Hub',
             lastVerified: '2026-07',
             githubFile: 'src/data/categories/gaming.md'
+          },
+          {
+            id: 'steamdownload',
+            title: 'SteamDownload',
+            url: 'https://www.steamdownload.cn/?lang=en',
+            description: 'Free download site for 9,000+ PC, Switch, retro, and mobile games, each mirrored on several Chinese cloud drives (Quark, Baidu, Xunlei, UC). Browsing needs no account; the cloud drives may ask you to sign in to download.',
+            category: 'gaming-emulation',
+            subcategory: 'emulators-clients',
+            tags: ['Game Downloads', 'PC Games', 'Switch', 'Cloud Drive', 'Chinese'],
+            safetyRating: 'Safe',
+            lastVerified: '2026-10',
+            dateAdded: '2026-10-20',
+            addedBy: 'lovelax1998',
+            githubFile: 'src/data/categories/gaming.md'
           }
         ]
       }
