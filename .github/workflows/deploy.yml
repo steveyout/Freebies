@@ -58,16 +58,17 @@ jobs:
             set -e
             echo "🚀 Starting automated deployment for freeebies.site..."
 
-            # Ensure PATH includes user and system binary paths for non-interactive shells
-            export PATH="$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$PATH:/usr/local/bin:/usr/bin:/bin"
-            [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh" || true
-            [ -s "$HOME/.bashrc" ] && source "$HOME/.bashrc" || true
+            # Ensure PATH includes node v22, pnpm, and pm2 for non-interactive shells
+            export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$PATH:/usr/local/bin:/usr/bin:/bin"
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true
 
-            APP_DIR="${APP_DIR:-$HOME/streaming}"
+            APP_DIR="${APP_DIR:-$HOME/streaming/freebies}"
+            mkdir -p "$HOME/streaming"
 
             # Ensure deployment target directory exists
             if [ ! -d "$APP_DIR" ]; then
-              echo "📁 Creating streaming directory at $APP_DIR..."
+              echo "📁 Creating streaming/freebies directory at $APP_DIR..."
               git clone https://github.com/steveyout/Freebies.git "$APP_DIR"
             fi
 
@@ -82,12 +83,6 @@ jobs:
               cp .env.example .env
             fi
 
-            # Check for pnpm and install if missing
-            if ! command -v pnpm >/dev/null 2>&1; then
-              echo "📦 Installing pnpm on VPS..."
-              npm install -g pnpm || true
-            fi
-
             echo "📦 Installing production dependencies via pnpm..."
             pnpm install --frozen-lockfile
 
@@ -98,16 +93,12 @@ jobs:
             pnpm run build
 
             echo "⚡ Restarting / reloading PM2 process..."
-            if command -v pm2 >/dev/null 2>&1; then
-              if pm2 list | grep -q "freebies"; then
-                pm2 reload deploy/ecosystem.config.cjs --update-env
-              else
-                pm2 start deploy/ecosystem.config.cjs
-              fi
-              pm2 save
-            elif [ -f "node_modules/.bin/pm2" ]; then
-              ./node_modules/.bin/pm2 reload deploy/ecosystem.config.cjs || ./node_modules/.bin/pm2 start deploy/ecosystem.config.cjs
+            if pm2 list | grep -q "freebies"; then
+              pm2 reload deploy/ecosystem.config.cjs --update-env
+            else
+              pm2 start deploy/ecosystem.config.cjs
             fi
+            pm2 save
 
             echo "🛡️ Refreshing BunkerWeb configuration..."
             if [ -d "/etc/bunkerweb/configs" ]; then
@@ -115,12 +106,6 @@ jobs:
               if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet bunkerweb; then
                 sudo systemctl reload bunkerweb 2>/dev/null || true
               fi
-            fi
-
-            if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q "bunkerweb"; then
-              docker exec -i bunkerweb mkdir -p /etc/bunkerweb/configs || true
-              docker cp bunkerweb/freeebies.site.conf bunkerweb:/etc/bunkerweb/configs/freeebies.site.conf || true
-              docker exec -i bunkerweb bunkercli reload 2>/dev/null || docker restart bunkerweb 2>/dev/null || true
             fi
 
             echo "🎉 Continuous Deployment successfully finished!"

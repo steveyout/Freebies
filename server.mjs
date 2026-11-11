@@ -4,8 +4,8 @@ import next from 'next';
 import { Server } from 'socket.io';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
-const port = parseInt(process.env.PORT || '3000', 10);
+const hostname = '0.0.0.0';
+const port = parseInt(process.env.PORT || '3050', 10);
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
@@ -51,12 +51,11 @@ app.prepare().then(() => {
     });
 
     socket.on('disconnect', () => {
-      // console.log(`[Socket.IO] Client disconnected: ${socket.id}`);
+      // client disconnected
     });
   });
 
   httpServer.listen(port, () => {
-    console.log(`> Ready on http://${hostname}:${port}`);
-    console.log(`> Socket.IO server running on path /api/socketio`);
+    console.log(`> Freebies production server ready on http://${hostname}:${port}`);
   });
 });
