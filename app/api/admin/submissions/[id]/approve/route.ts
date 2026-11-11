@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Submission, Resource, AuditLog, initDb } from '@/db/models';
 import { getAuthenticatedAdmin } from '@/lib/auth';
 import { broadcastSocketEvent } from '@/lib/socketBroadcaster';
+import { appendResourceToMarkdown } from '@/lib/markdownSync';
 
 export async function POST(
   req: NextRequest,
@@ -72,6 +73,17 @@ export async function POST(
       targetType: 'SUBMISSION',
       targetId: submission.id,
       details: `Approved "${submission.title}" (Type: ${submission.submissionType}) -> Created Resource "${finalId}"`,
+    });
+
+    // Automatically append to GitHub repository markdown file
+    appendResourceToMarkdown({
+      title: submission.title,
+      url: submission.url,
+      category: submission.category,
+      subcategory: submission.subcategory,
+      description: submission.description,
+      safetyRating: 'Safe',
+      isNoReg: true,
     });
 
     // Broadcast real-time events

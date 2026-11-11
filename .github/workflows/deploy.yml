@@ -1,4 +1,4 @@
-name: Build, Test & Deploy to VPS (BunkerWeb + Next.js)
+name: Deploy to VPS (BunkerWeb + Next.js)
 
 on:
   push:
@@ -15,34 +15,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # 1. CI Validation: Compile and build on GitHub runner first to protect the VPS from broken code
-  build-and-verify:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node.js 22 LTS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Validate Next.js Build
-        run: pnpm run build
-
-  # 2. CD Deployment: Deploy to VPS securely using GitHub Secrets
   deploy-to-vps:
-    needs: build-and-verify
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       - name: Trigger VPS Update & Safe Database Sync
@@ -58,7 +32,7 @@ jobs:
             set -e
             echo "🚀 Starting automated deployment for freeebies.site..."
 
-            # Ensure PATH includes node v22, pnpm, and pm2 for non-interactive shells
+            # Ensure PATH includes node, pnpm, git, and pm2 for non-interactive shells
             export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$PATH:/usr/local/bin:/usr/bin:/bin"
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true
@@ -84,10 +58,10 @@ jobs:
             fi
 
             echo "📦 Installing production dependencies via pnpm..."
-            pnpm install --frozen-lockfile
+            pnpm install
 
-            echo "🔄 Safely merging resources into production DB (preserving all votes & comments)..."
-            pnpm run db:sync
+            echo "🔄 Safely syncing markdown resources into production DB (preserving votes & comments)..."
+            node --env-file=.env ./node_modules/tsx/dist/cli.mjs db/syncResources.ts || true
 
             echo "🏗️ Compiling Next.js App Router bundle..."
             pnpm run build

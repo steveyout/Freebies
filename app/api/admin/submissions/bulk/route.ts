@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Submission, Resource, AuditLog, initDb } from '@/db/models';
 import { getAuthenticatedAdmin } from '@/lib/auth';
 import { broadcastSocketEvent } from '@/lib/socketBroadcaster';
+import { appendResourceToMarkdown } from '@/lib/markdownSync';
 
 export async function POST(req: NextRequest) {
   try {
@@ -73,7 +74,18 @@ export async function POST(req: NextRequest) {
             action: 'APPROVE_SUBMISSION',
             targetType: 'SUBMISSION',
             targetId: submission.id,
-            details: `Bulk approved \"${submission.title}\" -> Created Resource \"${finalId}\"`,
+            details: `Bulk approved "${submission.title}" -> Created Resource "${finalId}"`,
+          });
+
+          // Append to repository markdown file
+          appendResourceToMarkdown({
+            title: submission.title,
+            url: submission.url,
+            category: submission.category,
+            subcategory: submission.subcategory,
+            description: submission.description,
+            safetyRating: 'Safe',
+            isNoReg: true,
           });
 
           broadcastSocketEvent('submission_approved', {
@@ -98,7 +110,7 @@ export async function POST(req: NextRequest) {
             action: 'REJECT_SUBMISSION',
             targetType: 'SUBMISSION',
             targetId: submission.id,
-            details: `Bulk rejected \"${submission.title}\". Reason: ${reason || 'None provided'}`,
+            details: `Bulk rejected "${submission.title}". Reason: ${reason || 'None provided'}`,
           });
 
           broadcastSocketEvent('submission_rejected', {

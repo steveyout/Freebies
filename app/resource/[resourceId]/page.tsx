@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { 
   getAllResources, 
   getResourceById, 
-  getRelatedResources 
+  getRelatedResources,
+  getCategoryBySlug 
 } from '@/lib/data';
 import { ResourceActionsClient } from '@/components/ResourceActionsClient';
 import { ResourceCommentsClient } from '@/components/ResourceCommentsClient';
@@ -14,6 +15,8 @@ import {
   getBreadcrumbJsonLd, 
   getSoftwareApplicationJsonLd 
 } from '@/lib/seo';
+import { Resource, initDb } from '@/db/models';
+import { LinkItem, Category, SubCategory } from '@/types/fmhy';
 import { 
   ChevronRight, 
   ShieldCheck, 
@@ -28,6 +31,9 @@ interface ResourcePageProps {
   }>;
 }
 
+// Allow on-demand server rendering for newly approved resources not in build-time static generation
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const resources = getAllResources();
   return resources.map((r) => ({
@@ -35,9 +41,65 @@ export async function generateStaticParams() {
   }));
 }
 
+async function findResourceItem(resourceId: string): Promise<{ item: LinkItem; category: Category; subcategory?: SubCategory } | undefined> {
+  // 1. Try local memory / markdown data first
+  const localResult = getResourceById(resourceId);
+  if (localResult) return localResult;
+
+  // 2. Query database for dynamically approved resources (e.g. approved submissions like arcmira)
+  try {
+    await initDb();
+    const dbResource = await Resource.findByPk(resourceId);
+    if (dbResource) {
+      const cat = getCategoryBySlug(dbResource.category) || {
+        id: dbResource.category,
+        name: dbResource.category.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        slug: dbResource.category,
+        description: `Verified directory for ${dbResource.category}`,
+        subcategories: [],
+      };
+
+      const item: LinkItem = {
+        id: dbResource.id,
+        title: dbResource.title,
+        url: dbResource.url,
+        description: dbResource.description,
+        category: dbResource.category,
+        subcategory: dbResource.subcategory,
+        tags: dbResource.tags || [],
+        safetyRating: (dbResource.safetyRating as any) || 'Safe',
+        badge: dbResource.badge || (dbResource.isStarred ? '⭐ Priority' : undefined),
+        score: dbResource.score ?? 0,
+        upvotesCount: dbResource.upvotesCount ?? 0,
+        downvotesCount: dbResource.downvotesCount ?? 0,
+        isStarred: Boolean(dbResource.isStarred),
+        isOpenSource: Boolean(dbResource.isOpenSource),
+        isNoAds: Boolean(dbResource.isNoAds),
+        isNoReg: Boolean(dbResource.isNoReg),
+        dateAdded: dbResource.dateAdded || undefined,
+        addedBy: dbResource.addedBy || undefined,
+      };
+
+      return {
+        item,
+        category: cat,
+        subcategory: {
+          id: `${cat.id}-${dbResource.subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          name: dbResource.subcategory,
+          items: [item],
+        },
+      };
+    }
+  } catch (err) {
+    console.warn(`Could not query database for resource ${resourceId}:`, err);
+  }
+
+  return undefined;
+}
+
 export async function generateMetadata({ params }: ResourcePageProps): Promise<Metadata> {
   const { resourceId } = await params;
-  const result = getResourceById(resourceId);
+  const result = await findResourceItem(resourceId);
 
   if (!result) {
     return constructMetadata({ title: 'Resource Not Found', noIndex: true });
@@ -63,7 +125,7 @@ export async function generateMetadata({ params }: ResourcePageProps): Promise<M
 
 export default async function ResourcePage({ params }: ResourcePageProps) {
   const { resourceId } = await params;
-  const result = getResourceById(resourceId);
+  const result = await findResourceItem(resourceId);
 
   if (!result) {
     notFound();
@@ -123,190 +185,164 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
           </>
         )}
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-slate-900 dark:text-white font-bold">{item.title}</span>
+        <span className="text-slate-900 dark:text-white font-bold truncate max-w-[200px]">{item.title}</span>
       </nav>
 
-      {/* Resource Main Showcase Header */}
-      <article className="rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-6 sm:p-10 shadow-xs space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-zinc-800">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center text-white font-black text-2xl shadow-md shrink-0">
-              {item.title.charAt(0)}
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
-                  {domain}
+      {/* Hero Header */}
+      <header className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div className="space-y-3 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                {category.name}
+              </span>
+              {subcategory && (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400">
+                  {subcategory.name}
                 </span>
-                {item.badge && (
-                  <span className="text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-full">
-                    {item.badge}
+              )}
+              {item.badge && (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                  {item.badge}
+                </span>
+              )}
+              {item.isOpenSource && (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                  Open Source
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {item.title}
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-600 dark:text-zinc-300 leading-relaxed max-w-3xl">
+              {item.description}
+            </p>
+
+            {item.tags && item.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-2">
+                {item.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400"
+                  >
+                    #{tag}
                   </span>
-                )}
-                {item.isOpenSource && (
-                  <span className="text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 px-2 py-0.5 rounded-full">
-                    Open Source
-                  </span>
-                )}
+                ))}
               </div>
-              <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
-                {item.title}
-              </h1>
-            </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>{item.safetyRating}</span>
-            </span>
+          {/* Primary External Action CTA */}
+          <div className="flex flex-col gap-3 shrink-0 sm:w-60">
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-md hover:shadow-lg hover:shadow-amber-500/20 transition-all cursor-pointer group"
+            >
+              <span>Visit Official Site</span>
+              <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700/60 text-xs text-center font-mono text-slate-500 dark:text-zinc-400 truncate">
+              {domain}
+            </div>
           </div>
         </div>
 
-        {/* Detailed Tagline Description */}
-        <p className="text-base sm:text-lg text-slate-700 dark:text-zinc-200 leading-relaxed font-sans">
-          {item.description}
-        </p>
-
-        {/* Client Interactive Action Buttons (Launch, Bookmark, Rating, Report) */}
+        {/* Voting & Actions Toolbar */}
         <ResourceActionsClient item={item} />
+      </header>
 
-        {/* Mirror URLs if available */}
-        {item.mirrorUrls && item.mirrorUrls.length > 0 && (
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-950/60 border border-slate-200 dark:border-zinc-800 space-y-2">
-            <span className="text-xs font-mono font-bold text-slate-700 dark:text-zinc-300">
-              Alternate Verified Mirrors:
+      {/* Safety & Audit Specs Breakdown */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-1">
+          <div className="text-xs font-mono uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+            Safety &amp; Adware Rating
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <ShieldCheck className="w-5 h-5 text-emerald-500" />
+            <span className="text-base font-bold text-slate-900 dark:text-white">
+              {item.safetyRating || 'Safe'}
             </span>
-            <div className="flex flex-wrap gap-2">
-              {item.mirrorUrls.map((mirror, idx) => (
-                <a
-                  key={idx}
-                  href={mirror}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-mono text-amber-600 dark:text-amber-400 hover:underline bg-white dark:bg-zinc-900 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-zinc-800 flex items-center gap-1"
-                >
-                  <span>{mirror.replace(/^https?:\/\//, '')}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ))}
-            </div>
           </div>
-        )}
-      </article>
-
-      {/* In-Depth Technical Specifications & Verification Table */}
-      <section className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-4">
-        <h2 className="text-base font-bold font-mono text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-          <Layers className="w-4 h-4 text-amber-500" />
-          <span>Technical Specifications &amp; Audit Profile</span>
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200 dark:border-zinc-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider">License &amp; Code</span>
-            <p className="font-bold text-slate-800 dark:text-zinc-200">
-              {item.isOpenSource ? 'Open Source (Audited FOSS)' : 'Verified Free Service'}
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200 dark:border-zinc-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider">Registration Policy</span>
-            <p className="font-bold text-slate-800 dark:text-zinc-200">
-              {item.isNoReg ? 'Zero Registration Required' : 'Optional / Free Account'}
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200 dark:border-zinc-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider">Ad Status</span>
-            <p className="font-bold text-slate-800 dark:text-zinc-200">
-              {item.isNoAds ? 'Ad-Free Experience' : 'Standard (Pair with uBlock)'}
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200 dark:border-zinc-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider">Last Community Audit</span>
-            <p className="font-bold text-slate-800 dark:text-zinc-200">
-              {item.lastVerified || 'Daily Poller Active'}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Safety & Recommended Usage Instructions */}
-      <section className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-4">
-        <h2 className="text-base font-bold font-mono text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-500" />
-          <span>Safe Usage &amp; Privacy Advisory for {item.title}</span>
-        </h2>
-
-        <div className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 leading-relaxed space-y-2.5 font-sans">
-          <p>
-            When utilizing <strong>{item.title}</strong>, freebies recommends having an active content blocker like <strong>uBlock Origin</strong> enabled to ensure clean media rendering without unintended third-party tracker requests.
+          <p className="text-xs text-slate-500 dark:text-zinc-400">
+            {item.safetyRating === 'Safe'
+              ? 'Audited zero malware, zero malicious redirects.'
+              : 'Requires adblocker protection.'}
           </p>
-          <p>
-            Always verify that you are connecting to the verified domain (<strong>{domain}</strong>) shown above. Never download executable installers or browser plugins prompted by secondary redirect screens.
+        </div>
+
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-1">
+          <div className="text-xs font-mono uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+            Account Registration
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <Sparkles className="w-5 h-5 text-amber-500" />
+            <span className="text-base font-bold text-slate-900 dark:text-white">
+              {item.isNoReg ? 'Zero Registration' : 'Registration Optional'}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">
+            {item.isNoReg
+              ? 'Immediate access without account or credit card.'
+              : 'Sign-up optional for extra features.'}
+          </p>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-1">
+          <div className="text-xs font-mono uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+            Audited Directory Source
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <Layers className="w-5 h-5 text-indigo-500" />
+            <span className="text-base font-bold text-slate-900 dark:text-white truncate">
+              {category.name}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 font-mono">
+            {item.dateAdded ? `Indexed on ${item.dateAdded}` : 'Regularly verified mirror'}
           </p>
         </div>
       </section>
 
-      {/* Interactive Public & Private Comments Component */}
+      {/* Community Comments & User Feedback Section */}
       <ResourceCommentsClient resourceId={item.id} resourceTitle={item.title} />
 
-      {/* Related Alternatives Section */}
+      {/* Related Resources in Category */}
       {relatedItems.length > 0 && (
-        <section className="space-y-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
+        <section className="space-y-4 pt-6 border-t border-slate-200 dark:border-zinc-800">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold font-mono text-slate-900 dark:text-white flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>Similar Curated Alternatives in {category.name}</span>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              Related {category.name} Tools
             </h2>
             <Link
               href={`/category/${category.slug}`}
-              className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:underline"
+              className="text-xs font-semibold text-amber-500 hover:text-amber-400 flex items-center gap-1"
             >
-              View Category &rarr;
+              <span>View all in {category.name}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {relatedItems.map((rel) => (
-              <div
+              <Link
                 key={rel.id}
-                className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-2 flex flex-col justify-between"
+                href={`/resource/${rel.id}`}
+                className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-amber-500/50 transition-all hover:-translate-y-0.5 space-y-2 block"
               >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                      {rel.title}
-                    </h3>
-                    <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                      {rel.safetyRating}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 line-clamp-2 mt-1">
-                    {rel.description}
-                  </p>
+                <div className="font-bold text-sm text-slate-900 dark:text-white flex items-center justify-between">
+                  <span className="truncate">{rel.title}</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </div>
-
-                <div className="pt-2 flex items-center justify-between text-xs font-mono">
-                  <Link
-                    href={`/resource/${rel.id}`}
-                    className="text-amber-600 dark:text-amber-400 font-bold hover:underline"
-                  >
-                    View Review &rarr;
-                  </Link>
-                  <a
-                    href={rel.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-slate-400 hover:text-slate-600 flex items-center gap-1"
-                  >
-                    <span>Visit</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-              </div>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 line-clamp-2">
+                  {rel.description}
+                </p>
+              </Link>
             ))}
           </div>
         </section>

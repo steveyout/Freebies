@@ -2,6 +2,7 @@ import { Category, SubCategory, LinkItem } from '@/types/fmhy';
 import { FMHY_CATEGORIES, HOME_CATEGORY } from '@/data/fmhyData';
 import { DEFAULT_MARKDOWN_FILES } from '@/data/markdownData';
 import { parseMarkdownToCategories } from '@/utils/markdownParser';
+import categoriesJson from '@/data/categories.json';
 
 // Category Editorial Overviews for high-quality SEO content
 export interface CategoryEditorial {
@@ -34,18 +35,6 @@ Our team and community audit media indexers daily to verify server uptime, test 
       'Consider using a privacy VPN or private DNS if your local ISP implements DNS-level filtering.',
     ],
     faqs: [
-      {
-        question: 'What is the highest-rated free movie streaming site on freebies?',
-        answer: 'FlixHQ (https://flixhq.ink) and CineJoy (https://cinejoy.online) are our highest-rated streaming platforms, selected for their 1080p HD library, zero required accounts, auto-subtitles, and clean user experience.',
-      },
-      {
-        question: 'Do I need to sign up or register an account to watch streams?',
-        answer: 'No. Every primary movie, TV series, and sports stream listed in our verified tier does not require user registration or credit card information.',
-      },
-      {
-        question: 'How do I bypass video buffering on streaming sites?',
-        answer: 'Most top platforms feature a server switcher directly below the media player (e.g. UpCloud, VidCloud, MegaCloud). If one server buffers, switch to an alternate mirror.',
-      },
       {
         question: 'Are free streaming platforms safe to use on mobile devices?',
         answer: 'Yes, provided you use an adblocking mobile browser such as Brave, Firefox with uBlock Origin on Android, or Safari with AdGuard on iOS to block malicious popups.',
@@ -108,92 +97,88 @@ We prioritize software with clean installers, zero bundled adware or telemetry, 
       },
       {
         question: 'Are all tools listed in the Software category open source?',
-        answer: 'A majority are FOSS (Free and Open Source Software) under licenses like GPL, MIT, and Apache 2.0. Any proprietary freeware is rigorously tested for zero malware or adware.',
+        answer: 'The vast majority are GPL, MIT, or Apache-licensed open-source tools. A small number are audited non-commercial freeware utilities with exceptional utility.',
       },
     ],
   },
   'ai-tools': {
-    title: 'Free AI Tools, LLMs, Generative Models & Developer APIs',
-    summary: 'Explore cutting-edge artificial intelligence assistants, local open-weight LLMs, generative art creators, voice synthesis, and zero-cost AI developer tiers.',
-    longDescription: `Artificial Intelligence has transformed productivity, software development, creative design, and research. However, many commercial AI suites gate capabilities behind expensive recurring subscriptions.
+    title: 'Free AI Models, Developer Workspaces, LLMs & Local Runners',
+    summary: 'Direct access to free LLM interfaces, local execution runners (Ollama, LM Studio), image generation platforms, and coding assistants.',
+    longDescription: `Artificial intelligence tools accelerate research, coding, writing, and creative ideation. The freebies AI Directory indexes platforms offering generous free tiers, uncapped local open-source models, API test workspaces, and private offline assistants.
 
-The freebies AI Tools Directory catalogues top-tier zero-cost and freemium AI platforms, unrestricted local LLM frontends, image generation models, and voice synthesis tools. Whether you need writing assistance, code refactoring, or creative media synthesis, our listings highlight generous free tiers and open-weight alternatives.`,
+We feature local model runners that protect your privacy by keeping prompt data strictly on your machine, alongside cloud platforms offering free developer access to Gemini, Llama 3, and DeepSeek models.`,
     keyFeatures: [
-      'Generous Free Tiers: Chat models and generators that do not require mandatory payment cards.',
-      'Local & Private AI: Guides and tools for running models locally (like Ollama) with 100% data privacy.',
-      'Multi-Modal Capabilities: Text generation, visual reasoning, code generation, and voice audio cloning.',
+      'Offline Private Execution: Run models locally with Ollama and LM Studio without sending data to third parties.',
+      'Zero-Cost Access: High rate limits and generous free developer quotas.',
+      'Cutting-Edge Open Weights: Easy deployment of DeepSeek, Llama 3, and Qwen architectures.',
     ],
     safetyTips: [
-      'Do not submit sensitive personal identifiers or confidential code to cloud-hosted public models.',
-      'Verify AI-generated code snippets in a sandbox before executing in production environments.',
+      'Never input proprietary passwords, keys, or private personal data into public cloud LLMs.',
+      'Prefer local offline model runners for confidential programming and document analysis.',
     ],
     faqs: [
       {
-        question: 'Can I run generative AI models locally on my computer for free?',
-        answer: 'Yes. Tools like Ollama and LM Studio allow you to download and run open-weight models (Llama, Mistral, DeepSeek) locally on your GPU with complete privacy.',
+        question: 'Can I run state-of-the-art AI models locally on my computer?',
+        answer: 'Yes! Applications like Ollama and LM Studio allow you to download and run optimized quantized models (GGUF) directly on modern CPUs and GPUs with zero internet connection.',
       },
     ],
   },
   'dev-tools': {
-    title: 'Developer Tools, Free Cloud Hosting, APIs & Coding Resources',
-    summary: 'Comprehensive directory of free cloud tiers, database hosting, code editors, API testing suites, and frontend component libraries.',
-    longDescription: `Building software in the modern era does not require an enterprise budget. The freebies Developer Tools section aggregates generous free tiers from cloud providers, serverless databases, CI/CD runners, and developer utilities.
-
-From free SSL certificates and static hosting on Vercel/Netlify to container hosting and REST testing tools, developers can build, test, and ship complete full-stack web applications without spending a dime.`,
+    title: 'Developer Tools, Free Hosting, Cloud Databases & Public APIs',
+    summary: 'Curated index of free cloud application hosting, serverless databases, CI/CD runners, public APIs, and developer productivity tools.',
+    longDescription: `Building modern web and software applications is more accessible than ever thanks to generous developer tiers. The freebies Dev Tools Directory lists production-grade tools offering robust free tiers: from full-stack hosting on Vercel to serverless PostgreSQL databases on Supabase.`,
     keyFeatures: [
-      'Zero-Cost Developer Tiers: Free cloud compute, database rows, and hosting bandwidth.',
-      'Productivity Accelerators: Instant snippet sharing, regex testers, JSON formatters, and API clients.',
-      'Open Standards: Compliant with modern web frameworks and developer toolchains.',
+      'Generous Free Tiers: Generous quotas suitable for side projects and production MVPs.',
+      'Modern Stack Support: Seamless integration with Next.js, Node.js, Python, and Docker.',
+      'Instant Provisioning: Deploy web services and databases in seconds with Git integration.',
     ],
     safetyTips: [
-      'Always set billing alerts and usage caps on cloud providers even when using free tiers.',
-      'Never commit API keys or environment secrets to public GitHub repositories.',
+      'Always set billing spend caps or disable automatic overage billing on cloud accounts.',
+      'Use environment variables (.env) to keep API secrets out of public GitHub repositories.',
     ],
     faqs: [
       {
-        question: 'Where can I host my web application for free?',
-        answer: 'Vercel, Netlify, Cloudflare Pages, and Render offer generous free tiers for hosting static frontends and serverless backends.',
-      },
-    ],
-  },
-  'gaming-emulation': {
-    title: 'Gaming, Retro Emulation, Mods & Free Game Repositories',
-    summary: 'Curated index of console emulators, open-source game engines, preservation archives, performance enhancement mods, and legal free games.',
-    longDescription: `Preserving video game history through open-source emulation and community modding is a vital facet of digital culture. The freebies Gaming & Emulation Directory indexes verified emulators for PlayStation, Nintendo, Sega, Xbox, and arcade hardware.
-
-We also highlight game optimization utilities, DRM-free legal gaming stores, translation patches, and open-source re-implementations of classic game engines.`,
-    keyFeatures: [
-      'Multi-Platform Emulators: Play historic titles on PC, Android, Steam Deck, and macOS.',
-      'Performance Enhancers: Texture packs, widescreen patches, and unlocked framerate mods.',
-      'Open Source Engines: Community remakes of legendary game engines.',
-    ],
-    safetyTips: [
-      'Never download game files from unverified third-party pop-up advertisements.',
-      'Use 7-Zip to extract archives and scan any downloaded files with an updated antivirus.',
-    ],
-    faqs: [
-      {
-        question: 'Is video game emulation legal?',
-        answer: 'Yes, developing and using console emulators is completely legal. Users should dump BIOS files and game ROMs from hardware and discs they legally own.',
+        question: 'What is the best free hosting platform for modern web apps?',
+        answer: 'Vercel, Netlify, and Cloudflare Pages offer exceptional free tiers for modern JavaScript frameworks with automatic SSL and global CDN distribution.',
       },
     ],
   },
   'books-reading': {
-    title: 'Free E-Books, Audiobooks, Manga, Comics & Research Papers',
-    summary: 'Discover public domain literary works, open-access academic research journals, comics, manga readers, and free audiobook archives.',
-    longDescription: `Knowledge and literature should be universally accessible. The freebies Books & Reading Directory connects avid readers, students, and academic researchers with legal e-book archives, public domain libraries, scientific paper repositories, and comic readers.`,
+    title: 'Free Digital Libraries, E-Books, Academic Papers & Public Domain Literature',
+    summary: 'Comprehensive guide to public domain book repositories, open academic journals, digital archives, and reader applications.',
+    longDescription: `Access to literature, scientific research, and historical documentation should be universal. The freebies Books & Reading Directory curates safe and legal platforms providing access to millions of digitized books, public domain classics, and open-access research repositories.`,
     keyFeatures: [
-      'Public Domain Classics: Thousands of copyright-free literary masterworks.',
-      'Academic Open Access: Free peer-reviewed journals, science articles, and research dissertations.',
-      'Multi-Format Support: EPUB, PDF, MOBI, and browser-based online readers.',
+      'Extensive Digital Archives: Access to millions of out-of-print, historical, and public domain texts.',
+      'Standard Formats: EPUB, PDF, and MOBI files compatible with Kindle, Kobo, and e-readers.',
+      'Open Access Science: Peer-reviewed research papers and academic textbooks.',
     ],
     safetyTips: [
-      'Use dedicated e-reader apps like KOReader or Calibre to organize and read digital books comfortably.',
+      'Use official e-reader apps and avoid executable (.exe) files disguised as book downloads.',
     ],
     faqs: [
       {
-        question: 'Where can I read free public domain books legally?',
-        answer: 'Project Gutenberg and Standard Ebooks provide thousands of verified public domain e-books in beautifully formatted EPUB and Kindle formats.',
+        question: 'Are public domain books completely legal to download?',
+        answer: 'Yes. Works whose copyright has expired (such as those hosted on Project Gutenberg) are in the public domain and completely free and legal to read, share, and redistribute.',
+      },
+    ],
+  },
+  'gaming-emulation': {
+    title: 'Video Game Emulators, Game Preservation, Free Launchers & Mods',
+    summary: 'Open-source game console emulators, game preservation archives, native indie game stores, and gaming optimization utilities.',
+    longDescription: `Video game preservation ensures classic interactive art remains playable across modern hardware. The freebies Gaming Directory showcases audited open-source emulators (RetroArch, PCSX2, Dolphin) and game platforms offering DRM-free indie titles.`,
+    keyFeatures: [
+      'High-Definition Enhancement: Internal resolution scaling, widescreen patches, and custom shaders.',
+      'DRM-Free Gaming: Platforms like itch.io offering independent indie games with zero restrictive DRM.',
+      'Open Source Engines: Active maintainer communities continually improving compatibility and performance.',
+    ],
+    safetyTips: [
+      'Only dump ROMs and BIOS files from consoles and cartridges you legally own.',
+      'Scan third-party game mods and custom texture packs on VirusTotal before installation.',
+    ],
+    faqs: [
+      {
+        question: 'Is video game emulation legal?',
+        answer: 'Yes. Developing and using emulators is completely legal. Users must legally dump their own BIOS and game copies.',
       },
     ],
   },
@@ -261,12 +246,17 @@ export function getCategoryEditorial(slug: string, name: string): CategoryEditor
   };
 }
 
-// Master Category & Resource Loader with Markdown Merging
+// Master Category & Resource Loader with Markdown & JSON Merging
 export function getAllCategories(): Category[] {
-  return FMHY_CATEGORIES.map((cat) => {
+  // Use parsed JSON categories as the dynamic baseline
+  const baseCategories: Category[] = (categoriesJson && Array.isArray(categoriesJson) && categoriesJson.length > 0)
+    ? (categoriesJson as unknown as Category[])
+    : FMHY_CATEGORIES;
+
+  return baseCategories.map((cat) => {
     const mdFilename = `${cat.id}.md`;
     const mdFile = DEFAULT_MARKDOWN_FILES[mdFilename];
-    let baseSubcategories = [...cat.subcategories];
+    let baseSubcategories = [...(cat.subcategories || [])];
 
     if (mdFile && mdFile.content) {
       const parsedSubs = parseMarkdownToCategories(cat.id, cat.name, mdFile.content);
@@ -320,8 +310,8 @@ export function getAllResources(): LinkItem[] {
   const categories = getAllCategories();
   const map = new Map<string, LinkItem>();
   for (const cat of categories) {
-    for (const sub of cat.subcategories) {
-      for (const item of sub.items) {
+    for (const sub of cat.subcategories || []) {
+      for (const item of sub.items || []) {
         if (!map.has(item.id)) {
           map.set(item.id, item);
         }
@@ -336,8 +326,8 @@ export function getResourceById(id: string): { item: LinkItem; category: Categor
   const normalizedId = decodeURIComponent(id).toLowerCase();
 
   for (const cat of categories) {
-    for (const sub of cat.subcategories) {
-      for (const item of sub.items) {
+    for (const sub of cat.subcategories || []) {
+      for (const item of sub.items || []) {
         if (
           item.id.toLowerCase() === normalizedId ||
           item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === normalizedId ||
