@@ -61,7 +61,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST || '157.173.125.157' }}
-          username: ${{ secrets.VPS_USERNAME || 'root' }}
+          username: ${{ secrets.VPS_USERNAME || 'steveyout' }}
           password: ${{ secrets.VPS_PASSWORD }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
@@ -98,25 +98,26 @@ jobs:
             echo "🏗️ Compiling Next.js App Router bundle..."
             pnpm run build
 
-            echo "⚡ Restarting application process via PM2..."
-            if command -v pm2 >/dev/null 2>&1; then
-              pm2 reload deploy/ecosystem.config.cjs --update-env || pm2 start deploy/ecosystem.config.cjs
-              pm2 save
+            echo "⚡ Restarting / reloading PM2 process..."
+            if pm2 list | grep -q "freebies"; then
+              pm2 reload deploy/ecosystem.config.cjs --update-env
             else
-              echo "⚠️ PM2 not found globally, falling back to background node server..."
-              pkill -f "node server.mjs" || true
-              nohup node server.mjs > server.log 2>&1 &
+              pm2 start deploy/ecosystem.config.cjs
             fi
+            pm2 save
 
-            echo "🛡️ Updating BunkerWeb reverse proxy configuration..."
+            echo "🛡️ Refreshing BunkerWeb configuration..."
             if [ -d "/etc/bunkerweb/configs" ]; then
-              cp bunkerweb/freeebies.site.conf /etc/bunkerweb/configs/freeebies.site.conf
-              systemctl reload bunkerweb 2>/dev/null || true
+              sudo cp bunkerweb/freeebies.site.conf /etc/bunkerweb/configs/freeebies.site.conf || cp bunkerweb/freeebies.site.conf /etc/bunkerweb/configs/freeebies.site.conf
+              if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet bunkerweb; then
+                sudo systemctl reload bunkerweb || true
+              fi
             fi
 
             if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q "bunkerweb"; then
-              docker cp bunkerweb/freeebies.site.conf bunkerweb:/etc/bunkerweb/configs/freeebies.site.conf 2>/dev/null || true
-              docker exec bunkerweb bunkercli reload 2>/dev/null || docker restart bunkerweb 2>/dev/null || true
+              docker exec -i bunkerweb mkdir -p /etc/bunkerweb/configs || true
+              docker cp bunkerweb/freeebies.site.conf bunkerweb:/etc/bunkerweb/configs/freeebies.site.conf || true
+              docker exec -i bunkerweb bunkercli reload || docker restart bunkerweb || true
             fi
 
-            echo "🎉 Continuous Deployment Completed Successfully!"
+            echo "🎉 Continuous Deployment successfully finished!"
