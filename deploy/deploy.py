@@ -1,27 +1,43 @@
 import os
 import sys
+import json
+import urllib.request
 import paramiko
 
 # Ensure UTF-8 output
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
+def report_log(message):
+    try:
+        data = json.dumps({"message": message}).encode("utf-8")
+        req = urllib.request.Request(
+            "https://freeebies.site/api/deploy-log",
+            data=data,
+            headers={"Content-Type": "application/json", "User-Agent": "FreebiesCI/1.0"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            pass
+    except Exception as e:
+        print(f"Could not report log to server: {e}", file=sys.stderr)
+
 def get_clean_env(*keys):
     for key in keys:
         val = os.environ.get(key)
         if val and val.strip().lower() not in ('true', 'false', 'none', 'null', ''):
             clean = val.strip()
-            # Clean protocol prefixes if user mistakenly entered a URL for host
             clean = clean.replace('https://', '').replace('http://', '').split('/')[0]
             return clean
     return None
+
+report_log("Starting deployment script execution on GitHub runner.")
 
 env_host = get_clean_env('SSH_HOST', 'DEPLOY_HOST', 'SERVER_HOST', 'HOST', 'VPS_HOST')
 env_user = get_clean_env('SSH_USER', 'DEPLOY_USER', 'SERVER_USER', 'USER', 'VPS_USERNAME')
 env_pass = get_clean_env('SSH_PASS', 'DEPLOY_PASSWORD', 'SERVER_PASSWORD', 'VPS_PASSWORD', 'PASSWORD')
 port_str = get_clean_env('SSH_PORT', 'DEPLOY_PORT', 'PORT', 'VPS_PORT')
 
-# Prioritize direct server IP first, then any custom env_host (excluding Cloudflare domain)
 raw_hosts = ['157.173.125.157']
 if env_host and env_host not in ('freeebies.site', 'www.freeebies.site'):
     raw_hosts.append(env_host)
@@ -60,18 +76,25 @@ for target_host in hosts_to_try:
                 connected = True
                 active_host = target_host
                 active_user = target_user
+                report_log(f"SSH connection succeeded to {target_host}:{port} as {target_user}")
                 break
             except paramiko.AuthenticationException:
-                print(f"Authentication with credentials for {target_user} rejected by server. Trying next...")
+                msg = f"Auth failed on {target_host} for user {target_user}"
+                print(msg)
+                report_log(msg)
             except Exception as e:
-                print(f"Connection attempt to {target_host}:{port} failed: {type(e).__name__}: {e}")
+                msg = f"Conn failed to {target_host}:{port}: {type(e).__name__}: {e}"
+                print(msg)
+                report_log(msg)
         if connected:
             break
     if connected:
         break
 
 if not connected:
-    print("Fatal: Could not authenticate to production host using configured credentials.", file=sys.stderr)
+    err = "Fatal: Could not authenticate to production host using configured credentials."
+    print(err, file=sys.stderr)
+    report_log(err)
     sys.exit(1)
 
 deploy_commands = """
@@ -127,7 +150,11 @@ exit_code = stdout.channel.recv_exit_status()
 ssh.close()
 
 if exit_code != 0:
-    print(f"Deployment script exited with error code {exit_code}", file=sys.stderr)
+    err_msg = f"Deployment script exited with error code {exit_code}"
+    print(err_msg, file=sys.stderr)
+    report_log(err_msg)
     sys.exit(exit_code)
 else:
-    print("Continuous deployment pipeline completed successfully with exit code 0.")
+    success_msg = "Continuous deployment pipeline completed successfully with exit code 0."
+    print(success_msg)
+    report_log(success_msg)
