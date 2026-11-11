@@ -1,52 +1,122 @@
-name: Build and Deploy to GitHub Pages
+name: Build, Test & Deploy to VPS (BunkerWeb + Next.js)
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    types: [closed]
+    branches:
+      - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: 'pages'
-  cancel-in-progress: true
+  group: 'production-deployment'
+  cancel-in-progress: false
 
 jobs:
-  build:
-    if: github.repository == 'steveyout/Freebies'
+  # 1. CI Validation: Compile and build on GitHub runner first to protect the VPS from broken code
+  build-and-verify:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22 LTS
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build application
-        run: npm run build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          path: './dist'
+          version: 9
 
-  deploy:
-    if: github.repository == 'steveyout/Freebies'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Next.js Build
+        run: pnpm run build
+
+  # 2. CD Deployment: Deploy to VPS securely using GitHub Secrets
+  deploy-to-vps:
+    needs: build-and-verify
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Trigger VPS Update & Safe Database Sync
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST || '157.173.125.157' }}
+          username: ${{ secrets.VPS_USERNAME || 'root' }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
+            echo "🚀 Starting automated deployment for freeebies.site..."
+
+            APP_DIR="${APP_DIR:-$HOME/streaming}"
+
+            # Ensure deployment target directory exists
+            if [ ! -d "$APP_DIR" ]; then
+              echo "📁 Creating streaming directory at $APP_DIR..."
+              git clone https://github.com/steveyout/Freebies.git "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+
+            echo "📥 Pulling latest verified changes from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Ensure .env exists with production secrets
+            if [ ! -f ".env" ]; then
+              cp .env.example .env
+            fi
+
+            echo "📦 Installing production dependencies via pnpm..."
+            pnpm install --frozen-lockfile
+
+            echo "🔄 Safely merging resources into production DB (preserving all votes & comments)..."
+            pnpm run db:sync
+
+            echo "🏗️ Compiling Next.js App Router bundle..."
+            pnpm run build
+
+            echo "⚡ Restarting application process via PM2..."
+            if command -v pm2 >/dev/null 2>&1; then
+              pm2 reload deploy/ecosystem.config.cjs --update-env || pm2 start deploy/ecosystem.config.cjs
+              pm2 save
+            else
+              echo "⚠️ PM2 not found globally, falling back to background node server..."
+              pkill -f "node server.mjs" || true
+              nohup node server.mjs > server.log 2>&1 &
+            fi
+
+            echo "🛡️ Updating BunkerWeb reverse proxy configuration..."
+            if [ -d "/etc/bunkerweb/configs" ]; then
+              cp bunkerweb/freeebies.site.conf /etc/bunkerweb/configs/freeebies.site.conf
+              systemctl reload bunkerweb 2>/dev/null || true
+            fi
+
+            if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q "bunkerweb"; then
+              docker cp bunkerweb/freeebies.site.conf bunkerweb:/etc/bunkerweb/configs/freeebies.site.conf 2>/dev/null || true
+              docker exec bunkerweb bunkercli reload 2>/dev/null || docker restart bunkerweb 2>/dev/null || true
+            fi
+
+            echo "🎉 Continuous Deployment Completed Successfully!"
