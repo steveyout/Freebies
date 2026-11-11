@@ -12,12 +12,13 @@ interface SubcategoryClientWrapperProps {
 export const SubcategoryClientWrapper: React.FC<SubcategoryClientWrapperProps> = ({
   subcategory,
 }) => {
-  const { bookmarkedItems, toggleBookmark, openReportBroken } = useModal();
-  const bookmarkedIds = useMemo(() => new Set(bookmarkedItems.map((i) => i.id)), [bookmarkedItems]);
+  const { bookmarkedItems = [], toggleBookmark, openReportBroken } = useModal();
+  const bookmarkedIds = useMemo(() => new Set((bookmarkedItems || []).map((i) => i?.id).filter(Boolean)), [bookmarkedItems]);
+  const items = subcategory?.items || [];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {subcategory.items.map((item) => (
+      {items.map((item) => (
         <LinkCard
           key={item.id}
           item={item}

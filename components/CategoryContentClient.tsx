@@ -29,7 +29,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
   category,
 }) => {
   const { config } = useTheme();
-  const { bookmarkedItems, toggleBookmark, openReportBroken } = useModal();
+  const { bookmarkedItems = [], toggleBookmark, openReportBroken } = useModal();
 
   const [activeSubId, setActiveSubId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -40,17 +40,19 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
   const [sortBy, setSortBy] = useState<'ranking' | 'name' | 'newest'>('ranking');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
-  const bookmarkedIds = useMemo(() => new Set(bookmarkedItems.map((i) => i.id)), [bookmarkedItems]);
+  const bookmarkedIds = useMemo(() => new Set((bookmarkedItems || []).map((i) => i?.id).filter(Boolean)), [bookmarkedItems]);
 
   // Filtered subcategories and items with vote ranking & star priority
   const filteredSubcategories = useMemo(() => {
-    let subs = category.subcategories;
+    let subs = category?.subcategories || [];
     if (activeSubId !== 'all') {
       subs = subs.filter((s) => s.id === activeSubId);
     }
 
     return subs.map((sub) => {
-      const filteredItems = sub.items.filter((item) => {
+      const itemsList = sub?.items || [];
+      const filteredItems = itemsList.filter((item) => {
+        if (!item) return false;
         if (onlyStarred && !item.isStarred) return false;
         if (onlyOpenSource && !item.isOpenSource) return false;
         if (onlyNoReg && !item.isNoReg) return false;
@@ -58,9 +60,9 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
 
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase();
-          const matchTitle = item.title.toLowerCase().includes(q);
-          const matchDesc = item.description.toLowerCase().includes(q);
-          const matchTags = item.tags.some((t) => t.toLowerCase().includes(q));
+          const matchTitle = (item.title || '').toLowerCase().includes(q);
+          const matchDesc = (item.description || '').toLowerCase().includes(q);
+          const matchTags = Array.isArray(item.tags) && item.tags.some((t) => (t || '').toLowerCase().includes(q));
           if (!matchTitle && !matchDesc && !matchTags) return false;
         }
 
@@ -81,11 +83,11 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
             return scoreB - scoreA;
           }
 
-          return a.title.localeCompare(b.title);
+          return (a.title || '').localeCompare(b.title || '');
         }
 
         if (sortBy === 'name') {
-          return a.title.localeCompare(b.title);
+          return (a.title || '').localeCompare(b.title || '');
         }
 
         if (sortBy === 'newest') {
@@ -105,8 +107,10 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
   }, [category, activeSubId, searchQuery, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, sortBy]);
 
   const totalFilteredCount = useMemo(() => {
-    return filteredSubcategories.reduce((acc, s) => acc + s.items.length, 0);
+    return filteredSubcategories.reduce((acc, s) => acc + (s.items?.length || 0), 0);
   }, [filteredSubcategories]);
+
+  const allSubcategories = category?.subcategories || [];
 
   return (
     <div className="space-y-8">
@@ -114,16 +118,16 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-zinc-800">
         <button
           onClick={() => setActiveSubId('all')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 cursor-pointer ${
             activeSubId === 'all'
-              ? `${config.bgActive} ${config.textAccent} border ${config.borderActive} shadow-xs`
+              ? `${config?.bgActive || 'bg-amber-500/10'} ${config?.textAccent || 'text-amber-500'} border ${config?.borderActive || 'border-amber-500/30'} shadow-xs`
               : 'bg-slate-100 dark:bg-zinc-800/80 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700'
           }`}
         >
-          All Subcategories ({category.subcategories.reduce((acc, s) => acc + s.items.length, 0)})
+          All Subcategories ({allSubcategories.reduce((acc, s) => acc + (s.items?.length || 0), 0)})
         </button>
 
-        {category.subcategories.map((sub) => {
+        {allSubcategories.map((sub) => {
           const isActive = activeSubId === sub.id;
           const subSlug = sub.id.replace(`${category.id}-`, '') || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
@@ -131,14 +135,14 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
             <div key={sub.id} className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => setActiveSubId(sub.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                   isActive
-                    ? `${config.bgActive} ${config.textAccent} border ${config.borderActive} font-bold shadow-xs`
+                    ? `${config?.bgActive || 'bg-amber-500/10'} ${config?.textAccent || 'text-amber-500'} border ${config?.borderActive || 'border-amber-500/30'} font-bold shadow-xs`
                     : 'bg-slate-100 dark:bg-zinc-800/80 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700'
                 }`}
               >
                 <span>{sub.name}</span>
-                <span className="ml-1.5 font-mono text-[10px] opacity-75">({sub.items.length})</span>
+                <span className="ml-1.5 font-mono text-[10px] opacity-75">({sub.items?.length || 0})</span>
               </button>
 
               <Link
@@ -161,7 +165,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Filter ${category.name} resources...`}
+            placeholder={`Filter ${category?.name || 'resources'}...`}
             className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-xs text-slate-900 dark:text-zinc-100 placeholder-slate-400 focus:outline-none focus:border-amber-500"
           />
         </div>
@@ -184,7 +188,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
 
           <button
             onClick={() => setOnlyStarred(!onlyStarred)}
-            className={`px-2.5 py-1 rounded-lg border text-[11px] transition-colors ${
+            className={`px-2.5 py-1 rounded-lg border text-[11px] transition-colors cursor-pointer ${
               onlyStarred
                 ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-300 font-bold'
                 : 'bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
@@ -195,7 +199,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
 
           <button
             onClick={() => setOnlyOpenSource(!onlyOpenSource)}
-            className={`px-2.5 py-1 rounded-lg border text-[11px] transition-colors ${
+            className={`px-2.5 py-1 rounded-lg border text-[11px] transition-colors cursor-pointer ${
               onlyOpenSource
                 ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-300 font-bold'
                 : 'bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
@@ -206,7 +210,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
 
           <button
             onClick={() => setOnlyNoReg(!onlyNoReg)}
-            className={`px-2.5 py-1 rounded-lg border text-[11px] transition-colors ${
+            className={`px-2.5 py-1 rounded-lg border text-[11px] transition-colors cursor-pointer ${
               onlyNoReg
                 ? 'bg-sky-100 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 border-sky-300 font-bold'
                 : 'bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800'
@@ -218,7 +222,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
           <div className="flex items-center gap-1 border-l border-slate-200 dark:border-zinc-800 pl-2">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1 rounded text-xs ${viewMode === 'grid' ? 'text-amber-500 font-bold' : 'text-slate-400'}`}
+              className={`p-1 rounded text-xs cursor-pointer ${viewMode === 'grid' ? 'text-amber-500 font-bold' : 'text-slate-400'}`}
               title="Grid View"
             >
               Grid
@@ -226,7 +230,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
             <span className="text-slate-300 dark:text-zinc-700">|</span>
             <button
               onClick={() => setViewMode('compact')}
-              className={`p-1 rounded text-xs ${viewMode === 'compact' ? 'text-amber-500 font-bold' : 'text-slate-400'}`}
+              className={`p-1 rounded text-xs cursor-pointer ${viewMode === 'compact' ? 'text-amber-500 font-bold' : 'text-slate-400'}`}
               title="Compact View"
             >
               Compact
