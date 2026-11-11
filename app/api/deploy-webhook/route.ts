@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       cd /home/steveyout/streaming/freebies
       git fetch origin main
       git reset --hard origin/main
-      pnpm install
+      pnpm install --prod=false
       node --env-file=.env ./node_modules/tsx/dist/cli.mjs db/syncResources.ts || true
       pnpm run build
       pm2 reload deploy/ecosystem.config.cjs --update-env || pm2 start deploy/ecosystem.config.cjs

@@ -153,7 +153,7 @@ if [ ! -f ".env" ]; then
 fi
 
 echo "📦 Installing production dependencies..."
-pnpm install
+pnpm install --prod=false
 
 echo "🔄 Safely synchronizing resources with database..."
 node --env-file=.env ./node_modules/tsx/dist/cli.mjs db/syncResources.ts || true
