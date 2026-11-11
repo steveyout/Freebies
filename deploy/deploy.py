@@ -6,10 +6,26 @@ import paramiko
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-host = os.environ.get('SSH_HOST') or '157.173.125.157'
-user = os.environ.get('SSH_USER') or 'steveyout'
-passw = os.environ.get('SSH_PASS') or 'bxw30RpaZdRYLQaQ'
-port = int(os.environ.get('SSH_PORT') or 22)
+def get_clean_env(*keys, fallback=""):
+    """
+    Safely retrieves first non-empty, non-boolean environment variable,
+    filtering out GitHub Actions boolean string coercion ('true'/'false').
+    """
+    for key in keys:
+        val = os.environ.get(key)
+        if val and val.strip().lower() not in ('true', 'false', 'none', 'null', ''):
+            return val.strip()
+    return fallback
+
+host = get_clean_env('SSH_HOST', 'DEPLOY_HOST', 'SERVER_HOST', 'HOST', fallback='157.173.125.157')
+user = get_clean_env('SSH_USER', 'DEPLOY_USER', 'SERVER_USER', 'USER', fallback='steveyout')
+passw = get_clean_env('SSH_PASS', 'DEPLOY_PASSWORD', 'SERVER_PASSWORD', 'VPS_PASSWORD', 'PASSWORD', fallback='bxw30RpaZdRYLQaQ')
+port_str = get_clean_env('SSH_PORT', 'DEPLOY_PORT', 'PORT', fallback='22')
+
+try:
+    port = int(port_str)
+except ValueError:
+    port = 22
 
 print(f"Connecting to production host at {host}:{port} as {user}...")
 
@@ -17,10 +33,10 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 try:
-    ssh.connect(host, port=port, username=user, password=passw, timeout=20)
+    ssh.connect(host, port=port, username=user, password=passw, timeout=30)
     print("SSH connection successfully established.")
 except Exception as e:
-    print(f"Failed to connect to host {host}: {e}", file=sys.stderr)
+    print(f"Failed to connect to host {host}:{port}: {e}", file=sys.stderr)
     sys.exit(1)
 
 deploy_commands = """

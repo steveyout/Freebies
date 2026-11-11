@@ -32,8 +32,15 @@ jobs:
 
       - name: Execute Deployment
         env:
-          SSH_HOST: ${{ secrets.DEPLOY_HOST || secrets.SERVER_HOST || secrets.SSH_HOST || secrets.HOST || secrets.VPS_HOST || vars.DEPLOY_HOST || vars.SERVER_HOST || vars.SSH_HOST || vars.HOST || vars.VPS_HOST }}
-          SSH_USER: ${{ secrets.DEPLOY_USER || secrets.SERVER_USER || secrets.SSH_USER || secrets.USER || secrets.VPS_USERNAME || vars.DEPLOY_USER || vars.SERVER_USER || vars.SSH_USER || vars.USER || vars.VPS_USERNAME }}
-          SSH_PASS: ${{ secrets.DEPLOY_PASSWORD || secrets.SERVER_PASSWORD || secrets.SSH_PASSWORD || secrets.PASSWORD || secrets.VPS_PASSWORD || vars.DEPLOY_PASSWORD || vars.SERVER_PASSWORD || vars.SSH_PASSWORD || vars.PASSWORD || vars.VPS_PASSWORD }}
-          SSH_PORT: ${{ secrets.DEPLOY_PORT || secrets.SERVER_PORT || secrets.SSH_PORT || secrets.PORT || secrets.VPS_PORT || vars.DEPLOY_PORT || vars.SERVER_PORT || vars.SSH_PORT || vars.PORT || vars.VPS_PORT }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+          DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: python deploy/deploy.py
