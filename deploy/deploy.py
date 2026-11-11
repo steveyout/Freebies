@@ -10,7 +10,10 @@ def get_clean_env(*keys):
     for key in keys:
         val = os.environ.get(key)
         if val and val.strip().lower() not in ('true', 'false', 'none', 'null', ''):
-            return val.strip()
+            clean = val.strip()
+            # Clean protocol prefixes if user mistakenly entered a URL for host
+            clean = clean.replace('https://', '').replace('http://', '').split('/')[0]
+            return clean
     return None
 
 env_host = get_clean_env('SSH_HOST', 'DEPLOY_HOST', 'SERVER_HOST', 'HOST', 'VPS_HOST')
@@ -18,19 +21,27 @@ env_user = get_clean_env('SSH_USER', 'DEPLOY_USER', 'SERVER_USER', 'USER', 'VPS_
 env_pass = get_clean_env('SSH_PASS', 'DEPLOY_PASSWORD', 'SERVER_PASSWORD', 'VPS_PASSWORD', 'PASSWORD')
 port_str = get_clean_env('SSH_PORT', 'DEPLOY_PORT', 'PORT', 'VPS_PORT')
 
-hosts_to_try = [h for h in [env_host, '157.173.125.157'] if h]
-users_to_try = [u for u in [env_user, 'steveyout'] if u]
-passwords_to_try = [p for p in [env_pass, 'bxw30RpaZdRYLQaQ'] if p]
+# Prioritize direct server IP first, then any custom env_host (excluding Cloudflare domain)
+raw_hosts = ['157.173.125.157']
+if env_host and env_host not in ('freeebies.site', 'www.freeebies.site'):
+    raw_hosts.append(env_host)
+
+raw_users = ['steveyout']
+if env_user:
+    raw_users.append(env_user)
+
+raw_passwords = ['bxw30RpaZdRYLQaQ']
+if env_pass:
+    raw_passwords.append(env_pass)
 
 try:
     port = int(port_str) if port_str else 22
 except ValueError:
     port = 22
 
-# Deduplicate preserving order
-hosts_to_try = list(dict.fromkeys(hosts_to_try))
-users_to_try = list(dict.fromkeys(users_to_try))
-passwords_to_try = list(dict.fromkeys(passwords_to_try))
+hosts_to_try = list(dict.fromkeys(raw_hosts))
+users_to_try = list(dict.fromkeys(raw_users))
+passwords_to_try = list(dict.fromkeys(raw_passwords))
 
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -44,7 +55,7 @@ for target_host in hosts_to_try:
         for target_pass in passwords_to_try:
             try:
                 print(f"Connecting to {target_host}:{port} as {target_user}...")
-                ssh.connect(target_host, port=port, username=target_user, password=target_pass, timeout=25)
+                ssh.connect(target_host, port=port, username=target_user, password=target_pass, timeout=20)
                 print(f"SSH authentication verified successfully on {target_host}.")
                 connected = True
                 active_host = target_host
@@ -53,7 +64,7 @@ for target_host in hosts_to_try:
             except paramiko.AuthenticationException:
                 print(f"Authentication with credentials for {target_user} rejected by server. Trying next...")
             except Exception as e:
-                print(f"Connection attempt to {target_host}:{port} failed: {e}")
+                print(f"Connection attempt to {target_host}:{port} failed: {type(e).__name__}: {e}")
         if connected:
             break
     if connected:
