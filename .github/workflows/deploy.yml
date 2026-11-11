@@ -20,17 +20,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy Application
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEPLOY_HOST || secrets.SERVER_HOST || secrets.SSH_HOST || secrets.HOST || secrets.VPS_HOST || '157.173.125.157' }}
-          username: ${{ secrets.DEPLOY_USER || secrets.SSH_USER || secrets.SSH_USERNAME || secrets.USERNAME || secrets.VPS_USERNAME || 'steveyout' }}
-          password: ${{ secrets.DEPLOY_PASSWORD || secrets.SSH_PASSWORD || secrets.PASSWORD || secrets.VPS_PASSWORD || 'bxw30RpaZdRYLQaQ' }}
-          port: ${{ secrets.DEPLOY_PORT || secrets.SSH_PORT || secrets.PORT || secrets.VPS_PORT || 22 }}
-          script_stop: true
-          script: |
-            set -e
-            echo "🚀 Starting automated deployment for freeebies.site..."
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_HOST || secrets.SERVER_HOST || secrets.SSH_HOST || secrets.HOST || secrets.VPS_HOST || vars.DEPLOY_HOST || vars.SERVER_HOST || vars.SSH_HOST || vars.HOST || vars.VPS_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_USER || secrets.SERVER_USER || secrets.SSH_USER || secrets.USER || secrets.VPS_USERNAME || vars.DEPLOY_USER || vars.SERVER_USER || vars.SSH_USER || vars.USER || vars.VPS_USERNAME }}
+          SSH_PASS: ${{ secrets.DEPLOY_PASSWORD || secrets.SERVER_PASSWORD || secrets.SSH_PASSWORD || secrets.PASSWORD || secrets.VPS_PASSWORD || vars.DEPLOY_PASSWORD || vars.SERVER_PASSWORD || vars.SSH_PASSWORD || vars.PASSWORD || vars.VPS_PASSWORD }}
+          SSH_PORT: ${{ secrets.DEPLOY_PORT || secrets.SERVER_PORT || secrets.SSH_PORT || secrets.PORT || secrets.VPS_PORT || vars.DEPLOY_PORT || vars.SERVER_PORT || vars.SSH_PORT || vars.PORT || vars.VPS_PORT }}
+        run: |
+          set -e
+          TARGET_HOST="${SSH_HOST:-157.173.125.157}"
+          TARGET_USER="${SSH_USER:-steveyout}"
+          TARGET_PASS="${SSH_PASS:-bxw30RpaZdRYLQaQ}"
+          TARGET_PORT="${SSH_PORT:-22}"
 
+          echo "🚀 Starting automated deployment for freeebies.site..."
+          sudo apt-get update -y && sudo apt-get install -y sshpass
+
+          export SSHPASS="$TARGET_PASS"
+          sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p "$TARGET_PORT" "$TARGET_USER@$TARGET_HOST" << 'EOF'
+            set -e
+            echo "--- Environment Setup ---"
             export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$PATH:/usr/local/bin:/usr/bin:/bin"
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true
@@ -71,3 +79,4 @@ jobs:
             pm2 save
 
             echo "🎉 Continuous Deployment successfully finished!"
+          EOF
