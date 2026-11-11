@@ -105,3 +105,32 @@ html:not(.dark) ::-webkit-scrollbar-thumb:hover {
   pointer-events: none;
   z-index: 10;
 }
+
+/* Scrollable Badges & Category Option Pills */
+.scroll-badges-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.scroll-badges-container::-webkit-scrollbar {
+  height: 5px;
+}
+
+.scroll-badges-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-badges-container::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+html.dark .scroll-badges-container::-webkit-scrollbar-thumb {
+  background: rgba(63, 63, 70, 0.6);
+}
+
+.scroll-badges-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.7);
+}

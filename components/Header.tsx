@@ -19,7 +19,8 @@ import {
   Compass,
   ChevronDown,
   PlusCircle,
-  Wrench
+  Wrench,
+  ShieldAlert
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
@@ -67,7 +68,22 @@ export const Header: React.FC<HeaderProps> = ({
   const { darkMode, toggleDarkMode, config } = useTheme();
   const [reportsCount, setReportsCount] = useState(() => getBrokenReports().length);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Check admin session on mount
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/auth/me')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.authenticated && (data.user?.role === 'admin' || data.user?.role === 'moderator')) {
+          if (isMounted) setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -138,15 +154,15 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenSearch}
               id="header-search-bar-btn"
-              className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:border-amber-500 transition-colors text-xs sm:text-sm group"
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100/80 dark:bg-zinc-800/80 hover:bg-slate-200/80 dark:hover:bg-zinc-700/80 border border-slate-200/80 dark:border-zinc-700 text-xs text-slate-500 dark:text-zinc-400 transition-all cursor-pointer shadow-2xs group"
             >
               <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-400 group-hover:text-amber-500 transition-colors" />
-                <span className="text-slate-500 dark:text-zinc-400 text-xs">Search {totalLinksCount.toLocaleString()} items...</span>
+                <Search className="w-4 h-4 text-slate-400 group-hover:text-amber-500 transition-colors" />
+                <span className="font-sans">Search 1,000+ resources...</span>
               </div>
-              <div className="flex items-center gap-1 font-mono text-[10px] text-slate-500 dark:text-zinc-400 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded">
-                <kbd>Ctrl+K</kbd>
-              </div>
+              <kbd className="hidden sm:inline-block font-mono text-[10px] bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-slate-500 dark:text-zinc-400 shadow-2xs">
+                Ctrl K
+              </kbd>
             </button>
           </div>
 
@@ -229,7 +245,7 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenBeginnerGuide();
                         setToolsDropdownOpen(false);
                       }}
-                      className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group"
+                      className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group cursor-pointer"
                     >
                       <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900">
                         <ShieldCheck className="w-3.5 h-3.5" />
@@ -251,53 +267,53 @@ export const Header: React.FC<HeaderProps> = ({
                           onOpenMarkdownEditor('streaming.md');
                           setToolsDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group"
+                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group cursor-pointer"
                       >
-                        <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900">
+                        <div className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900">
                           <FileText className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-800 dark:text-zinc-200 group-hover:text-indigo-500 transition-colors">
-                            Markdown Studio
+                          <div className="font-semibold text-slate-800 dark:text-zinc-200 group-hover:text-rose-500 transition-colors">
+                            Markdown Editor Studio
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-zinc-400">
-                            Live category .md table editor
+                            Edit and download FMHY markdown
                           </div>
                         </div>
                       </button>
                     )}
 
-                    {/* SEO & Social Studio */}
+                    {/* SEO & Meta Studio */}
                     {onOpenSeoStudio && (
                       <button
                         onClick={() => {
                           onOpenSeoStudio();
                           setToolsDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group"
+                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group cursor-pointer"
                       >
-                        <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900">
+                        <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900">
                           <Globe className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-800 dark:text-zinc-200 group-hover:text-emerald-500 transition-colors">
-                            SEO &amp; Social Studio
+                          <div className="font-semibold text-slate-800 dark:text-zinc-200 group-hover:text-indigo-500 transition-colors">
+                            SEO &amp; Meta Studio
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-zinc-400">
-                            OpenGraph, JSON-LD &amp; SERP tags
+                            Audit Schema.org &amp; OpenGraph
                           </div>
                         </div>
                       </button>
                     )}
 
-                    {/* Live GitHub Poller */}
+                    {/* Sync Poller Status */}
                     {onOpenGitHubSyncModal && (
                       <button
                         onClick={() => {
                           onOpenGitHubSyncModal();
                           setToolsDropdownOpen(false);
                         }}
-                        className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group"
+                        className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group cursor-pointer"
                       >
                         <div className="flex items-center gap-2.5">
                           <div className="p-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-900">
@@ -323,7 +339,7 @@ export const Header: React.FC<HeaderProps> = ({
                           onOpenGithubGuide();
                           setToolsDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group"
+                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-left group cursor-pointer"
                       >
                         <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700">
                           <Github className="w-3.5 h-3.5" />
@@ -348,7 +364,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenContribute}
               id="header-contribute-btn"
-              className={`px-3 py-1.5 text-xs font-bold ${config.buttonBg} rounded-xl transition-all flex items-center gap-1.5 shadow-sm hover:scale-[1.02]`}
+              className={`px-3 py-1.5 text-xs font-bold ${config.buttonBg} rounded-xl transition-all flex items-center gap-1.5 shadow-sm hover:scale-[1.02] cursor-pointer`}
               title="Submit resource via UI or GitHub PR"
             >
               <PlusCircle className="w-3.5 h-3.5" />
@@ -360,11 +376,23 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Icon Controls */}
           <div className="flex items-center gap-1.5 shrink-0">
             
+            {/* Admin Portal Direct Icon if Authenticated */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/15 to-violet-500/15 hover:from-indigo-500/25 hover:to-violet-500/25 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 text-xs font-bold font-mono transition-all shadow-xs"
+                title="Admin Control Center (Authenticated)"
+              >
+                <ShieldAlert className="w-4 h-4 text-indigo-500 animate-pulse" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
+
             {/* Mobile Search Button */}
             <button
               onClick={onOpenSearch}
               id="header-mobile-search-btn"
-              className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700"
+              className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 cursor-pointer"
               aria-label="Search freebies"
             >
               <Search className="w-4 h-4" />
@@ -374,7 +402,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenBookmarks}
               id="header-bookmarks-btn"
-              className="relative p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 transition-colors"
+              className="relative p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 transition-colors cursor-pointer"
               aria-label="View Saved Bookmarks"
               title="Saved Bookmarks"
             >
@@ -391,7 +419,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={onOpenThemeSwitcher}
                 id="header-theme-switcher-btn"
-                className="p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 transition-colors"
+                className="p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 transition-colors cursor-pointer"
                 title="Change UI Theme & Accent Colors"
                 aria-label="Change Theme"
               >
@@ -403,7 +431,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={toggleDarkMode}
               id="header-dark-mode-toggle"
-              className="p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 transition-colors"
+              className="p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 hover:text-amber-500 border border-slate-200 dark:border-zinc-700 transition-colors cursor-pointer"
               aria-label={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
@@ -414,7 +442,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               id="header-mobile-menu-btn"
-              className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700"
+              className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 cursor-pointer"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -428,6 +456,23 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 space-y-2 transition-colors">
+          {/* Admin Control Center direct mobile card if authenticated */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between p-3 rounded-2xl bg-indigo-950/50 border border-indigo-800/80 text-indigo-300 text-xs font-bold shadow-md"
+            >
+              <div className="flex items-center gap-2.5">
+                <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                <span>Admin Control Center</span>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-900 text-indigo-200 uppercase tracking-wider">
+                Portal &rarr;
+              </span>
+            </Link>
+          )}
+
           <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-200 dark:border-zinc-800">
             <Link
               href="/explore"
@@ -454,7 +499,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenContribute();
                 setMobileMenuOpen(false);
               }}
-              className={`flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-semibold ${config.buttonBg}`}
+              className={`flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-semibold ${config.buttonBg} cursor-pointer`}
             >
               <PlusCircle className="w-4 h-4" />
               <span>Submit Resource</span>
@@ -465,7 +510,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenBeginnerGuide();
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700"
+              className="flex items-center justify-center gap-2 p-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 cursor-pointer"
             >
               <ShieldCheck className="w-4 h-4 text-amber-500" />
               <span>Beginner Setup</span>
@@ -478,7 +523,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenSeoStudio();
                 setMobileMenuOpen(false);
               }}
-              className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900"
+              className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 cursor-pointer"
             >
               <Globe className="w-4 h-4 text-indigo-500" />
               <span>SEO Meta &amp; Social Studio</span>
@@ -491,7 +536,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onOpenMarkdownEditor('streaming.md');
                 setMobileMenuOpen(false);
               }}
-              className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900"
+              className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 cursor-pointer"
             >
               <FileText className="w-4 h-4 text-rose-500" />
               <span>Markdown Studio (.md Editor)</span>
@@ -503,7 +548,7 @@ export const Header: React.FC<HeaderProps> = ({
               onOpenGithubGuide();
               setMobileMenuOpen(false);
             }}
-            className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
+            className="w-full flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer"
           >
             <Github className="w-4 h-4 text-slate-500 dark:text-zinc-400" />
             <span>GitHub Repository &amp; PR Workflow</span>

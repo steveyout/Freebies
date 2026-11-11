@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Category, LinkItem } from '@/types/fmhy';
 import { LinkCard } from './LinkCard';
 import { useTheme } from '@/context/ThemeContext';
 import { useModal } from '@/context/ModalContext';
+import { useSocket } from '@/hooks/useSocket';
 import { 
   Search, 
   Filter, 
@@ -18,7 +19,9 @@ import {
   Star, 
   X,
   Code2,
-  ArrowUpDown
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface ExploreClientProps {
@@ -35,6 +38,7 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
   const initialQuery = searchParams ? (searchParams.get('q') || '') : '';
 
   const { bookmarkedItems, toggleBookmark, openReportBroken } = useModal();
+  const { socket } = useSocket();
   const bookmarkedIds = useMemo(() => new Set(bookmarkedItems.map((i) => i.id)), [bookmarkedItems]);
 
   const [query, setQuery] = useState(initialQuery);
@@ -46,6 +50,24 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
   const [sortBy, setSortBy] = useState<'ranking' | 'name' | 'newest'>('ranking');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
+  // Dynamic overrides from database (for live starred priority and vote ranking)
+  const [dynamicOverrides, setDynamicOverrides] = useState<Map<string, any>>(new Map());
+
+  // Horizontal scroll container ref
+  const badgesScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollBadges = (offset: number) => {
+    if (badgesScrollRef.current) {
+      badgesScrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
+
+  const handleBadgesWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY !== 0 && badgesScrollRef.current) {
+      badgesScrollRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
   useEffect(() => {
     if (!searchParams) return;
     const q = searchParams.get('q');
@@ -54,8 +76,93 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
     }
   }, [searchParams]);
 
+  // Fetch live database resources to reflect stars & votes
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDynamicResources() {
+      try {
+        const res = await fetch('/api/resources');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.resources && isMounted) {
+            const map = new Map<string, any>();
+            data.resources.forEach((r: any) => {
+              map.set(r.id, r);
+            });
+            setDynamicOverrides(map);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load explore dynamic resources:', err);
+      }
+    }
+
+    loadDynamicResources();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Realtime updates for stars and scores
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleResourceUpdated = (updatedResource: any) => {
+      if (updatedResource?.id) {
+        setDynamicOverrides((prev) => {
+          const next = new Map(prev);
+          next.set(updatedResource.id, {
+            ...next.get(updatedResource.id),
+            ...updatedResource,
+          });
+          return next;
+        });
+      }
+    };
+
+    const handleVoteUpdated = (payload: any) => {
+      if (payload?.resourceId) {
+        setDynamicOverrides((prev) => {
+          const next = new Map(prev);
+          const current = next.get(payload.resourceId) || {};
+          next.set(payload.resourceId, {
+            ...current,
+            upvotesCount: payload.upvotesCount,
+            downvotesCount: payload.downvotesCount,
+            score: payload.score,
+          });
+          return next;
+        });
+      }
+    };
+
+    socket.on('resource_updated', handleResourceUpdated);
+    socket.on('vote_updated', handleVoteUpdated);
+
+    return () => {
+      socket.off('resource_updated', handleResourceUpdated);
+      socket.off('vote_updated', handleVoteUpdated);
+    };
+  }, [socket]);
+
+  // Merge static links with dynamic overrides
+  const mergedLinks = useMemo(() => {
+    return allFlatLinks.map((link) => {
+      const override = dynamicOverrides.get(link.id);
+      if (!override) return link;
+      return {
+        ...link,
+        isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : link.isStarred,
+        score: override.score !== undefined ? override.score : link.score,
+        upvotesCount: override.upvotesCount !== undefined ? override.upvotesCount : link.upvotesCount,
+        downvotesCount: override.downvotesCount !== undefined ? override.downvotesCount : link.downvotesCount,
+      };
+    });
+  }, [allFlatLinks, dynamicOverrides]);
+
   const filteredLinks = useMemo(() => {
-    let list = allFlatLinks;
+    let list = mergedLinks;
 
     if (selectedCat !== 'all') {
       list = list.filter((item) => item.category === selectedCat);
@@ -116,7 +223,7 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
 
       return 0;
     });
-  }, [allFlatLinks, selectedCat, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, query, sortBy]);
+  }, [mergedLinks, selectedCat, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, query, sortBy]);
 
   return (
     <div className="space-y-6">
@@ -143,34 +250,58 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
           )}
         </div>
 
-        {/* Categories Pill Selector */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+        {/* Categories Pill Selector with scroll controls */}
+        <div className="relative flex items-center group">
           <button
-            onClick={() => setSelectedCat('all')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
-              selectedCat === 'all'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
-                : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
+            type="button"
+            onClick={() => scrollBadges(-220)}
+            aria-label="Scroll left"
+            className="hidden sm:flex absolute left-0 z-10 w-6 h-6 -ml-2 items-center justify-center rounded-full bg-white/95 dark:bg-zinc-800/95 border border-slate-200 dark:border-zinc-700 shadow-md text-slate-600 dark:text-zinc-300 hover:text-amber-500 transition-opacity opacity-0 group-hover:opacity-100"
           >
-            All Categories ({allFlatLinks.length})
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          {categories.map((c) => {
-            const count = allFlatLinks.filter((l) => l.category === c.name).length;
-            return (
-              <button
-                key={c.id}
-                onClick={() => setSelectedCat(c.name)}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
-                  selectedCat === c.name
-                    ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
-                    : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                {c.name} ({count})
-              </button>
-            );
-          })}
+
+          <div 
+            ref={badgesScrollRef}
+            onWheel={handleBadgesWheel}
+            className="scroll-badges-container flex items-center gap-1.5 overflow-x-auto pb-1 text-xs w-full px-1"
+          >
+            <button
+              onClick={() => setSelectedCat('all')}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+                selectedCat === 'all'
+                  ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
+                  : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              All Categories ({mergedLinks.length})
+            </button>
+            {categories.map((c) => {
+              const count = mergedLinks.filter((l) => l.category === c.name).length;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setSelectedCat(c.name)}
+                  className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+                    selectedCat === c.name
+                      ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
+                      : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  {c.name} ({count})
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => scrollBadges(220)}
+            aria-label="Scroll right"
+            className="hidden sm:flex absolute right-0 z-10 w-6 h-6 -mr-2 items-center justify-center rounded-full bg-white/95 dark:bg-zinc-800/95 border border-slate-200 dark:border-zinc-700 shadow-md text-slate-600 dark:text-zinc-300 hover:text-amber-500 transition-opacity opacity-0 group-hover:opacity-100"
+          >
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* Feature Toggles & View Controls */}
@@ -230,64 +361,68 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
               onClick={() => setOnlySafe(!onlySafe)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors ${
                 onlySafe
-                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 text-emerald-700 dark:text-emerald-300 font-semibold'
+                  ? 'bg-teal-50 dark:bg-teal-950/40 border-teal-400 text-teal-700 dark:text-teal-300 font-semibold'
                   : 'border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-400 hover:border-slate-300'
               }`}
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <ShieldCheck className="w-3.5 h-3.5 text-teal-500" />
               <span>Safe Rating Only</span>
             </button>
           </div>
 
-          {/* View mode toggle */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800 p-1 rounded-lg border border-slate-200 dark:border-zinc-700">
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800 p-1 rounded-lg">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 shadow-2xs text-amber-500' : 'text-slate-500'}`}
+              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-zinc-700 text-amber-500 shadow-xs' : 'text-slate-400 hover:text-slate-600'}`}
               title="Grid View"
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('compact')}
-              className={`p-1.5 rounded ${viewMode === 'compact' ? 'bg-white dark:bg-zinc-700 shadow-2xs text-amber-500' : 'text-slate-500'}`}
+              className={`p-1.5 rounded ${viewMode === 'compact' ? 'bg-white dark:bg-zinc-700 text-amber-500 shadow-xs' : 'text-slate-400 hover:text-slate-600'}`}
               title="Compact View"
             >
               <List className="w-4 h-4" />
             </button>
           </div>
         </div>
-
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 px-1 font-mono">
+      <div className="flex items-center justify-between text-xs font-mono text-slate-500 px-1">
         <div>
-          Showing <span className="font-bold text-slate-900 dark:text-white">{filteredLinks.length}</span> of {allFlatLinks.length} resources (ranked by votes &amp; priority)
+          Showing <span className="font-bold text-slate-900 dark:text-white">{filteredLinks.length}</span> of {mergedLinks.length} resources
+          {selectedCat !== 'all' && <span> in <span className="text-amber-500 font-semibold">{selectedCat}</span></span>}
         </div>
-        {query && (
-          <button
-            onClick={() => setQuery('')}
-            className="text-amber-600 dark:text-amber-400 hover:underline"
-          >
-            Clear Search
-          </button>
-        )}
       </div>
 
-      {/* Links Grid / List */}
+      {/* Resource Cards */}
       {filteredLinks.length === 0 ? (
         <div className="p-12 text-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-3">
-          <Compass className="w-10 h-10 mx-auto text-slate-400" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            No matching resources found
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-sm mx-auto">
-            Try adjusting your search terms or unchecking some filter flags.
-          </p>
+          <p className="text-base font-semibold text-slate-800 dark:text-zinc-200">No resources found matching your criteria.</p>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">Try removing some filters or searching for different keywords.</p>
+          <button
+            onClick={() => {
+              setQuery('');
+              setSelectedCat('all');
+              setOnlyStarred(false);
+              setOnlyOpenSource(false);
+              setOnlyNoReg(false);
+              setOnlySafe(false);
+            }}
+            className="px-4 py-2 text-xs font-semibold rounded-lg bg-amber-500 text-slate-950 hover:bg-amber-400 transition-colors shadow-xs"
+          >
+            Reset All Filters
+          </button>
         </div>
       ) : (
-        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
+        <div className={
+          viewMode === 'grid'
+            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+            : 'space-y-3'
+        }>
           {filteredLinks.map((item) => (
             <LinkCard
               key={item.id}
@@ -295,6 +430,7 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
               isBookmarked={bookmarkedIds.has(item.id)}
               onToggleBookmark={toggleBookmark}
               onReportBroken={openReportBroken}
+              viewMode={viewMode}
             />
           ))}
         </div>

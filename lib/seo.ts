@@ -4,7 +4,7 @@ import { LinkItem } from '@/types/fmhy';
 export const SITE_CONFIG = {
   name: 'freebies',
   fullName: 'freebies Directory - Ultimate Free Media, Tools & Open Source Index',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://freebies.directory',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://freeebies.site',
   description: 'The ultimate curated mega-directory of free media, tools, HD streaming, open-source software, dev resources, and privacy guides. Verified daily with zero spam.',
   author: 'freebies Community',
   keywords: [
@@ -64,6 +64,15 @@ export function constructMetadata({
     alternates: {
       canonical: canonicalUrl,
     },
+    icons: {
+      icon: [
+        { url: '/favicon.svg', type: 'image/svg+xml' },
+        { url: '/icon', sizes: '32x32', type: 'image/png' },
+      ],
+      apple: [
+        { url: '/apple-icon', sizes: '180x180', type: 'image/png' },
+      ],
+    },
     robots: noIndex
       ? { index: false, follow: false }
       : {
@@ -121,73 +130,74 @@ export function getWebsiteJsonLd() {
     },
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${SITE_CONFIG.url}/explore?q={search_term_string}`,
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_CONFIG.url}/explore?q={search_term_string}`,
+      },
       'query-input': 'required name=search_term_string',
     },
   };
 }
 
-export function getBreadcrumbJsonLd(items: { name: string; url: string }[]) {
+export function getBreadcrumbJsonLd(breadcrumbs: { name: string; url: string }[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
+    itemListElement: breadcrumbs.map((crumb, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${SITE_CONFIG.url}${item.url}`,
+      name: crumb.name,
+      item: `${SITE_CONFIG.url}${crumb.url}`,
     })),
   };
 }
 
-export function getCollectionJsonLd(name: string, description: string, url: string, items: LinkItem[]) {
+export function getCollectionJsonLd(name: string, description: string, path: string, items: LinkItem[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name,
+    name: `${name} Directory`,
     description,
-    url: url.startsWith('http') ? url : `${SITE_CONFIG.url}${url}`,
+    url: `${SITE_CONFIG.url}${path}`,
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: items.length,
-      itemListElement: items.slice(0, 50).map((item, index) => ({
+      itemListElement: items.slice(0, 30).map((item, index) => ({
         '@type': 'ListItem',
         position: index + 1,
         name: item.title,
-        url: `${SITE_CONFIG.url}/resource/${item.id}`,
+        url: item.url,
         description: item.description,
       })),
     },
   };
 }
 
-export function getSoftwareApplicationJsonLd(item: LinkItem, categoryName: string) {
+export function getItemJsonLd(item: LinkItem, categoryName?: string) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'WebApplication',
+    '@type': 'SoftwareApplication',
     name: item.title,
-    url: item.url,
-    description: item.description,
-    applicationCategory: categoryName,
-    operatingSystem: 'Any',
+    applicationCategory: categoryName || item.category,
+    operatingSystem: 'All',
     offers: {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
     },
+    description: item.description,
+    url: item.url,
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: item.isStarred ? '4.9' : '4.6',
-      reviewCount: item.isStarred ? '128' : '42',
+      ratingCount: item.upvotesCount || 10,
       bestRating: '5',
       worstRating: '1',
     },
-    author: {
-      '@type': 'Organization',
-      name: item.addedBy || 'freebies Community',
-    },
   };
 }
+
+export const getSoftwareApplicationJsonLd = getItemJsonLd;
 
 export function getFaqJsonLd(faqs: { question: string; answer: string }[]) {
   return {

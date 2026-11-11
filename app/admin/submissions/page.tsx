@@ -18,8 +18,12 @@ import {
   ShieldCheck,
   Globe,
   Tag,
+  CheckSquare,
+  Square,
+  MinusSquare,
 } from 'lucide-react';
 import { useSocket } from '@/hooks/useSocket';
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 
 interface SubmissionItem {
   id: string;
@@ -50,7 +54,23 @@ export default function AdminSubmissionsPage() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'ui' | 'github_pr'>('all');
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<{ id: string; message: string; type: 'success' | 'error' } | null>(null);
+  const [feedback, setFeedback] = useState<{ id?: string; message: string; type: 'success' | 'error' } | null>(null);
+
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // ConfirmDialog state for reject actions
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    mode: 'single_reject' | 'bulk_reject';
+    targetId?: string;
+    targetTitle?: string;
+    reason: string;
+  }>({
+    isOpen: false,
+    mode: 'single_reject',
+    reason: '',
+  });
 
   const fetchSubmissions = async () => {
     try {
@@ -74,6 +94,7 @@ export default function AdminSubmissionsPage() {
 
   useEffect(() => {
     fetchSubmissions();
+    setSelectedIds(new Set()); // Reset selection on filter change
   }, [statusFilter, typeFilter, search]);
 
   // Real-time updates via Socket.IO
@@ -95,6 +116,32 @@ export default function AdminSubmissionsPage() {
     };
   }, [socket]);
 
+  // Bulk selection helpers
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === submissions.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(submissions.map((s) => s.id)));
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  // Single Approve
   const handleApprove = async (id: string, title: string) => {
     try {
       setActionLoading(id);
@@ -115,33 +162,112 @@ export default function AdminSubmissionsPage() {
     }
   };
 
-  const handleReject = async (id: string, title: string) => {
-    const reason = window.prompt(`Reason for rejecting "${title}" (optional):`);
-    if (reason === null) return; // User pressed cancel
+  // Open Reject Dialog
+  const openSingleReject = (id: string, title: string) => {
+    setConfirmState({
+      isOpen: true,
+      mode: 'single_reject',
+      targetId: id,
+      targetTitle: title,
+      reason: '',
+    });
+  };
+
+  const openBulkReject = () => {
+    if (selectedIds.size === 0) return;
+    setConfirmState({
+      isOpen: true,
+      mode: 'bulk_reject',
+      reason: '',
+    });
+  };
+
+  // Execute Reject
+  const handleConfirmReject = async () => {
+    if (confirmState.mode === 'single_reject' && confirmState.targetId) {
+      const id = confirmState.targetId;
+      try {
+        setActionLoading(id);
+        const res = await fetch(`/api/admin/submissions/${id}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: confirmState.reason || 'Declined by administrator.' }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setFeedback({ id, message: `Rejected "${confirmState.targetTitle}".`, type: 'success' });
+          fetchSubmissions();
+        } else {
+          setFeedback({ id, message: data.error || 'Failed to reject', type: 'error' });
+        }
+      } catch (err: any) {
+        setFeedback({ id, message: err.message || 'Error rejecting', type: 'error' });
+      } finally {
+        setActionLoading(null);
+        setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      }
+    } else if (confirmState.mode === 'bulk_reject') {
+      const ids = Array.from(selectedIds);
+      try {
+        setActionLoading('bulk');
+        const res = await fetch('/api/admin/submissions/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'reject',
+            ids,
+            reason: confirmState.reason || 'Bulk rejected by administrator.',
+          }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setFeedback({ message: `Successfully rejected ${data.processedCount || ids.length} submissions.`, type: 'success' });
+          setSelectedIds(new Set());
+          fetchSubmissions();
+        } else {
+          setFeedback({ message: data.error || 'Failed bulk rejection', type: 'error' });
+        }
+      } catch (err: any) {
+        setFeedback({ message: err.message || 'Error during bulk rejection', type: 'error' });
+      } finally {
+        setActionLoading(null);
+        setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      }
+    }
+  };
+
+  // Bulk Approve
+  const handleBulkApprove = async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
 
     try {
-      setActionLoading(id);
-      const res = await fetch(`/api/admin/submissions/${id}/reject`, {
+      setActionLoading('bulk');
+      const res = await fetch('/api/admin/submissions/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
+        body: JSON.stringify({ action: 'approve', ids }),
       });
       const data = await res.json();
       if (res.ok) {
-        setFeedback({ id, message: `Rejected "${title}".`, type: 'success' });
+        setFeedback({ message: `Successfully approved ${data.processedCount || ids.length} submissions to directory!`, type: 'success' });
+        setSelectedIds(new Set());
         fetchSubmissions();
       } else {
-        setFeedback({ id, message: data.error || 'Failed to reject', type: 'error' });
+        setFeedback({ message: data.error || 'Failed bulk approval', type: 'error' });
       }
     } catch (err: any) {
-      setFeedback({ id, message: err.message || 'Error rejecting', type: 'error' });
+      setFeedback({ message: err.message || 'Error during bulk approval', type: 'error' });
     } finally {
       setActionLoading(null);
     }
   };
 
+  const isAllSelected = submissions.length > 0 && selectedIds.size === submissions.length;
+  const isPartiallySelected = selectedIds.size > 0 && selectedIds.size < submissions.length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
@@ -174,6 +300,28 @@ export default function AdminSubmissionsPage() {
         </button>
       </div>
 
+      {/* Global Feedback Banner */}
+      {feedback && !feedback.id && (
+        <div
+          className={`p-3.5 rounded-2xl text-xs flex items-center justify-between gap-3 shadow-lg ${
+            feedback.type === 'success'
+              ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/80'
+              : 'bg-rose-950/80 text-rose-300 border border-rose-800/80'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span className="font-semibold">{feedback.message}</span>
+          </div>
+          <button
+            onClick={() => setFeedback(null)}
+            className="text-xs opacity-75 hover:opacity-100 underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
         {/* Status Tabs */}
@@ -198,8 +346,29 @@ export default function AdminSubmissionsPage() {
           ))}
         </div>
 
-        {/* Search & Type filter */}
-        <div className="flex items-center gap-2">
+        {/* Search, Type filter, Select All */}
+        <div className="flex flex-wrap items-center gap-2">
+          {submissions.length > 0 && (
+            <button
+              type="button"
+              onClick={handleSelectAll}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border transition-colors ${
+                isAllSelected
+                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {isAllSelected ? (
+                <CheckSquare className="w-3.5 h-3.5 text-amber-400" />
+              ) : isPartiallySelected ? (
+                <MinusSquare className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Square className="w-3.5 h-3.5" />
+              )}
+              <span>{isAllSelected ? 'Deselect All' : 'Select All'}</span>
+            </button>
+          )}
+
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as any)}
@@ -235,174 +404,257 @@ export default function AdminSubmissionsPage() {
             No submissions match the current filter.
           </div>
         ) : (
-          submissions.map((sub) => (
-            <div
-              key={sub.id}
-              className={`p-5 rounded-2xl bg-slate-900/90 border transition-all ${
-                sub.status === 'pending'
-                  ? 'border-amber-500/40 hover:border-amber-500/70 shadow-lg shadow-amber-500/5'
-                  : sub.status === 'approved'
-                  ? 'border-emerald-500/30 hover:border-emerald-500/50'
-                  : 'border-slate-800 opacity-70'
-              }`}
-            >
-              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                {/* Content details */}
-                <div className="space-y-2.5 flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    {/* Submission Type Badge */}
-                    {sub.submissionType === 'github_pr' ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-950/80 text-violet-300 border border-violet-800">
-                        <GitPullRequest className="w-3.5 h-3.5 text-violet-400" />
-                        GitHub Pull Request
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/80 text-blue-300 border border-blue-800">
-                        <Send className="w-3.5 h-3.5 text-blue-400" />
-                        Direct UI Submission
-                      </span>
-                    )}
-
-                    {/* Status Badge */}
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
-                        sub.status === 'pending'
-                          ? 'bg-amber-950 text-amber-300 border border-amber-800'
-                          : sub.status === 'approved'
-                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                          : 'bg-rose-950 text-rose-300 border border-rose-800'
+          submissions.map((sub) => {
+            const isSelected = selectedIds.has(sub.id);
+            return (
+              <div
+                key={sub.id}
+                className={`p-5 rounded-2xl bg-slate-900/90 border transition-all ${
+                  isSelected
+                    ? 'border-amber-500/80 bg-slate-900/95 ring-1 ring-amber-500/40 shadow-lg shadow-amber-500/10'
+                    : sub.status === 'pending'
+                    ? 'border-amber-500/40 hover:border-amber-500/70 shadow-lg shadow-amber-500/5'
+                    : sub.status === 'approved'
+                    ? 'border-emerald-500/30 hover:border-emerald-500/50'
+                    : 'border-slate-800 opacity-70'
+                }`}
+              >
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                  {/* Select Checkbox + Content details */}
+                  <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSelect(sub.id)}
+                      className={`mt-1 p-1 rounded-lg border transition-colors ${
+                        isSelected
+                          ? 'bg-amber-500 border-amber-500 text-slate-950 font-bold'
+                          : 'border-slate-700 hover:border-slate-500 text-transparent hover:text-slate-600 bg-slate-950/40'
                       }`}
+                      aria-label="Toggle selection"
                     >
-                      {sub.status}
-                    </span>
+                      <Check className="w-3.5 h-3.5" />
+                    </button>
 
-                    <span className="text-xs text-slate-400 font-medium">
-                      Category: <span className="text-slate-200 font-semibold">{sub.category}</span>
-                      {sub.subcategory && <span className="text-slate-500 font-mono"> / {sub.subcategory}</span>}
-                    </span>
+                    <div className="space-y-2.5 flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* Submission Type Badge */}
+                        {sub.submissionType === 'github_pr' ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-950/80 text-violet-300 border border-violet-800">
+                            <GitPullRequest className="w-3.5 h-3.5 text-violet-400" />
+                            GitHub Pull Request
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/80 text-blue-300 border border-blue-800">
+                            <Send className="w-3.5 h-3.5 text-blue-400" />
+                            Direct UI Submission
+                          </span>
+                        )}
 
-                    <span className="text-xs text-slate-500 font-mono">
-                      {new Date(sub.createdAt).toLocaleString()}
-                    </span>
-                  </div>
-
-                  {/* Title & Link */}
-                  <div>
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      <span>{sub.title}</span>
-                      <a
-                        href={sub.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 text-xs font-mono font-normal hover:underline"
-                        title="Open Resource URL"
-                      >
-                        <span>{sub.url}</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </h3>
-                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                      {sub.description}
-                    </p>
-                  </div>
-
-                  {/* GitHub PR URL if present */}
-                  {sub.githubPrUrl && (
-                    <div className="p-2.5 rounded-xl bg-violet-950/40 border border-violet-800/60 flex items-center justify-between text-xs text-violet-300">
-                      <div className="flex items-center gap-2">
-                        <GitPullRequest className="w-4 h-4 text-violet-400 shrink-0" />
-                        <span>Registered GitHub Pull Request URL:</span>
-                        <a
-                          href={sub.githubPrUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono underline text-violet-200 hover:text-white"
+                        {/* Status Badge */}
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+                            sub.status === 'pending'
+                              ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                              : sub.status === 'approved'
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                              : 'bg-rose-950 text-rose-300 border border-rose-800'
+                          }`}
                         >
-                          {sub.githubPrUrl}
-                        </a>
-                      </div>
-                      <ExternalLink className="w-3.5 h-3.5 text-violet-400" />
-                    </div>
-                  )}
-
-                  {/* Submitter & IP details */}
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400 pt-1 border-t border-slate-800/60 font-mono">
-                    <span>
-                      Submitted by: <strong className="text-slate-300">{sub.submitterName}</strong>
-                      {sub.submitterEmail ? ` (${sub.submitterEmail})` : ''}
-                    </span>
-                    <span>•</span>
-                    <span>IP: {sub.submitterIp || 'N/A'}</span>
-                    {sub.notes && (
-                      <>
-                        <span>•</span>
-                        <span className="text-amber-300">Note: {sub.notes}</span>
-                      </>
-                    )}
-                    {sub.reviewedBy && (
-                      <>
-                        <span>•</span>
-                        <span className="text-emerald-400">
-                          Reviewed by {sub.reviewedBy} at {new Date(sub.reviewedAt!).toLocaleDateString()}
+                          {sub.status}
                         </span>
+
+                        <span className="text-xs text-slate-400 font-medium">
+                          Category: <span className="text-slate-200 font-semibold">{sub.category}</span>
+                          {sub.subcategory && <span className="text-slate-500 font-mono"> / {sub.subcategory}</span>}
+                        </span>
+
+                        <span className="text-xs text-slate-500 font-mono">
+                          {new Date(sub.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+
+                      {/* Title & Link */}
+                      <div>
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                          <span>{sub.title}</span>
+                          <a
+                            href={sub.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 text-xs font-mono font-normal hover:underline"
+                            title="Open Resource URL"
+                          >
+                            <span>{sub.url}</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </h3>
+                        <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                          {sub.description}
+                        </p>
+                      </div>
+
+                      {/* GitHub PR URL if present */}
+                      {sub.githubPrUrl && (
+                        <div className="p-2.5 rounded-xl bg-violet-950/40 border border-violet-800/60 flex items-center justify-between text-xs text-violet-300">
+                          <div className="flex items-center gap-2">
+                            <GitPullRequest className="w-4 h-4 text-violet-400 shrink-0" />
+                            <span>Registered GitHub Pull Request URL:</span>
+                            <a
+                              href={sub.githubPrUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono underline text-violet-200 hover:text-white"
+                            >
+                              {sub.githubPrUrl}
+                            </a>
+                          </div>
+                          <ExternalLink className="w-3.5 h-3.5 text-violet-400" />
+                        </div>
+                      )}
+
+                      {/* Submitter & IP details */}
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400 pt-1 border-t border-slate-800/60 font-mono">
+                        <span>
+                          Submitted by: <strong className="text-slate-300">{sub.submitterName}</strong>
+                          {sub.submitterEmail ? ` (${sub.submitterEmail})` : ''}
+                        </span>
+                        <span>&bull;</span>
+                        <span>IP: {sub.submitterIp || 'N/A'}</span>
+                        {sub.notes && (
+                          <>
+                            <span>&bull;</span>
+                            <span className="text-amber-300">Note: {sub.notes}</span>
+                          </>
+                        )}
+                        {sub.reviewedBy && (
+                          <>
+                            <span>&bull;</span>
+                            <span className="text-emerald-400">
+                              Reviewed by {sub.reviewedBy} at {new Date(sub.reviewedAt!).toLocaleDateString()}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
+                    <a
+                      href={sub.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                      title="Test Link before approving"
+                    >
+                      <span>Test Link</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+
+                    {sub.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => handleApprove(sub.id, sub.title)}
+                          disabled={actionLoading === sub.id}
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          <Check className="w-4 h-4" />
+                          <span>{actionLoading === sub.id ? 'Publishing...' : 'Approve & Publish'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => openSingleReject(sub.id, sub.title)}
+                          disabled={actionLoading === sub.id}
+                          className="px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-800/80 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          <span>Reject</span>
+                        </button>
                       </>
                     )}
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
-                  <a
-                    href={sub.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                    title="Test Link before approving"
+                {feedback && feedback.id === sub.id && (
+                  <div
+                    className={`mt-3 p-2.5 rounded-xl text-xs flex items-center gap-2 ${
+                      feedback.type === 'success'
+                        ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
+                        : 'bg-rose-950/80 text-rose-300 border border-rose-800'
+                    }`}
                   >
-                    <span>Test Link</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-
-                  {sub.status === 'pending' && (
-                    <>
-                      <button
-                        onClick={() => handleApprove(sub.id, sub.title)}
-                        disabled={actionLoading === sub.id}
-                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition-all disabled:opacity-50"
-                      >
-                        <Check className="w-4 h-4" />
-                        <span>{actionLoading === sub.id ? 'Publishing...' : 'Approve & Publish'}</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleReject(sub.id, sub.title)}
-                        disabled={actionLoading === sub.id}
-                        className="px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-800/80 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
-                      >
-                        <XCircle className="w-3.5 h-3.5" />
-                        <span>Reject</span>
-                      </button>
-                    </>
-                  )}
-                </div>
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{feedback.message}</span>
+                  </div>
+                )}
               </div>
-
-              {feedback && feedback.id === sub.id && (
-                <div
-                  className={`mt-3 p-2.5 rounded-xl text-xs flex items-center gap-2 ${
-                    feedback.type === 'success'
-                      ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
-                      : 'bg-rose-950/80 text-rose-300 border border-rose-800'
-                  }`}
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{feedback.message}</span>
-                </div>
-              )}
-            </div>
-          ))
+            );
+          })
         )}
       </div>
+
+      {/* Floating Sticky Bulk Actions Bar */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 border border-slate-700/80 shadow-2xl backdrop-blur-md rounded-2xl px-5 py-3.5 flex items-center gap-4 text-xs animate-in slide-in-from-bottom duration-200">
+          <div className="flex items-center gap-2 pr-3 border-r border-slate-700">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+            <span className="font-bold text-white">
+              {selectedIds.size} <span className="font-normal text-slate-300">selected</span>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleBulkApprove}
+              disabled={actionLoading === 'bulk'}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-md shadow-emerald-600/30 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Bulk Approve ({selectedIds.size})</span>
+            </button>
+
+            <button
+              onClick={openBulkReject}
+              disabled={actionLoading === 'bulk'}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold shadow-md shadow-rose-600/30 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <XCircle className="w-3.5 h-3.5" />
+              <span>Bulk Reject ({selectedIds.size})</span>
+            </button>
+
+            <button
+              onClick={handleClearSelection}
+              disabled={actionLoading === 'bulk'}
+              className="px-3 py-2 rounded-xl text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Styled Rejection ConfirmDialog */}
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={handleConfirmReject}
+        title={confirmState.mode === 'single_reject' ? 'Reject Submission' : 'Bulk Reject Submissions'}
+        description={
+          confirmState.mode === 'single_reject'
+            ? 'Are you sure you want to decline this submission? You can specify a rejection reason for audit records.'
+            : `Are you sure you want to decline all ${selectedIds.size} selected submissions?`
+        }
+        itemTitle={confirmState.targetTitle}
+        confirmText="Confirm Rejection"
+        cancelText="Cancel"
+        type="danger"
+        isLoading={actionLoading === (confirmState.targetId || 'bulk')}
+        hasInput={true}
+        inputLabel="Reason for Rejection (Optional)"
+        inputPlaceholder="e.g. Broken link, duplicates existing resource, inappropriate content..."
+        inputValue={confirmState.reason}
+        onInputChange={(val) => setConfirmState((prev) => ({ ...prev, reason: val }))}
+      />
     </div>
   );
 }
