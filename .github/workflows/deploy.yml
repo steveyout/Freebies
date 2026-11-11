@@ -43,4 +43,11 @@ jobs:
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
-        run: python deploy/deploy.py
+        run: |
+          python deploy/deploy.py 2>&1 | tee deploy_execution.log
+          EXIT_STATUS=${PIPESTATUS[0]}
+          echo "### 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat deploy_execution.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_STATUS
