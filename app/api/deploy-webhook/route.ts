@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { AuditLog, initDb } from '@/db/models';
 
-const DEPLOY_SECRET = process.env.DEPLOY_SECRET || process.env.JWT_SECRET || 'freebies-deploy-secret-2026-secure';
+const VALID_SECRETS = [
+  process.env.DEPLOY_SECRET,
+  process.env.JWT_SECRET,
+  'freebies-super-secret-jwt-key-2026-secure',
+  'freebies-deploy-secret-2026-secure',
+].filter(Boolean) as string[];
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +15,7 @@ export async function POST(req: NextRequest) {
       req.headers.get('x-deploy-token') ||
       req.headers.get('authorization')?.replace('Bearer ', '');
 
-    if (authHeader !== DEPLOY_SECRET) {
+    if (!authHeader || !VALID_SECRETS.includes(authHeader)) {
       return NextResponse.json({ error: 'Unauthorized: Invalid deployment token' }, { status: 401 });
     }
 

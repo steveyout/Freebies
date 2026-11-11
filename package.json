@@ -9,8 +9,8 @@
     "build": "next build",
     "start": "node server.mjs",
     "lint": "next lint",
-    "seed": "pnpm tsx db/seedRunner.ts",
-    "db:sync": "pnpm tsx db/syncResources.ts"
+    "seed": "tsx db/seedRunner.ts",
+    "db:sync": "tsx db/syncResources.ts"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.14",
@@ -32,7 +32,9 @@
     "socket.io": "^4.8.4",
     "socket.io-client": "^4.8.4",
     "sqlite3": "^6.0.1",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.23.15",
+    "typescript": "~5.8.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
@@ -40,8 +42,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",
     "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "tsx": "^4.23.15",
-    "typescript": "~5.8.2"
+    "@types/react-dom": "^19.0.4"
   }
 }
