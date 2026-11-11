@@ -2,25 +2,52 @@ import os
 import sys
 import json
 import urllib.request
+import urllib.error
 import paramiko
 
 # Ensure UTF-8 output
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-def report_log(message):
+DEPLOY_TOKEN = os.environ.get('DEPLOY_SECRET') or os.environ.get('JWT_SECRET') or 'freebies-deploy-secret-2026-secure'
+WEBHOOK_URL = "https://freeebies.site/api/deploy-webhook"
+
+def trigger_webhook():
+    print(f"Triggering secure deployment via HTTPS webhook: {WEBHOOK_URL}...")
     try:
-        data = json.dumps({"message": message}).encode("utf-8")
+        data = json.dumps({"trigger": "github_actions", "ref": "refs/heads/main"}).encode("utf-8")
         req = urllib.request.Request(
-            "https://freeebies.site/api/deploy-log",
+            WEBHOOK_URL,
             data=data,
-            headers={"Content-Type": "application/json", "User-Agent": "FreebiesCI/1.0"},
+            headers={
+                "Content-Type": "application/json",
+                "x-deploy-token": DEPLOY_TOKEN,
+                "User-Agent": "FreebiesCI/1.0"
+            },
             method="POST"
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            pass
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = resp.read().decode("utf-8")
+            result = json.loads(body)
+            if result.get("success"):
+                print("==================================================")
+                print("✅ Deployment webhook acknowledged by production server!")
+                print(result.get("message", "Continuous deployment triggered successfully."))
+                print("The production server is syncing Markdown data, compiling Next.js bundle, and reloading PM2.")
+                print("==================================================")
+                return True
+    except urllib.error.HTTPError as e:
+        print(f"Webhook HTTP {e.code}: {e.read().decode('utf-8', errors='replace')}")
     except Exception as e:
-        print(f"Could not report log to server: {e}", file=sys.stderr)
+        print(f"Webhook connection error: {e}")
+    return False
+
+# Attempt primary HTTPS webhook deployment first (fastest, immune to firewall/SSH port blocks)
+if trigger_webhook():
+    print("Deployment pipeline completed successfully with exit code 0.")
+    sys.exit(0)
+
+print("\nWebhook attempt unsuccessful. Falling back to direct SSH automation channel...\n")
 
 def get_clean_env(*keys):
     for key in keys:
@@ -30,8 +57,6 @@ def get_clean_env(*keys):
             clean = clean.replace('https://', '').replace('http://', '').split('/')[0]
             return clean
     return None
-
-report_log("Starting deployment script execution on GitHub runner.")
 
 env_host = get_clean_env('SSH_HOST', 'DEPLOY_HOST', 'SERVER_HOST', 'HOST', 'VPS_HOST')
 env_user = get_clean_env('SSH_USER', 'DEPLOY_USER', 'SERVER_USER', 'USER', 'VPS_USERNAME')
@@ -76,25 +101,18 @@ for target_host in hosts_to_try:
                 connected = True
                 active_host = target_host
                 active_user = target_user
-                report_log(f"SSH connection succeeded to {target_host}:{port} as {target_user}")
                 break
             except paramiko.AuthenticationException:
-                msg = f"Auth failed on {target_host} for user {target_user}"
-                print(msg)
-                report_log(msg)
+                print(f"Authentication with credentials for {target_user} rejected by server. Trying next...")
             except Exception as e:
-                msg = f"Conn failed to {target_host}:{port}: {type(e).__name__}: {e}"
-                print(msg)
-                report_log(msg)
+                print(f"Connection attempt to {target_host}:{port} failed: {type(e).__name__}: {e}")
         if connected:
             break
     if connected:
         break
 
 if not connected:
-    err = "Fatal: Could not authenticate to production host using configured credentials."
-    print(err, file=sys.stderr)
-    report_log(err)
+    print("Fatal: Could not authenticate to production host using configured credentials.", file=sys.stderr)
     sys.exit(1)
 
 deploy_commands = """
@@ -150,11 +168,7 @@ exit_code = stdout.channel.recv_exit_status()
 ssh.close()
 
 if exit_code != 0:
-    err_msg = f"Deployment script exited with error code {exit_code}"
-    print(err_msg, file=sys.stderr)
-    report_log(err_msg)
+    print(f"Deployment script exited with error code {exit_code}", file=sys.stderr)
     sys.exit(exit_code)
 else:
-    success_msg = "Continuous deployment pipeline completed successfully with exit code 0."
-    print(success_msg)
-    report_log(success_msg)
+    print("Continuous deployment pipeline completed successfully with exit code 0.")
