@@ -1,4 +1,4 @@
-name: Deploy to VPS (BunkerWeb + Next.js)
+name: Deploy to Production
 
 on:
   push:
@@ -15,24 +15,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy-to-vps:
+  deploy:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger VPS Update & Safe Database Sync
+      - name: Deploy Application
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_HOST || '157.173.125.157' }}
-          username: ${{ secrets.VPS_USERNAME || 'steveyout' }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
+          host: ${{ secrets.DEPLOY_HOST || secrets.SERVER_HOST || secrets.SSH_HOST || secrets.HOST || secrets.VPS_HOST || '157.173.125.157' }}
+          username: ${{ secrets.DEPLOY_USER || secrets.SSH_USER || secrets.SSH_USERNAME || secrets.USERNAME || secrets.VPS_USERNAME || 'steveyout' }}
+          password: ${{ secrets.DEPLOY_PASSWORD || secrets.SSH_PASSWORD || secrets.PASSWORD || secrets.VPS_PASSWORD || 'bxw30RpaZdRYLQaQ' }}
+          port: ${{ secrets.DEPLOY_PORT || secrets.SSH_PORT || secrets.PORT || secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
             set -e
             echo "🚀 Starting automated deployment for freeebies.site..."
 
-            # Ensure PATH includes node, pnpm, git, and pm2 for non-interactive shells
             export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$HOME/.local/share/pnpm:$HOME/.npm-global/bin:$PATH:/usr/local/bin:/usr/bin:/bin"
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true
@@ -40,9 +38,8 @@ jobs:
             APP_DIR="${APP_DIR:-$HOME/streaming/freebies}"
             mkdir -p "$HOME/streaming"
 
-            # Ensure deployment target directory exists
             if [ ! -d "$APP_DIR" ]; then
-              echo "📁 Creating streaming/freebies directory at $APP_DIR..."
+              echo "📁 Creating application directory at $APP_DIR..."
               git clone https://github.com/steveyout/Freebies.git "$APP_DIR"
             fi
 
@@ -52,7 +49,6 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            # Ensure .env exists with production secrets
             if [ ! -f ".env" ]; then
               cp .env.example .env
             fi
@@ -60,26 +56,18 @@ jobs:
             echo "📦 Installing production dependencies via pnpm..."
             pnpm install
 
-            echo "🔄 Safely syncing markdown resources into production DB (preserving votes & comments)..."
+            echo "🔄 Safely syncing markdown resources into database..."
             node --env-file=.env ./node_modules/tsx/dist/cli.mjs db/syncResources.ts || true
 
-            echo "🏗️ Compiling Next.js App Router bundle..."
+            echo "🏗️ Compiling Next.js production bundle..."
             pnpm run build
 
-            echo "⚡ Restarting / reloading PM2 process..."
+            echo "⚡ Reloading PM2 process..."
             if pm2 list | grep -q "freebies"; then
               pm2 reload deploy/ecosystem.config.cjs --update-env
             else
               pm2 start deploy/ecosystem.config.cjs
             fi
             pm2 save
-
-            echo "🛡️ Refreshing BunkerWeb configuration..."
-            if [ -d "/etc/bunkerweb/configs" ]; then
-              sudo cp bunkerweb/freeebies.site.conf /etc/bunkerweb/configs/freeebies.site.conf 2>/dev/null || cp bunkerweb/freeebies.site.conf /etc/bunkerweb/configs/freeebies.site.conf 2>/dev/null || true
-              if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet bunkerweb; then
-                sudo systemctl reload bunkerweb 2>/dev/null || true
-              fi
-            fi
 
             echo "🎉 Continuous Deployment successfully finished!"

@@ -12,3 +12,4 @@ coverage/
 *.tsbuildinfo
 *.sqlite
 *.sqlite-journal
+bunkerweb/

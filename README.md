@@ -1,26 +1,27 @@
-# 🎁 freebies Directory
-
-> The modern community mega-directory for curated free media, HD streaming indexers, open-source software, developer tools, adblocking shields, and AI utilities.
-
-[![Website](https://img.shields.io/badge/Website-freeebies.site-f59e0b?style=for-the-badge&logo=google-chrome&logoColor=white)](https://freeebies.site)
-[![Next.js](https://img.shields.io/badge/Next.js-15.2.1-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+<div align="center">
+  <h1>🎁 Freebies Directory</h1>
+  <p><strong>A curated, high-performance web directory of verified free tools, open-source software, streaming platforms, AI utilities, and internet privacy resources.</strong></p>
+  <p>
+    <a href="https://freeebies.site"><strong>freeebies.site</strong></a> •
+    <a href="https://freeebies.site/contribute">Submit a Resource</a> •
+    <a href="#-how-to-contribute-resources">Contribute via GitHub</a> •
+    <a href="https://freeebies.site/explore">Explore Directory</a>
+  </p>
+</div>
 
 ---
 
-## 🌟 Key Highlights & Architecture
+## 🌟 Highlights & Features
 
-- **Hybrid Submission Model**: Contributors can submit resources either directly via the web UI (`/contribute`) or by opening a GitHub Pull Request editing repository Markdown files (`data/*.md`).
-- **Real-Time Synchronized Directory**: Live votes, new submissions, priority stars, and comments sync instantly across clients using native **Socket.IO** streams.
-- **Dynamic Star Priority & IP Voting**: Resources are ranked by algorithmic community score (`score = upvotes - downvotes`). Administrators can 1-click star priority resources (e.g. FlixHQ, CineJoy, uBlock Origin) to pin them on top.
-- **Zero-Stall Markdown Synchronization**:
-  - Edits to `data/*.md` in GitHub PRs are automatically parsed into UI cards and synced to production MySQL on deployment.
+- **Modern Tech Stack**: Next.js 15 (App Router), React 19, Tailwind CSS, Lucide Icons.
+- **Robust Persistence**: MySQL / MariaDB via Sequelize ORM with local SQLite support for rapid offline development.
+- **Real-Time Synchronization**: Live WebSockets (Socket.IO) updating client cards, voting counters, and admin metrics in real time.
+- **Hybrid Submission Pipeline**:
+  - Users can submit links via the public [Contribute Portal](https://freeebies.site/contribute) or by submitting Pull Requests to repository Markdown files (`data/*.md`).
   - Submissions approved in the Admin Panel automatically append new rows to their respective Markdown files (`data/<category>.md`) to keep the Git history and database 100% congruent.
-- **Enterprise Security & Cloud Deployment**:
-  - Fully proxied behind BunkerWeb WAF and Cloudflare SSL.
-  - Automated Continuous Deployment pipeline running via GitHub Actions directly to Ubuntu VPS with PM2 cluster reload.
+- **Enterprise Security & Production Deployment**:
+  - Protected by Cloudflare SSL, HTTP-Only SameSite strict cookies, brute-force rate limiters, and CSRF origin guards.
+  - Automated Continuous Deployment pipeline running via GitHub Actions directly to production with PM2 cluster reload.
 
 ---
 
@@ -33,6 +34,7 @@ Freebies/
 │   │   ├── categories/            # Category & subcategory manager + Markdown sync editor
 │   │   ├── comments/              # Moderation queue for discussions & team notes
 │   │   ├── resources/             # Dynamic catalog manager, star pinning & voting
+│   │   ├── settings/              # Security hardening metrics, audit logs & change password
 │   │   ├── submissions/           # Hybrid queue: UI & GitHub PR approvals
 │   │   └── votes/                 # IP audit log & vote fraud prevention
 │   ├── api/                       # REST endpoints & Socket.IO handlers
@@ -55,13 +57,13 @@ Freebies/
 │   ├── software.md                # Free & open-source software (FOSS)
 │   └── ai-tools.md                # Free LLMs, local runners (Ollama, LM Studio)
 ├── db/                            # Sequelize ORM & MySQL database models
-│   ├── models/                    # Resource, Submission, Comment, Vote, AuditLog
+│   ├── models/                    # Resource, Submission, Comment, Vote, User, AuditLog
 │   ├── connection.ts              # Connection pooling & dialect setup
 │   └── syncResources.ts           # Safe zero-data-loss database sync script
 ├── deploy/                        # Production deployment configuration
 │   └── ecosystem.config.cjs       # PM2 cluster configuration
 └── .github/workflows/             # Continuous Deployment workflows
-    └── deploy.yml                 # Automated zero-downtime VPS deployment
+    └── deploy.yml                 # Automated zero-downtime production deployment
 ```
 
 ---
@@ -151,7 +153,7 @@ We welcome all community contributions! There are two ways to submit new tools, 
 
 ## 🛡️ Admin Panel & Management Console
 
-The administration dashboard is protected by JWT authentication and bcrypt password hashing.
+The administration dashboard is protected by JWT authentication, bcrypt password hashing, sliding-window rate limiters, and CSRF protection.
 
 - **URL**: `/admin`
 - **Features**:
@@ -159,6 +161,7 @@ The administration dashboard is protected by JWT authentication and bcrypt passw
   - **Categories & Markdown Sync**: Create/delete categories, add subcategories, and edit `data/*.md` files with in-browser syntax highlighting and live database sync.
   - **Dynamic Resources**: 1-click star toggle for top priority pinning, full metadata editor, and bulk delete with vote cleanup.
   - **Comment Moderation**: Moderate community discussion threads and private team feedback notes.
+  - **Security & Settings**: Change administrator password with real-time strength validation, inspect brute-force rate limit status, and monitor security audit logs.
 
 ---
 

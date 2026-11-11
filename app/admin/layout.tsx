@@ -20,6 +20,7 @@ import {
   Sparkles,
   Layers,
   FolderTree,
+  Settings,
 } from 'lucide-react';
 import { useSocket } from '@/hooks/useSocket';
 
@@ -262,6 +263,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         type: 'neutral',
       } : null,
     },
+    {
+      label: 'Security & Settings',
+      href: '/admin/settings',
+      icon: ShieldCheck,
+      badge: null,
+    },
   ];
 
   const renderNavLinks = (isDrawerMobile: boolean = false) => {
@@ -371,14 +378,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
 
-          {/* User profile dropdown / logout */}
+          {/* User profile dropdown / settings / logout */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
-            <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold text-slate-200">
-              {user?.username ? user.username[0].toUpperCase() : 'A'}
-            </div>
-            <span className="hidden lg:inline text-xs font-medium text-slate-300">
-              {user?.username || 'Admin'}
-            </span>
+            <Link
+              href="/admin/settings"
+              className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-slate-800/70 text-slate-300 hover:text-white transition-colors"
+              title="Security &amp; Password Settings"
+            >
+              <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold text-slate-200">
+                {user?.username ? user.username[0].toUpperCase() : 'A'}
+              </div>
+              <span className="hidden lg:inline text-xs font-medium">
+                {user?.username || 'Admin'}
+              </span>
+              <Settings className="w-3.5 h-3.5 text-slate-400 hover:text-slate-200" />
+            </Link>
+
             <button
               onClick={handleLogout}
               className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors cursor-pointer"
@@ -421,14 +436,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Desktop Nav Links */}
           {renderNavLinks(false)}
 
-          {/* Bottom Version / Audit Badge */}
+          {/* Bottom Version / Security Badge */}
           {!isCollapsed && (
             <div className="p-4 border-t border-slate-800/80 text-[11px] font-mono text-slate-400 space-y-1">
               <div className="flex items-center justify-between text-slate-400">
                 <span>Freebies Engine</span>
                 <span className="text-emerald-400 font-bold">v1.0.0</span>
               </div>
-              <p className="text-[10px] text-slate-400">Sequelize MySQL + Socket.IO</p>
+              <p className="text-[10px] text-slate-500">Security Hardened &bull; Bcrypt 12</p>
             </div>
           )}
         </aside>
