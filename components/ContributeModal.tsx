@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Category, LinkItem, SafetyRating } from '../types/fmhy';
 import { 
   GitPullRequest, 
@@ -36,11 +36,13 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
   const [activeTab, setActiveTab] = useState<'ui' | 'github_pr'>('ui');
 
   // Form State
+  const [liveCategories, setLiveCategories] = useState<Category[]>(categories);
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCatId, setSelectedCatId] = useState(categories[0]?.id || 'adblocking');
   const [selectedSubId, setSelectedSubId] = useState(categories[0]?.subcategories[0]?.name || 'Extensions');
+  const [safetyRating, setSafetyRating] = useState<SafetyRating>('Safe');
   const [tags, setTags] = useState('Open Source, Free, No Ads');
   const [submitterName, setSubmitterName] = useState('');
   const [submitterEmail, setSubmitterEmail] = useState('');
@@ -52,13 +54,52 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedSnippet, setCopiedSnippet] = useState(false);
 
-  const selectedCategoryObj = categories.find((c) => c.id === selectedCatId) || categories[0];
+  // Sync with live categories (including admin-created categories/subcategories)
+  useEffect(() => {
+    if (!isOpen) return;
+    let isMounted = true;
+    fetch('/api/admin/categories')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted || !data?.categories || !Array.isArray(data.categories)) return;
+        const mergedMap = new Map<string, Category>();
+        categories.forEach((c) => mergedMap.set(c.id, c));
+        data.categories.forEach((c: Category) => {
+          const existing = mergedMap.get(c.id);
+          if (!existing) {
+            mergedMap.set(c.id, c);
+          } else {
+            const subMap = new Map(existing.subcategories.map((s) => [s.name.toLowerCase(), s]));
+            (c.subcategories || []).forEach((s) => {
+              if (!subMap.has(s.name.toLowerCase())) {
+                subMap.set(s.name.toLowerCase(), s);
+              }
+            });
+            mergedMap.set(c.id, { ...existing, ...c, subcategories: Array.from(subMap.values()) });
+          }
+        });
+        setLiveCategories(Array.from(mergedMap.values()));
+      })
+      .catch(() => {
+        // Fallback to prop categories
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, categories]);
+
+  const selectedCategoryObj = useMemo(
+    () => liveCategories.find((c) => c.id === selectedCatId) || liveCategories[0],
+    [liveCategories, selectedCatId]
+  );
 
   const handleCatChange = (catId: string) => {
     setSelectedCatId(catId);
-    const cat = categories.find((c) => c.id === catId);
-    if (cat && cat.subcategories.length > 0) {
+    const cat = liveCategories.find((c) => c.id === catId);
+    if (cat && cat.subcategories && cat.subcategories.length > 0) {
       setSelectedSubId(cat.subcategories[0].name);
+    } else {
+      setSelectedSubId('General');
     }
   };
 
@@ -118,7 +159,10 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
           submitterName: submitterName.trim() || 'Community Contributor',
           submitterEmail: submitterEmail.trim() || null,
           githubPrUrl: githubPrUrl.trim() || null,
-          notes: notes.trim() || null,
+          notes: [
+            safetyRating !== 'Safe' ? `Safety Rating: ${safetyRating}` : '',
+            notes.trim(),
+          ].filter(Boolean).join(' | ') || null,
         }),
       });
 
@@ -290,7 +334,7 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
                   Category *
@@ -300,8 +344,8 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
                   onChange={(e) => handleCatChange(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
+                  {liveCategories.map((c) => (
+                    <option key={c.id} value={c.id} className="bg-white dark:bg-zinc-900">
                       {c.name}
                     </option>
                   ))}
@@ -310,18 +354,41 @@ export const ContributeModal: React.FC<ContributeModalProps> = ({
 
               <div>
                 <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                  Subcategory / Section
+                  Subcategory / Section *
                 </label>
                 <select
                   value={selectedSubId}
                   onChange={(e) => setSelectedSubId(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
-                  {selectedCategoryObj?.subcategories.map((sub) => (
-                    <option key={sub.id} value={sub.name}>
-                      {sub.name}
+                  {selectedCategoryObj?.subcategories && selectedCategoryObj.subcategories.length > 0 ? (
+                    selectedCategoryObj.subcategories.map((sub) => (
+                      <option key={sub.id} value={sub.name} className="bg-white dark:bg-zinc-900">
+                        {sub.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="General" className="bg-white dark:bg-zinc-900">
+                      General
                     </option>
-                  ))}
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
+                  Safety Rating
+                </label>
+                <select
+                  value={safetyRating}
+                  onChange={(e) => setSafetyRating(e.target.value as SafetyRating)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+                  <option value="Safe" className="bg-white dark:bg-zinc-900">Safe</option>
+                  <option value="Use Adblock" className="bg-white dark:bg-zinc-900">Use Adblock</option>
+                  <option value="Requires Registration" className="bg-white dark:bg-zinc-900">Requires Registration</option>
+                  <option value="Freemium" className="bg-white dark:bg-zinc-900">Freemium</option>
+                  <option value="Torrent" className="bg-white dark:bg-zinc-900">Torrent</option>
                 </select>
               </div>
             </div>

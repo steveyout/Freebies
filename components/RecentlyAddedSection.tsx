@@ -1,30 +1,119 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { LinkItem } from '../types/fmhy';
 import { Sparkles, ExternalLink, Calendar, User, Copy, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useSocket } from '../hooks/useSocket';
 
 interface RecentlyAddedSectionProps {
   links: LinkItem[];
   onOpenContributorProfile?: (username: string) => void;
 }
 
+type LinkWithTimestamp = LinkItem & { createdAt?: string | number };
+
 export const RecentlyAddedSection: React.FC<RecentlyAddedSectionProps> = ({
   links,
   onOpenContributorProfile,
 }) => {
   const { config } = useTheme();
+  const { socket } = useSocket();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [dbResources, setDbResources] = useState<LinkWithTimestamp[]>([]);
 
-  // Take top 5 sorted by dateAdded or fallback insertion
-  const sortedLinks = [...links]
-    .sort((a, b) => {
-      const dateA = a.dateAdded || '2026-07-01';
-      const dateB = b.dateAdded || '2026-07-01';
-      return dateB.localeCompare(dateA);
-    })
-    .slice(0, 5);
+  useEffect(() => {
+    let isMounted = true;
+    const loadResources = async () => {
+      try {
+        const res = await fetch('/api/resources');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isMounted && Array.isArray(data?.resources)) {
+          setDbResources(data.resources);
+        }
+      } catch {
+        // Fallback to static links prop
+      }
+    };
+
+    loadResources();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleCreated = (resource: LinkWithTimestamp) => {
+      if (!resource?.id) return;
+      setDbResources((prev) => [resource, ...prev.filter((r) => r.id !== resource.id)]);
+    };
+
+    const handleUpdated = (resource: LinkWithTimestamp) => {
+      if (!resource?.id) return;
+      setDbResources((prev) =>
+        prev.some((r) => r.id === resource.id)
+          ? prev.map((r) => (r.id === resource.id ? { ...r, ...resource } : r))
+          : [resource, ...prev]
+      );
+    };
+
+    const handleDeleted = (payload: { id: string }) => {
+      if (!payload?.id) return;
+      setDbResources((prev) => prev.filter((r) => r.id !== payload.id));
+    };
+
+    socket.on('resource_created', handleCreated);
+    socket.on('resource_updated', handleUpdated);
+    socket.on('resource_deleted', handleDeleted);
+
+    return () => {
+      socket.off('resource_created', handleCreated);
+      socket.off('resource_updated', handleUpdated);
+      socket.off('resource_deleted', handleDeleted);
+    };
+  }, [socket]);
+
+  // Merge static links with live DB resources and take top 5 newest
+  const sortedLinks = useMemo(() => {
+    const mergedMap = new Map<string, LinkWithTimestamp>();
+    const urlToId = new Map<string, string>();
+
+    for (const item of links) {
+      mergedMap.set(item.id, item);
+      if (item.url) {
+        urlToId.set(item.url.toLowerCase(), item.id);
+      }
+    }
+
+    for (const dbItem of dbResources) {
+      const existingIdByUrl = dbItem.url ? urlToId.get(dbItem.url.toLowerCase()) : undefined;
+      const targetKey = mergedMap.has(dbItem.id) ? dbItem.id : existingIdByUrl || dbItem.id;
+      const existing = mergedMap.get(targetKey);
+      mergedMap.set(targetKey, {
+        ...existing,
+        ...dbItem,
+        dateAdded: dbItem.dateAdded || existing?.dateAdded || (dbItem.createdAt ? String(dbItem.createdAt).slice(0, 10) : undefined),
+      });
+    }
+
+    return Array.from(mergedMap.values())
+      .sort((a, b) => {
+        const dateA = a.dateAdded || '2026-01-01';
+        const dateB = b.dateAdded || '2026-01-01';
+        const dateDiff = dateB.localeCompare(dateA);
+        if (dateDiff !== 0) return dateDiff;
+
+        const createdA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const createdB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        if (createdB !== createdA) return createdB - createdA;
+
+        return (b.score ?? 0) - (a.score ?? 0);
+      })
+      .slice(0, 5);
+  }, [links, dbResources]);
 
   const handleCopy = (e: React.MouseEvent, url: string, id: string) => {
     e.stopPropagation();
@@ -37,7 +126,13 @@ export const RecentlyAddedSection: React.FC<RecentlyAddedSectionProps> = ({
     if (!dateStr) return 'Recently';
     try {
       const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      if (Number.isNaN(date.getTime())) return dateStr;
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
     } catch {
       return dateStr;
     }

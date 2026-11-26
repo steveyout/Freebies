@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
 
     const resources = await Resource.findAll({
       where: whereClause,
-      order: [[sortBy, order]],
+      order: [
+        ['isStarred', 'DESC'],
+        [sortBy, order],
+      ],
     });
 
     let filtered = resources;

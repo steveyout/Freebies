@@ -284,7 +284,14 @@ export function getAllCategories(): Category[] {
 
     return {
       ...cat,
-      subcategories: baseSubcategories,
+      subcategories: baseSubcategories.map((sub) => ({
+        ...sub,
+        items: [...(sub.items || [])].sort((a, b) => {
+          if (a.isStarred && !b.isStarred) return -1;
+          if (!a.isStarred && b.isStarred) return 1;
+          return (b.score ?? 0) - (a.score ?? 0);
+        }),
+      })),
     };
   });
 }

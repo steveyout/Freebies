@@ -126,11 +126,35 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
       }
     };
 
+    const handleResourceCreated = (newResource: any) => {
+      if (newResource?.id && (newResource.category === category?.id || newResource.category === category?.slug)) {
+        setDynamicOverrides((prev) => {
+          const next = new Map(prev);
+          next.set(newResource.id, newResource);
+          return next;
+        });
+      }
+    };
+
+    const handleResourceDeleted = (payload: any) => {
+      if (payload?.id) {
+        setDynamicOverrides((prev) => {
+          const next = new Map(prev);
+          next.delete(payload.id);
+          return next;
+        });
+      }
+    };
+
+    socket.on('resource_created', handleResourceCreated);
     socket.on('resource_updated', handleResourceUpdated);
+    socket.on('resource_deleted', handleResourceDeleted);
     socket.on('vote_updated', handleVoteUpdated);
 
     return () => {
+      socket.off('resource_created', handleResourceCreated);
       socket.off('resource_updated', handleResourceUpdated);
+      socket.off('resource_deleted', handleResourceDeleted);
       socket.off('vote_updated', handleVoteUpdated);
     };
   }, [socket]);
@@ -140,52 +164,79 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
     [bookmarkedItems]
   );
 
-  // All merged items with dynamic database properties (stars and votes)
-  const allMergedCategoryItems = useMemo(() => {
+  // Build subcategories merged with dynamic DB overrides AND newly created DB resources
+  const mergedSubcategories = useMemo(() => {
     const rawSubs = category?.subcategories || [];
-    const items: LinkItem[] = [];
+    const seenIds = new Set<string>();
+    const seenUrls = new Set<string>();
 
-    for (const sub of rawSubs) {
-      for (const item of sub?.items || []) {
-        if (!item) continue;
+    const subsWithOverrides = rawSubs.map((sub) => {
+      const mergedItems = (sub?.items || []).map((item) => {
+        seenIds.add(item.id);
+        if (item.url) seenUrls.add(item.url.toLowerCase());
         const override = dynamicOverrides.get(item.id);
-        items.push({
+        if (!override) return item;
+        return {
           ...item,
-          isStarred: override?.isStarred !== undefined ? Boolean(override.isStarred) : Boolean(item.isStarred),
-          score: override?.score !== undefined ? override.score : item.score,
-          upvotesCount: override?.upvotesCount !== undefined ? override.upvotesCount : item.upvotesCount,
-          downvotesCount: override?.downvotesCount !== undefined ? override.downvotesCount : item.downvotesCount,
+          isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : Boolean(item.isStarred),
+          score: override.score !== undefined ? override.score : item.score,
+          upvotesCount: override.upvotesCount !== undefined ? override.upvotesCount : item.upvotesCount,
+          downvotesCount: override.downvotesCount !== undefined ? override.downvotesCount : item.downvotesCount,
+        };
+      });
+      return { ...sub, items: mergedItems };
+    });
+
+    // Append any DB resources not present in static subcategories
+    dynamicOverrides.forEach((dbItem) => {
+      if (!dbItem?.id) return;
+      if (seenIds.has(dbItem.id)) return;
+      if (dbItem.url && seenUrls.has(String(dbItem.url).toLowerCase())) return;
+
+      const targetSubName = (dbItem.subcategory || 'General').toLowerCase();
+      const targetSub = subsWithOverrides.find((s) => s.name.toLowerCase() === targetSubName);
+      if (targetSub) {
+        targetSub.items.push(dbItem);
+      } else if (subsWithOverrides.length > 0) {
+        subsWithOverrides[0].items.push(dbItem);
+      } else {
+        subsWithOverrides.push({
+          id: `${category.id}-${targetSubName.replace(/[^a-z0-9]+/g, '-')}`,
+          name: dbItem.subcategory || 'General',
+          items: [dbItem],
         });
       }
-    }
+      seenIds.add(dbItem.id);
+    });
 
-    return items;
+    return subsWithOverrides;
   }, [category, dynamicOverrides]);
+
+  // All merged items with dynamic database properties (stars and votes)
+  const allMergedCategoryItems = useMemo(() => {
+    return mergedSubcategories.flatMap((sub) => sub.items || []);
+  }, [mergedSubcategories]);
 
   // Priority Starred items for the top highlight section
   const priorityStarredItems = useMemo(() => {
-    return allMergedCategoryItems.filter((i) => i.isStarred);
+    return allMergedCategoryItems
+      .filter((i) => i.isStarred)
+      .sort((a, b) => {
+        const scoreDiff = (b.score ?? 0) - (a.score ?? 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        return (a.title || '').localeCompare(b.title || '');
+      });
   }, [allMergedCategoryItems]);
 
   // Filtered subcategories and items with vote ranking & star priority
   const filteredSubcategories = useMemo(() => {
-    let subs = category?.subcategories || [];
+    let subs = mergedSubcategories;
     if (activeSubId !== 'all') {
       subs = subs.filter((s) => s.id === activeSubId);
     }
 
     return subs.map((sub) => {
-      const itemsList = sub?.items || [];
-      const mergedItems = itemsList.map((item) => {
-        const override = dynamicOverrides.get(item.id);
-        return {
-          ...item,
-          isStarred: override?.isStarred !== undefined ? Boolean(override.isStarred) : Boolean(item.isStarred),
-          score: override?.score !== undefined ? override.score : item.score,
-          upvotesCount: override?.upvotesCount !== undefined ? override.upvotesCount : item.upvotesCount,
-          downvotesCount: override?.downvotesCount !== undefined ? override.downvotesCount : item.downvotesCount,
-        };
-      });
+      const mergedItems = sub?.items || [];
 
       const filteredItems = mergedItems.filter((item) => {
         if (!item) return false;
@@ -205,20 +256,17 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
         return true;
       });
 
-      // Sort items: Priority Starred first, then by Votes Score descending
+      // Sort items: Starred priority resources ALWAYS on top of their respective category/subcategory
       const sortedItems = [...filteredItems].sort((a, b) => {
-        if (sortBy === 'ranking') {
-          // 1. Starred priority resources always on top
-          if (a.isStarred && !b.isStarred) return -1;
-          if (!a.isStarred && b.isStarred) return 1;
+        if (a.isStarred && !b.isStarred) return -1;
+        if (!a.isStarred && b.isStarred) return 1;
 
-          // 2. Ranked by votes score descending
+        if (sortBy === 'ranking') {
           const scoreA = a.score ?? 0;
           const scoreB = b.score ?? 0;
           if (scoreB !== scoreA) {
             return scoreB - scoreA;
           }
-
           return (a.title || '').localeCompare(b.title || '');
         }
 
@@ -240,7 +288,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
         items: sortedItems,
       };
     }).filter((sub) => sub.items.length > 0);
-  }, [category, activeSubId, searchQuery, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, sortBy, dynamicOverrides]);
+  }, [mergedSubcategories, activeSubId, searchQuery, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, sortBy]);
 
   const allSubcategories = category?.subcategories || [];
 

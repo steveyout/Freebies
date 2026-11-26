@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { getAllCategories } from '@/lib/data';
+import { Category } from '@/types/fmhy';
 import { 
   Database, 
   Search, 
@@ -70,6 +72,9 @@ export default function AdminResourcesPage() {
     mode: 'single',
   });
 
+  // Category options for dropdowns (static + dynamic from /api/admin/categories)
+  const [categoryOptions, setCategoryOptions] = useState<Category[]>(() => getAllCategories());
+
   // Form State
   const [formData, setFormData] = useState({
     title: '',
@@ -83,6 +88,53 @@ export default function AdminResourcesPage() {
   });
 
   const { socket } = useSocket();
+
+  // Fetch live categories for dropdowns
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/admin/categories')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted || !data?.categories || !Array.isArray(data.categories)) return;
+        const base = getAllCategories();
+        const mergedMap = new Map<string, Category>();
+        base.forEach((c) => mergedMap.set(c.id, c));
+        data.categories.forEach((c: Category) => {
+          const existing = mergedMap.get(c.id);
+          if (!existing) {
+            mergedMap.set(c.id, c);
+          } else {
+            const subMap = new Map(existing.subcategories.map((s) => [s.name.toLowerCase(), s]));
+            (c.subcategories || []).forEach((s) => {
+              if (!subMap.has(s.name.toLowerCase())) {
+                subMap.set(s.name.toLowerCase(), s);
+              }
+            });
+            mergedMap.set(c.id, { ...existing, ...c, subcategories: Array.from(subMap.values()) });
+          }
+        });
+        setCategoryOptions(Array.from(mergedMap.values()));
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const selectedFormCategory = useMemo(
+    () => categoryOptions.find((c) => c.id === formData.category) || categoryOptions[0],
+    [categoryOptions, formData.category]
+  );
+
+  const handleFormCategoryChange = (nextCatId: string) => {
+    const cat = categoryOptions.find((c) => c.id === nextCatId);
+    const firstSub = cat?.subcategories?.[0]?.name || 'General';
+    setFormData((prev) => ({
+      ...prev,
+      category: nextCatId,
+      subcategory: firstSub,
+    }));
+  };
 
   const fetchResources = async () => {
     try {
@@ -724,26 +776,68 @@ export default function AdminResourcesPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">Category</label>
-                  <input
-                    type="text"
+                  <select
                     required
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) => handleFormCategoryChange(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  />
+                  >
+                    {categoryOptions.map((cat) => (
+                      <option key={cat.id} value={cat.id} className="bg-slate-900">
+                        {cat.name}
+                      </option>
+                    ))}
+                    {!categoryOptions.some((c) => c.id === formData.category) && formData.category && (
+                      <option value={formData.category} className="bg-slate-900">
+                        {formData.category}
+                      </option>
+                    )}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">Subcategory</label>
-                  <input
-                    type="text"
+                  <select
                     required
                     value={formData.subcategory}
                     onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  />
+                  >
+                    {selectedFormCategory?.subcategories && selectedFormCategory.subcategories.length > 0 ? (
+                      selectedFormCategory.subcategories.map((sub) => (
+                        <option key={sub.id} value={sub.name} className="bg-slate-900">
+                          {sub.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="General" className="bg-slate-900">
+                        General
+                      </option>
+                    )}
+                    {formData.subcategory &&
+                      !selectedFormCategory?.subcategories?.some((s) => s.name === formData.subcategory) &&
+                      formData.subcategory !== 'General' && (
+                        <option value={formData.subcategory} className="bg-slate-900">
+                          {formData.subcategory}
+                        </option>
+                      )}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">Safety Rating</label>
+                  <select
+                    value={formData.safetyRating}
+                    onChange={(e) => setFormData({ ...formData, safetyRating: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  >
+                    <option value="Safe" className="bg-slate-900">Safe</option>
+                    <option value="Use Adblock" className="bg-slate-900">Use Adblock</option>
+                    <option value="Requires Registration" className="bg-slate-900">Requires Registration</option>
+                    <option value="Freemium" className="bg-slate-900">Freemium</option>
+                    <option value="Torrent" className="bg-slate-900">Torrent</option>
+                  </select>
                 </div>
               </div>
 

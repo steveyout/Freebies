@@ -36,7 +36,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const resources = getAllResources();
-  return resources.map((r) => ({
+  return resources.slice(0, 100).map((r) => ({
     resourceId: r.id,
   }));
 }
