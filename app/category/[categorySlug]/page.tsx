@@ -32,12 +32,7 @@ interface CategoryPageProps {
   }>;
 }
 
-export async function generateStaticParams() {
-  const categories = getAllCategories();
-  return categories.map((cat) => ({
-    categorySlug: cat.slug,
-  }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { categorySlug } = await params;
@@ -86,7 +81,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     category.name,
     editorial.summary,
     `/category/${category.slug}`,
-    allCategoryItems
+    allCategoryItems.slice(0, 50)
   );
   const faqJsonLd = getFaqJsonLd(editorial.faqs);
 

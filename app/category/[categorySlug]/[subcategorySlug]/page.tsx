@@ -29,18 +29,7 @@ interface SubcategoryPageProps {
   }>;
 }
 
-export async function generateStaticParams() {
-  const categories = getAllCategories();
-  return categories.flatMap((cat) =>
-    cat.subcategories.map((sub) => {
-      const subSlug = sub.id.replace(`${cat.id}-`, '') || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      return {
-        categorySlug: cat.slug,
-        subcategorySlug: subSlug,
-      };
-    })
-  );
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: SubcategoryPageProps): Promise<Metadata> {
   const { categorySlug, subcategorySlug } = await params;
