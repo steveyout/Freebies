@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { LinkItem } from '../types/fmhy';
 import { Star, Sparkles, ExternalLink, Copy, Check, ThumbsUp, Code, Globe, Share2 } from 'lucide-react';
 import { getUserVotes, saveUserVote, getEffectiveRating, UserVote } from '../utils/ratings';
 import { useToast } from '../context/ToastContext';
+import { useSocket } from '../hooks/useSocket';
 
 interface RecommendedSectionProps {
   links: LinkItem[];
@@ -22,36 +23,90 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
   categoryTitle,
 }) => {
   const { showToast } = useToast();
+  const { socket } = useSocket();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [votes, setVotes] = useState<Record<string, UserVote>>(() => getUserVotes());
+  const [superStarItems, setSuperStarItems] = useState<LinkItem[]>([]);
 
-  // Filter and sort top recommended links (starred or badge with ⭐/🔥/Top/Recommended, or highest rating)
-  let filteredRecs = [...links]
-    .filter((item) => {
-      const isStarred = item.isStarred;
-      const isBadgeRec = !!(item.badge && (
-        item.badge.includes('⭐') || 
-        item.badge.includes('🔥') || 
-        item.badge.includes('Top') || 
-        item.badge.includes('Must Have') || 
-        item.badge.includes('Recommended')
-      ));
-      const rating = getEffectiveRating(item, votes[item.id] || null);
-      return isStarred || isBadgeRec || rating.score >= 4.5;
-    })
-    .sort((a, b) => {
-      if (a.isStarred && !b.isStarred) return -1;
-      if (!a.isStarred && b.isStarred) return 1;
-      const ratingA = getEffectiveRating(a, votes[a.id] || null).score;
-      const ratingB = getEffectiveRating(b, votes[b.id] || null).score;
-      return ratingB - ratingA;
-    });
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/resources?superStarred=true')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && Array.isArray(data?.resources)) {
+          setSuperStarItems(data.resources);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  if (filteredRecs.length === 0 && links.length > 0) {
-    filteredRecs = [...links].slice(0, 4);
-  }
+  useEffect(() => {
+    if (!socket) return;
+    const handleUpdated = (updated: any) => {
+      if (!updated?.id) return;
+      setSuperStarItems((prev) => {
+        const filtered = prev.filter((r) => r.id !== updated.id);
+        return updated.isSuperStarred ? [updated, ...filtered] : filtered;
+      });
+    };
+    socket.on('resource_updated', handleUpdated);
+    return () => {
+      socket.off('resource_updated', handleUpdated);
+    };
+  }, [socket]);
 
-  const recommendedLinks = filteredRecs.slice(0, 6);
+  // Merge live Super Star items with static links; sort Super Stars first, then Stars, then rating
+  const recommendedLinks = useMemo(() => {
+    const normalizeUrl = (u?: string) => (u ? u.trim().replace(/\/+$/, '').toLowerCase() : '');
+    const mergedMap = new Map<string, LinkItem>();
+    const urlToId = new Map<string, string>();
+
+    for (const item of links) {
+      mergedMap.set(item.id, item);
+      const norm = normalizeUrl(item.url);
+      if (norm) urlToId.set(norm, item.id);
+    }
+
+    for (const sup of superStarItems) {
+      const norm = normalizeUrl(sup.url);
+      const key = mergedMap.has(sup.id) ? sup.id : (norm && urlToId.get(norm)) || sup.id;
+      const existing = mergedMap.get(key);
+      mergedMap.set(key, { ...existing, ...sup, isSuperStarred: true });
+    }
+
+    let filteredRecs = Array.from(mergedMap.values())
+      .filter((item) => {
+        const isSuper = item.isSuperStarred;
+        const isStarred = item.isStarred;
+        const isBadgeRec = !!(item.badge && (
+          item.badge.includes('⭐') ||
+          item.badge.includes('🔥') ||
+          item.badge.includes('Top') ||
+          item.badge.includes('Must Have') ||
+          item.badge.includes('Recommended')
+        ));
+        const rating = getEffectiveRating(item, votes[item.id] || null);
+        return isSuper || isStarred || isBadgeRec || rating.score >= 4.5;
+      })
+      .sort((a, b) => {
+        if (a.isSuperStarred && !b.isSuperStarred) return -1;
+        if (!a.isSuperStarred && b.isSuperStarred) return 1;
+        if (a.isStarred && !b.isStarred) return -1;
+        if (!a.isStarred && b.isStarred) return 1;
+        const ratingA = getEffectiveRating(a, votes[a.id] || null).score;
+        const ratingB = getEffectiveRating(b, votes[b.id] || null).score;
+        return ratingB - ratingA;
+      });
+
+    if (filteredRecs.length === 0 && links.length > 0) {
+      filteredRecs = [...links].slice(0, 4);
+    }
+
+    return filteredRecs.slice(0, 6);
+  }, [links, superStarItems, votes]);
 
   const handleCopy = (e: React.MouseEvent, item: LinkItem) => {
     e.stopPropagation();

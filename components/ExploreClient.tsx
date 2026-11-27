@@ -151,10 +151,22 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
     };
   }, [socket]);
 
-  // Merge static links with dynamic overrides
+  // Merge static links with dynamic overrides (match by id or normalized URL)
   const mergedLinks = useMemo(() => {
+    const normalizeUrl = (u?: string) => (u ? u.trim().replace(/\/+$/, '').toLowerCase() : '');
+    const overridesByUrl = new Map<string, any>();
+    dynamicOverrides.forEach((r) => {
+      const norm = normalizeUrl(r?.url);
+      if (!norm) return;
+      const prev = overridesByUrl.get(norm);
+      if (!prev || (r.isSuperStarred && !prev.isSuperStarred) || (r.isStarred && !prev.isStarred)) {
+        overridesByUrl.set(norm, r);
+      }
+    });
+
     return allFlatLinks.map((link) => {
-      const override = dynamicOverrides.get(link.id);
+      const norm = normalizeUrl(link.url);
+      const override = dynamicOverrides.get(link.id) || (norm ? overridesByUrl.get(norm) : undefined);
       if (!override) return link;
       return {
         ...link,

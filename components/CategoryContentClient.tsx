@@ -175,11 +175,29 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
     const seenIds = new Set<string>();
     const seenUrls = new Set<string>();
 
+    const normalizeUrl = (u?: string) => (u ? u.trim().replace(/\/+$/, '').toLowerCase() : '');
+
+    // Index dynamicOverrides by both id and normalized url so DB rows match even if IDs differ
+    const overridesByUrl = new Map<string, any>();
+    dynamicOverrides.forEach((r) => {
+      const norm = normalizeUrl(r?.url);
+      if (!norm) return;
+      const prev = overridesByUrl.get(norm);
+      if (
+        !prev ||
+        (r.isSuperStarred && !prev.isSuperStarred) ||
+        (r.isStarred && !prev.isStarred)
+      ) {
+        overridesByUrl.set(norm, r);
+      }
+    });
+
     const subsWithOverrides = rawSubs.map((sub) => {
       const mergedItems = (sub?.items || []).map((item) => {
         seenIds.add(item.id);
-        if (item.url) seenUrls.add(item.url.toLowerCase());
-        const override = dynamicOverrides.get(item.id);
+        const normUrl = normalizeUrl(item.url);
+        if (normUrl) seenUrls.add(normUrl);
+        const override = dynamicOverrides.get(item.id) || (normUrl ? overridesByUrl.get(normUrl) : undefined);
         if (!override) return item;
         return {
           ...item,
@@ -197,7 +215,8 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
     dynamicOverrides.forEach((dbItem) => {
       if (!dbItem?.id) return;
       if (seenIds.has(dbItem.id)) return;
-      if (dbItem.url && seenUrls.has(String(dbItem.url).toLowerCase())) return;
+      const normDbUrl = normalizeUrl(dbItem.url);
+      if (normDbUrl && seenUrls.has(normDbUrl)) return;
 
       const targetSubName = (dbItem.subcategory || 'General').toLowerCase();
       const targetSub = subsWithOverrides.find((s) => s.name.toLowerCase() === targetSubName);

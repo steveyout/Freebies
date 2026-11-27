@@ -72,8 +72,20 @@ export const SubcategoryClientWrapper: React.FC<SubcategoryClientWrapperProps> =
   }, [socket]);
 
   const items = useMemo(() => {
+    const normalizeUrl = (u?: string) => (u ? u.trim().replace(/\/+$/, '').toLowerCase() : '');
+    const overridesByUrl = new Map<string, any>();
+    dynamicOverrides.forEach((r) => {
+      const norm = normalizeUrl(r?.url);
+      if (!norm) return;
+      const prev = overridesByUrl.get(norm);
+      if (!prev || (r.isSuperStarred && !prev.isSuperStarred) || (r.isStarred && !prev.isStarred)) {
+        overridesByUrl.set(norm, r);
+      }
+    });
+
     const baseItems: LinkItem[] = (subcategory?.items || []).map((item) => {
-      const override = dynamicOverrides.get(item.id);
+      const norm = normalizeUrl(item.url);
+      const override = dynamicOverrides.get(item.id) || (norm ? overridesByUrl.get(norm) : undefined);
       if (!override) return item;
       return {
         ...item,
