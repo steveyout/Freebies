@@ -287,6 +287,8 @@ export function getAllCategories(): Category[] {
       subcategories: baseSubcategories.map((sub) => ({
         ...sub,
         items: [...(sub.items || [])].sort((a, b) => {
+          if (a.isSuperStarred && !b.isSuperStarred) return -1;
+          if (!a.isSuperStarred && b.isSuperStarred) return 1;
           if (a.isStarred && !b.isStarred) return -1;
           if (!a.isStarred && b.isStarred) return 1;
           return (b.score ?? 0) - (a.score ?? 0);

@@ -17,6 +17,7 @@ export interface ResourceAttributes {
   upvotesCount: number;
   downvotesCount: number;
   isStarred: boolean;
+  isSuperStarred: boolean;
   isOpenSource: boolean;
   isNoAds: boolean;
   isNoReg: boolean;
@@ -32,6 +33,7 @@ export interface ResourceCreationAttributes extends Optional<
   | 'upvotesCount'
   | 'downvotesCount'
   | 'isStarred'
+  | 'isSuperStarred'
   | 'isOpenSource'
   | 'isNoAds'
   | 'isNoReg'
@@ -58,6 +60,7 @@ export class Resource extends Model<ResourceAttributes, ResourceCreationAttribut
   declare upvotesCount: number;
   declare downvotesCount: number;
   declare isStarred: boolean;
+  declare isSuperStarred: boolean;
   declare isOpenSource: boolean;
   declare isNoAds: boolean;
   declare isNoReg: boolean;
@@ -158,6 +161,10 @@ Resource.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    isSuperStarred: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     isOpenSource: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -188,6 +195,7 @@ Resource.init(
       { fields: ['subcategory'] },
       { fields: ['score'] },
       { fields: ['isStarred'] },
+      { fields: ['isSuperStarred'] },
     ],
   }
 );

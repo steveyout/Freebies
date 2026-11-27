@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
     const starredOnly = searchParams.get('starred') === 'true';
+    const superStarredOnly = searchParams.get('superStarred') === 'true';
 
     const whereClause: any = {};
     if (category && category !== 'all') {
@@ -15,10 +16,14 @@ export async function GET(req: NextRequest) {
     if (starredOnly) {
       whereClause.isStarred = true;
     }
+    if (superStarredOnly) {
+      whereClause.isSuperStarred = true;
+    }
 
     const resources = await Resource.findAll({
       where: whereClause,
       order: [
+        ['isSuperStarred', 'DESC'],
         ['isStarred', 'DESC'],
         ['score', 'DESC'],
         ['title', 'ASC'],

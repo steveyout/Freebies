@@ -32,6 +32,7 @@ export async function PATCH(
       'safetyRating',
       'badge',
       'isStarred',
+      'isSuperStarred',
       'isOpenSource',
       'isNoAds',
       'isNoReg',

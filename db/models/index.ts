@@ -1,3 +1,4 @@
+import { DataTypes } from 'sequelize';
 import { sequelize } from '../connection';
 import { User } from './User';
 import { Resource } from './Resource';
@@ -37,6 +38,16 @@ export async function initDb(): Promise<void> {
       try {
         await sequelize.authenticate();
         await sequelize.sync({ alter: false });
+        // Safely ensure new columns exist on existing databases
+        const qi = sequelize.getQueryInterface();
+        const cols = await qi.describeTable('resources');
+        if (!cols.isSuperStarred) {
+          await qi.addColumn('resources', 'isSuperStarred', {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false,
+          });
+        }
       } catch (err: any) {
         console.warn('Database initialization notice:', err.message);
       }

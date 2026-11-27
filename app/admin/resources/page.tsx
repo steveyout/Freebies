@@ -22,7 +22,10 @@ import {
   Square,
   MinusSquare,
   Sparkles,
-  StarOff
+  StarOff,
+  Crown,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSocket } from '@/hooks/useSocket';
@@ -42,6 +45,7 @@ interface ResourceItem {
   upvotesCount: number;
   downvotesCount: number;
   isStarred: boolean;
+  isSuperStarred?: boolean;
   isOpenSource: boolean;
   isNoAds: boolean;
   isNoReg: boolean;
@@ -52,7 +56,13 @@ export default function AdminResourcesPage() {
   const [resources, setResources] = useState<ResourceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [starFilter, setStarFilter] = useState<'all' | 'super_starred' | 'starred'>('all');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(50);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<ResourceItem | null>(null);
   const [saving, setSaving] = useState(false);
@@ -84,6 +94,7 @@ export default function AdminResourcesPage() {
     subcategory: 'Extensions',
     safetyRating: 'Safe',
     isStarred: false,
+    isSuperStarred: false,
     isOpenSource: false,
   });
 
@@ -136,16 +147,31 @@ export default function AdminResourcesPage() {
     }));
   };
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const fetchResources = async () => {
     try {
+      setLoading(true);
       const queryParams = new URLSearchParams();
+      queryParams.set('page', String(page));
+      queryParams.set('limit', String(limit));
       if (selectedCategory !== 'all') queryParams.set('category', selectedCategory);
-      if (search.trim()) queryParams.set('search', search.trim());
+      if (starFilter !== 'all') queryParams.set('starFilter', starFilter);
+      if (debouncedSearch) queryParams.set('search', debouncedSearch);
 
       const res = await fetch(`/api/admin/resources?${queryParams.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setResources(data.resources || []);
+        setTotal(data.total ?? (data.resources?.length || 0));
+        setTotalPages(data.totalPages ?? 1);
       }
     } catch (err) {
       console.error('Failed to fetch resources:', err);
@@ -156,8 +182,8 @@ export default function AdminResourcesPage() {
 
   useEffect(() => {
     fetchResources();
-    setSelectedIds(new Set()); // Reset selection on filter change
-  }, [selectedCategory, search]);
+    setSelectedIds(new Set()); // Reset selection on filter/page change
+  }, [selectedCategory, starFilter, debouncedSearch, page, limit]);
 
   // Real-time updates via Socket.IO
   useEffect(() => {
@@ -234,6 +260,7 @@ export default function AdminResourcesPage() {
       subcategory: 'Extensions',
       safetyRating: 'Safe',
       isStarred: false,
+      isSuperStarred: false,
       isOpenSource: false,
     });
     setIsModalOpen(true);
@@ -249,9 +276,36 @@ export default function AdminResourcesPage() {
       subcategory: res.subcategory,
       safetyRating: res.safetyRating || 'Safe',
       isStarred: res.isStarred,
+      isSuperStarred: Boolean(res.isSuperStarred),
       isOpenSource: res.isOpenSource,
     });
     setIsModalOpen(true);
+  };
+
+  const handleToggleSuperStar = async (item: ResourceItem) => {
+    const nextSuper = !item.isSuperStarred;
+    setResources((prev) =>
+      prev
+        .map((r) => (r.id === item.id ? { ...r, isSuperStarred: nextSuper } : r))
+        .sort((a, b) => {
+          const aSup = a.id === item.id ? nextSuper : Boolean(a.isSuperStarred);
+          const bSup = b.id === item.id ? nextSuper : Boolean(b.isSuperStarred);
+          if (aSup !== bSup) return aSup ? -1 : 1;
+          if (a.isStarred !== b.isStarred) return a.isStarred ? -1 : 1;
+          return b.score - a.score;
+        })
+    );
+
+    try {
+      await fetch(`/api/admin/resources/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isSuperStarred: nextSuper }),
+      });
+    } catch (err) {
+      console.error('Failed to toggle super star:', err);
+      fetchResources();
+    }
   };
 
   const handleToggleStar = async (item: ResourceItem) => {
@@ -401,7 +455,33 @@ export default function AdminResourcesPage() {
     }
   };
 
-  const categories = Array.from(new Set(resources.map((r) => r.category)));
+  // Bulk Super Star / Un-Super Star
+  const handleBulkSuperStar = async (superStarState: boolean) => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+
+    try {
+      setActionLoading('bulk');
+      const res = await fetch('/api/admin/resources/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: superStarState ? 'super_star' : 'unsuper_star', ids }),
+      });
+      if (res.ok) {
+        setResources((prev) =>
+          prev.map((r) => (selectedIds.has(r.id) ? { ...r, isSuperStarred: superStarState } : r))
+        );
+        setSelectedIds(new Set());
+        fetchResources();
+      }
+    } catch (err) {
+      console.error('Error in bulk super star:', err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const categories = categoryOptions.map((c) => c.id);
   const isAllSelected = resources.length > 0 && selectedIds.size === resources.length;
   const isPartiallySelected = selectedIds.size > 0 && selectedIds.size < resources.length;
 
@@ -434,19 +514,19 @@ export default function AdminResourcesPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           <button
-            onClick={() => setSelectedCategory('all')}
+            onClick={() => { setSelectedCategory('all'); setPage(1); }}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap cursor-pointer ${
               selectedCategory === 'all'
                 ? 'bg-indigo-600 text-white font-semibold'
                 : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            All Categories ({resources.length})
+            All Categories ({total})
           </button>
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => { setSelectedCategory(cat); setPage(1); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap capitalize cursor-pointer ${
                 selectedCategory === cat
                   ? 'bg-indigo-600 text-white font-semibold'
@@ -458,15 +538,27 @@ export default function AdminResourcesPage() {
           ))}
         </div>
 
-        <div className="relative flex-1 sm:max-w-xs sm:ml-auto">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search resources by title or URL..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          />
+        <div className="flex items-center gap-2 sm:ml-auto">
+          <select
+            value={starFilter}
+            onChange={(e) => { setStarFilter(e.target.value as any); setPage(1); }}
+            className="px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+          >
+            <option value="all">All Priorities</option>
+            <option value="super_starred">👑 Super Starred</option>
+            <option value="starred">⭐ Priority Starred</option>
+          </select>
+
+          <div className="relative flex-1 sm:w-64">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search resources by title or URL..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-3.5 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
         </div>
       </div>
 
@@ -542,25 +634,29 @@ export default function AdminResourcesPage() {
                         <td className="py-3.5 px-3 text-center">
                           <span
                             className={`font-mono font-bold text-xs px-2 py-0.5 rounded-lg ${
-                              item.isStarred
+                              item.isSuperStarred
+                                ? 'bg-violet-500/20 text-violet-300 border border-violet-500/40'
+                                : item.isStarred
                                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                                : index === 0
+                                : index === 0 && page === 1
                                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                : index === 1
-                                ? 'bg-slate-300/20 text-slate-200 border border-slate-400/30'
-                                : index === 2
-                                ? 'bg-amber-800/20 text-amber-500 border border-amber-800/30'
                                 : 'text-slate-500'
                             }`}
                           >
-                            {item.isStarred ? '⭐' : `#${index + 1}`}
+                            {item.isSuperStarred ? '👑' : item.isStarred ? '⭐' : `#${(page - 1) * limit + index + 1}`}
                           </span>
                         </td>
 
                         {/* Title & Info */}
                         <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-semibold text-slate-100">{item.title}</span>
+                            {item.isSuperStarred && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/40">
+                                <Crown className="w-3 h-3 text-violet-400" />
+                                <span>Super Star</span>
+                              </span>
+                            )}
                             {item.isStarred && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                                 <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
@@ -612,6 +708,19 @@ export default function AdminResourcesPage() {
                         {/* Actions */}
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            {/* 1-Click Super Star Toggle */}
+                            <button
+                              onClick={() => handleToggleSuperStar(item)}
+                              title={item.isSuperStarred ? 'Remove Super Star' : 'Pin as Super Star (Top)'}
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                item.isSuperStarred
+                                  ? 'text-violet-300 bg-violet-500/25 hover:bg-violet-500/35'
+                                  : 'text-slate-500 hover:text-violet-400 hover:bg-slate-800'
+                              }`}
+                            >
+                              <Crown className={`w-3.5 h-3.5 ${item.isSuperStarred ? 'text-violet-400' : ''}`} />
+                            </button>
+
                             {/* 1-Click Priority Star Toggle */}
                             <button
                               onClick={() => handleToggleStar(item)}
@@ -657,6 +766,57 @@ export default function AdminResourcesPage() {
             </table>
           </div>
         )}
+
+        {/* Pagination Footer */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-800 bg-slate-950/60 text-xs text-slate-400">
+          <div className="flex items-center gap-3">
+            <span>
+              Showing{' '}
+              <strong className="text-white">
+                {total === 0 ? 0 : (page - 1) * limit + 1}
+              </strong>
+              –
+              <strong className="text-white">
+                {Math.min(page * limit, total)}
+              </strong>{' '}
+              of <strong className="text-white">{total}</strong> resources
+            </span>
+
+            <select
+              value={limit}
+              onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+              className="px-2 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300 focus:outline-none cursor-pointer"
+            >
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+              <option value={100}>100 / page</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1 || loading}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 text-slate-300 flex items-center gap-1 cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Prev</span>
+            </button>
+
+            <span className="px-3 py-1 font-mono text-slate-300">
+              Page <strong className="text-white">{page}</strong> / {totalPages}
+            </span>
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages || loading}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 text-slate-300 flex items-center gap-1 cursor-pointer"
+            >
+              <span>Next</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Floating Sticky Bulk Actions Bar */}
@@ -669,7 +829,16 @@ export default function AdminResourcesPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => handleBulkSuperStar(true)}
+              disabled={actionLoading === 'bulk'}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold shadow-md shadow-violet-600/25 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <Crown className="w-3.5 h-3.5" />
+              <span>Bulk Super Star</span>
+            </button>
+
             <button
               onClick={() => handleBulkStar(true)}
               disabled={actionLoading === 'bulk'}
@@ -841,7 +1010,20 @@ export default function AdminResourcesPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 py-2">
+              <div className="flex items-center gap-5 flex-wrap py-2">
+                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isSuperStarred}
+                    onChange={(e) => setFormData({ ...formData, isSuperStarred: e.target.checked })}
+                    className="rounded border-slate-700 text-violet-600 focus:ring-violet-500"
+                  />
+                  <span className="flex items-center gap-1">
+                    <Crown className="w-3.5 h-3.5 text-violet-400" />
+                    <span>Super Star (Top Pinned)</span>
+                  </span>
+                </label>
+
                 <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
                   <input
                     type="checkbox"

@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Category, SubCategory, LinkItem } from '@/types/fmhy';
 import { LinkCard } from '@/components/LinkCard';
+import { LinkCardSkeleton } from '@/components/LinkCardSkeleton';
 import { QuickFilters } from '@/components/QuickFilters';
 import { useModal } from '@/context/ModalContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -44,6 +45,10 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
   const [onlySafe, setOnlySafe] = useState(false);
   const [sortBy, setSortBy] = useState<'ranking' | 'name' | 'newest'>('ranking');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
+  const [showAllPriority, setShowAllPriority] = useState(false);
+  const [visibleItemsLimit, setVisibleItemsLimit] = useState(24);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Dynamic overrides from database (for live starred priority and vote ranking)
   const [dynamicOverrides, setDynamicOverrides] = useState<Map<string, any>>(new Map());
@@ -178,6 +183,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
         if (!override) return item;
         return {
           ...item,
+          isSuperStarred: override.isSuperStarred !== undefined ? Boolean(override.isSuperStarred) : Boolean(item.isSuperStarred),
           isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : Boolean(item.isStarred),
           score: override.score !== undefined ? override.score : item.score,
           upvotesCount: override.upvotesCount !== undefined ? override.upvotesCount : item.upvotesCount,
@@ -217,11 +223,15 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
     return mergedSubcategories.flatMap((sub) => sub.items || []);
   }, [mergedSubcategories]);
 
-  // Priority Starred items for the top highlight section
+  // Priority Starred items for the top highlight section (Super Starred first, then Starred)
   const priorityStarredItems = useMemo(() => {
     return allMergedCategoryItems
-      .filter((i) => i.isStarred)
+      .filter((i) => i.isSuperStarred || i.isStarred)
       .sort((a, b) => {
+        if (a.isSuperStarred && !b.isSuperStarred) return -1;
+        if (!a.isSuperStarred && b.isSuperStarred) return 1;
+        if (a.isStarred && !b.isStarred) return -1;
+        if (!a.isStarred && b.isStarred) return 1;
         const scoreDiff = (b.score ?? 0) - (a.score ?? 0);
         if (scoreDiff !== 0) return scoreDiff;
         return (a.title || '').localeCompare(b.title || '');
@@ -256,8 +266,10 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
         return true;
       });
 
-      // Sort items: Starred priority resources ALWAYS on top of their respective category/subcategory
+      // Sort items: Super Starred first, then Starred priority resources ALWAYS on top
       const sortedItems = [...filteredItems].sort((a, b) => {
+        if (a.isSuperStarred && !b.isSuperStarred) return -1;
+        if (!a.isSuperStarred && b.isSuperStarred) return 1;
         if (a.isStarred && !b.isStarred) return -1;
         if (!a.isStarred && b.isStarred) return 1;
 
@@ -289,6 +301,54 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
       };
     }).filter((sub) => sub.items.length > 0);
   }, [mergedSubcategories, activeSubId, searchQuery, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, sortBy]);
+
+  useEffect(() => {
+    setVisibleItemsLimit(24);
+  }, [activeSubId, searchQuery, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, sortBy]);
+
+  const totalFilteredItems = useMemo(
+    () => filteredSubcategories.reduce((acc, s) => acc + s.items.length, 0),
+    [filteredSubcategories]
+  );
+
+  const visibleSubcategories = useMemo(() => {
+    let remaining = visibleItemsLimit;
+    const result: typeof filteredSubcategories = [];
+    for (const sub of filteredSubcategories) {
+      if (remaining <= 0) break;
+      if (sub.items.length <= remaining) {
+        result.push(sub);
+        remaining -= sub.items.length;
+      } else {
+        result.push({ ...sub, items: sub.items.slice(0, remaining) });
+        remaining = 0;
+      }
+    }
+    return result;
+  }, [filteredSubcategories, visibleItemsLimit]);
+
+  const hasMoreItems = visibleItemsLimit < totalFilteredItems;
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el || !hasMoreItems) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleItemsLimit((prev) => Math.min(prev + 24, totalFilteredItems));
+            setIsLoadingMore(false);
+          }, 150);
+        }
+      },
+      { rootMargin: '250px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMoreItems, isLoadingMore, totalFilteredItems]);
 
   const allSubcategories = category?.subcategories || [];
 
@@ -394,7 +454,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {priorityStarredItems.map((item) => (
+            {(showAllPriority ? priorityStarredItems : priorityStarredItems.slice(0, 6)).map((item) => (
               <LinkCard
                 key={`priority-${item.id}`}
                 item={item}
@@ -404,6 +464,20 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
               />
             ))}
           </div>
+
+          {priorityStarredItems.length > 6 && (
+            <div className="flex justify-center pt-2">
+              <button
+                type="button"
+                onClick={() => setShowAllPriority((prev) => !prev)}
+                className="px-4 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-xs font-mono font-bold transition-colors cursor-pointer"
+              >
+                {showAllPriority
+                  ? 'Show Fewer Priority Picks'
+                  : `Show All ${priorityStarredItems.length} Priority Picks`}
+              </button>
+            </div>
+          )}
         </section>
       )}
 
@@ -510,7 +584,7 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
         </div>
       ) : (
         <div className="space-y-10">
-          {filteredSubcategories.map((sub) => {
+          {visibleSubcategories.map((sub) => {
             const subSlug = sub.id.replace(`${category.id}-`, '') || sub.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
             return (
@@ -563,6 +637,24 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
               </section>
             );
           })}
+
+          {isLoadingMore && (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-2'}>
+              <LinkCardSkeleton count={viewMode === 'grid' ? 6 : 4} viewMode={viewMode} />
+            </div>
+          )}
+
+          {hasMoreItems && (
+            <div ref={loadMoreRef} className="flex flex-col items-center justify-center py-6 space-y-2">
+              <button
+                type="button"
+                onClick={() => setVisibleItemsLimit((prev) => Math.min(prev + 24, totalFilteredItems))}
+                className="px-5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-amber-500 text-xs font-mono font-bold text-slate-700 dark:text-zinc-200 shadow-xs transition-colors cursor-pointer"
+              >
+                Load More ({totalFilteredItems - visibleItemsLimit} remaining)
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -9,6 +9,7 @@ export interface LinkItem {
   subcategory: string;
   tags: string[];
   isStarred?: boolean;
+  isSuperStarred?: boolean;
   isOpenSource?: boolean;
   isNoAds?: boolean;
   isNoReg?: boolean;

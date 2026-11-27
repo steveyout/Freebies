@@ -147,7 +147,8 @@ export const LinkCard: React.FC<LinkCardProps> = ({
   };
 
   const ratingInfo = getEffectiveRating(item, userVote);
-  const isTopRatedOrRecommended = item.isStarred || Boolean(item.badge && (item.badge.includes('⭐') || item.badge.includes('🔥') || item.badge.includes('Top') || item.badge.includes('Must Have') || item.badge.includes('Recommended')));
+  const isSuperStarred = Boolean(item.isSuperStarred);
+  const isTopRatedOrRecommended = isSuperStarred || item.isStarred || Boolean(item.badge && (item.badge.includes('⭐') || item.badge.includes('🔥') || item.badge.includes('Top') || item.badge.includes('Must Have') || item.badge.includes('Recommended')));
   const isBroken = health.status === 'broken';
   const isDegraded = health.status === 'degraded';
 
@@ -238,6 +239,12 @@ export const LinkCard: React.FC<LinkCardProps> = ({
 
           {/* Health Badge in Compact */}
           {renderHealthBadge(true)}
+
+          {isSuperStarred && !isBroken && (
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 hidden sm:inline-block font-bold text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-950/70 border border-violet-300 dark:border-violet-700/70">
+              👑 Super Star
+            </span>
+          )}
 
           {item.badge && !isBroken && (
             <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 hidden sm:inline-block font-bold ${
@@ -337,6 +344,8 @@ export const LinkCard: React.FC<LinkCardProps> = ({
       className={`relative p-4 rounded-2xl flex flex-col justify-between group transition-all overflow-hidden border shadow-xs ${
         isBroken
           ? 'bg-rose-50/30 dark:bg-zinc-900/80 border-rose-300 dark:border-rose-900/60'
+          : isSuperStarred
+          ? 'bg-gradient-to-b from-violet-50/90 via-white to-amber-50/40 dark:from-violet-950/30 dark:via-zinc-900 dark:to-zinc-950/90 border-violet-400/90 dark:border-violet-500/70 shadow-md ring-1 ring-violet-500/20'
           : isTopRatedOrRecommended
           ? 'bg-gradient-to-b from-amber-50/80 via-white to-amber-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950/90 border-amber-400/80 dark:border-amber-500/60 recommended-gradient-border recommended-glow-pulse shadow-md'
           : 'bg-white dark:bg-zinc-900/50 border-slate-200 dark:border-zinc-800/90 hover:border-slate-300 dark:hover:border-zinc-700'
@@ -361,6 +370,11 @@ export const LinkCard: React.FC<LinkCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
+            {isSuperStarred && !isBroken && (
+              <span className="text-[10px] font-mono font-extrabold px-1.5 py-0.5 rounded-md border text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-950/70 border-violet-300 dark:border-violet-500/50 shadow-xs">
+                👑 Super Star
+              </span>
+            )}
             {item.badge && !isBroken && (
               <motion.span 
                 animate={isTopRatedOrRecommended ? { scale: [1, 1.04, 1] } : {}}

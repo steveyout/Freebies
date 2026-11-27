@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Category, LinkItem } from '@/types/fmhy';
 import { LinkCard } from './LinkCard';
+import { LinkCardSkeleton } from './LinkCardSkeleton';
 import { useTheme } from '@/context/ThemeContext';
 import { useModal } from '@/context/ModalContext';
 import { useSocket } from '@/hooks/useSocket';
@@ -43,12 +44,16 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
 
   const [query, setQuery] = useState(initialQuery);
   const [selectedCat, setSelectedCat] = useState('all');
+  const [onlySuperStarred, setOnlySuperStarred] = useState(false);
   const [onlyStarred, setOnlyStarred] = useState(false);
   const [onlyOpenSource, setOnlyOpenSource] = useState(false);
   const [onlyNoReg, setOnlyNoReg] = useState(false);
   const [onlySafe, setOnlySafe] = useState(false);
   const [sortBy, setSortBy] = useState<'ranking' | 'name' | 'newest'>('ranking');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
+  const [visibleCount, setVisibleCount] = useState(24);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Dynamic overrides from database (for live starred priority and vote ranking)
   const [dynamicOverrides, setDynamicOverrides] = useState<Map<string, any>>(new Map());
@@ -153,6 +158,7 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
       if (!override) return link;
       return {
         ...link,
+        isSuperStarred: override.isSuperStarred !== undefined ? Boolean(override.isSuperStarred) : Boolean(link.isSuperStarred),
         isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : link.isStarred,
         score: override.score !== undefined ? override.score : link.score,
         upvotesCount: override.upvotesCount !== undefined ? override.upvotesCount : link.upvotesCount,
@@ -166,6 +172,10 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
 
     if (selectedCat !== 'all') {
       list = list.filter((item) => item.category === selectedCat);
+    }
+
+    if (onlySuperStarred) {
+      list = list.filter((item) => item.isSuperStarred);
     }
 
     if (onlyStarred) {
@@ -196,8 +206,11 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
       );
     }
 
-    // Dynamic ranking: Starred priority first, then votes score descending
+    // Dynamic ranking: Super Starred first, then Starred, then votes score descending
     return [...list].sort((a, b) => {
+      if (a.isSuperStarred && !b.isSuperStarred) return -1;
+      if (!a.isSuperStarred && b.isSuperStarred) return 1;
+
       if (sortBy === 'ranking') {
         if (a.isStarred && !b.isStarred) return -1;
         if (!a.isStarred && b.isStarred) return 1;
@@ -223,7 +236,37 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
 
       return 0;
     });
-  }, [mergedLinks, selectedCat, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, query, sortBy]);
+  }, [mergedLinks, selectedCat, onlySuperStarred, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, query, sortBy]);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(24);
+  }, [selectedCat, onlySuperStarred, onlyStarred, onlyOpenSource, onlyNoReg, onlySafe, query, sortBy]);
+
+  // Lazy load more items with skeleton state on scroll
+  const hasMore = visibleCount < filteredLinks.length;
+  const visibleLinks = useMemo(() => filteredLinks.slice(0, visibleCount), [filteredLinks, visibleCount]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount((prev) => Math.min(prev + 24, filteredLinks.length));
+            setIsLoadingMore(false);
+          }, 150);
+        }
+      },
+      { rootMargin: '250px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, filteredLinks.length]);
 
   return (
     <div className="space-y-6">
@@ -322,6 +365,18 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
             </div>
 
             <button
+              onClick={() => setOnlySuperStarred(!onlySuperStarred)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors ${
+                onlySuperStarred
+                  ? 'bg-violet-50 dark:bg-violet-950/40 border-violet-400 text-violet-700 dark:text-violet-300 font-semibold'
+                  : 'border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-400 hover:border-slate-300'
+              }`}
+            >
+              <span>👑</span>
+              <span>Super Stars Only</span>
+            </button>
+
+            <button
               onClick={() => setOnlyStarred(!onlyStarred)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors ${
                 onlyStarred
@@ -418,21 +473,36 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
           </button>
         </div>
       ) : (
-        <div className={
-          viewMode === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-            : 'space-y-3'
-        }>
-          {filteredLinks.map((item) => (
-            <LinkCard
-              key={item.id}
-              item={item}
-              isBookmarked={bookmarkedIds.has(item.id)}
-              onToggleBookmark={toggleBookmark}
-              onReportBroken={openReportBroken}
-              viewMode={viewMode}
-            />
-          ))}
+        <div className="space-y-6">
+          <div className={
+            viewMode === 'grid'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+              : 'space-y-3'
+          }>
+            {visibleLinks.map((item) => (
+              <LinkCard
+                key={item.id}
+                item={item}
+                isBookmarked={bookmarkedIds.has(item.id)}
+                onToggleBookmark={toggleBookmark}
+                onReportBroken={openReportBroken}
+                viewMode={viewMode}
+              />
+            ))}
+            {isLoadingMore && <LinkCardSkeleton count={viewMode === 'grid' ? 6 : 4} viewMode={viewMode} />}
+          </div>
+
+          {hasMore && (
+            <div ref={loadMoreRef} className="flex flex-col items-center justify-center py-6 space-y-3">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => Math.min(prev + 24, filteredLinks.length))}
+                className="px-5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:border-amber-500 text-xs font-mono font-bold text-slate-700 dark:text-zinc-200 shadow-xs transition-colors cursor-pointer"
+              >
+                Load More ({filteredLinks.length - visibleCount} remaining)
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

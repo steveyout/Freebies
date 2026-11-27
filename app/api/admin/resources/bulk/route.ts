@@ -19,8 +19,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No resource IDs provided' }, { status: 400 });
     }
 
-    if (!['star', 'unstar', 'delete'].includes(action)) {
-      return NextResponse.json({ error: 'Invalid action. Must be star, unstar, or delete' }, { status: 400 });
+    if (!['star', 'unstar', 'super_star', 'unsuper_star', 'delete'].includes(action)) {
+      return NextResponse.json({ error: 'Invalid action. Must be star, unstar, super_star, unsuper_star, or delete' }, { status: 400 });
+    }
+
+    if (action === 'super_star' || action === 'unsuper_star') {
+      const isSuperStarred = action === 'super_star';
+      await Resource.update(
+        { isSuperStarred },
+        { where: { id: { [Op.in]: ids } } }
+      );
+
+      for (const id of ids) {
+        broadcastSocketEvent('resource_updated', { id, isSuperStarred });
+      }
+
+      await AuditLog.create({
+        adminUsername: admin.username,
+        action: 'BULK_UPDATE_RESOURCES',
+        targetType: 'RESOURCE',
+        details: `Bulk ${isSuperStarred ? 'super-starred' : 'un-super-starred'} ${ids.length} resources: [${ids.slice(0, 5).join(', ')}${ids.length > 5 ? '...' : ''}]`,
+      });
+
+      return NextResponse.json({
+        success: true,
+        count: ids.length,
+        action,
+        message: `Successfully updated ${ids.length} resources.`,
+      });
     }
 
     if (action === 'star' || action === 'unstar') {
