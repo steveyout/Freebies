@@ -21,6 +21,12 @@
     transition: background-color 0.25s ease, color 0.25s ease;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 /* Custom scrollbars for both light and dark modes */
