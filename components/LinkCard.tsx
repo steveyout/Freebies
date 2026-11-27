@@ -67,11 +67,6 @@ export const LinkCard: React.FC<LinkCardProps> = ({
     onToggleBookmark(item);
     setIsBouncing(true);
     setTimeout(() => setIsBouncing(false), 500);
-    if (isBookmarked) {
-      showToast(`Removed "${item.title}" from saved bookmarks`, 'info');
-    } else {
-      showToast(`Bookmarked "${item.title}"!`, 'success');
-    }
   };
 
   const handleCopy = (e: React.MouseEvent) => {
@@ -215,7 +210,7 @@ export const LinkCard: React.FC<LinkCardProps> = ({
             className="p-1 rounded text-slate-400 dark:text-zinc-500 hover:text-amber-500 transition-colors shrink-0 cursor-pointer"
             title={isBookmarked ? 'Remove Bookmark' : 'Bookmark Link'}
           >
-            <Star className={`w-3.5 h-3.5 ${isBookmarked || isTopRatedOrRecommended ? 'text-amber-500 fill-amber-400' : ''}`} />
+            <Star className={`w-3.5 h-3.5 ${isBookmarked ? 'text-amber-500 fill-amber-400' : ''}`} />
           </motion.button>
 
           <a
@@ -401,7 +396,7 @@ export const LinkCard: React.FC<LinkCardProps> = ({
               className="p-1 rounded-lg text-slate-400 dark:text-zinc-500 hover:text-amber-500 transition-colors cursor-pointer"
               title={isBookmarked ? 'Remove Bookmark' : 'Bookmark this link'}
             >
-              <Star className={`w-3.5 h-3.5 ${isBookmarked || isTopRatedOrRecommended ? 'text-amber-500 fill-amber-400' : ''}`} />
+              <Star className={`w-3.5 h-3.5 ${isBookmarked ? 'text-amber-500 fill-amber-400' : ''}`} />
             </motion.button>
           </div>
         </div>

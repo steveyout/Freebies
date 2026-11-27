@@ -95,13 +95,8 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
     }
   };
 
-  const handleBookmarkToggle = (item: LinkItem, isBookmarked: boolean) => {
+  const handleBookmarkToggle = (item: LinkItem) => {
     onToggleBookmark(item);
-    if (isBookmarked) {
-      showToast(`Removed "${item.title}" from saved bookmarks`, 'info');
-    } else {
-      showToast(`Bookmarked "${item.title}"!`, 'success');
-    }
   };
 
   if (recommendedLinks.length === 0) return null;
@@ -166,7 +161,7 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
                   </div>
 
                   <button
-                    onClick={() => handleBookmarkToggle(item, isBookmarked)}
+                    onClick={() => handleBookmarkToggle(item)}
                     className="p-1 rounded-lg text-slate-400 hover:text-amber-500 transition-colors"
                     title={isBookmarked ? 'Remove Bookmark' : 'Bookmark Link'}
                   >
