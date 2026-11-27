@@ -23,7 +23,7 @@ export const SITE_CONFIG = {
     'free books',
     'curated directory',
     'privacy guides',
-    'FMHY alternative',
+    'Freebies directory',
   ],
   links: {
     github: 'https://github.com/steveyout/Freebies',

@@ -183,7 +183,7 @@ export const RecentlyAddedSection: React.FC<RecentlyAddedSectionProps> = ({
 
                   <button
                     onClick={() => onOpenContributorProfile && onOpenContributorProfile(submitter)}
-                    className="flex items-center gap-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors font-semibold"
+                    className="flex items-center gap-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors font-semibold cursor-pointer"
                     title={`View profile for @${submitter}`}
                   >
                     <User className="w-3 h-3" />
@@ -223,7 +223,7 @@ export const RecentlyAddedSection: React.FC<RecentlyAddedSectionProps> = ({
 
                 <button
                   onClick={(e) => handleCopy(e, item.url, item.id)}
-                  className="p-1 rounded text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 transition-colors"
+                  className="p-1 rounded text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
                   title="Copy Link URL"
                 >
                   {copiedId === item.id ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}

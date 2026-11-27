@@ -294,7 +294,7 @@ export const SeoHeadManager: React.FC<SeoHeadManagerProps> = ({
           publisher: {
             '@type': 'Organization',
             name: 'freebies Community',
-            logo: 'https://fmhy.net/assets/logo.png',
+            logo: 'https://freeebies.site/icon',
           },
         },
         {

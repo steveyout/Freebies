@@ -67,7 +67,7 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
       try {
         await navigator.share({
           title: item.title,
-          text: item.description || `Check out ${item.title} on FMHY Freebies!`,
+          text: item.description || `Check out ${item.title} on Freebies!`,
           url: item.url,
         });
         showToast(`Shared "${item.title}"!`, 'success');

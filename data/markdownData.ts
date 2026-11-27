@@ -17,7 +17,7 @@ export const DEFAULT_MARKDOWN_FILES: Record<string, MarkdownFile> = {
     description: 'Curated guide for movies, TV series, anime, live sports, and media players.',
     content: `# 🎬 Streaming Mega-Directory (\`data/streaming.md\`)
 
-Welcome to the **FMHY Streaming Index**. This curated repository file lists verified ad-free movie streaming platforms, high-definition cinema portals, anime hubs, live sports indexers, and media players.
+Welcome to the **Freebies Streaming Index**. This curated repository file lists verified ad-free movie streaming platforms, high-definition cinema portals, anime hubs, live sports indexers, and media players.
 
 > 💡 **Repository Note**: To add a new movie or TV site to this directory, simply edit this \`data/streaming.md\` file in Markdown format! The web application automatically parses table rows, callouts, and lists, rendering them into interactive UI cards with search, filtering, and bookmarking.
 

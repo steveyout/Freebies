@@ -68,7 +68,7 @@ export async function syncResourcesToDatabase() {
           isNoAds: Boolean(item.isNoAds),
           isNoReg: Boolean(item.isNoReg),
           dateAdded: item.dateAdded || today,
-          addedBy: (item.addedBy || 'fmhy-community').slice(0, 64),
+          addedBy: (item.addedBy || 'community').slice(0, 64),
         });
       }
     } catch (err) {

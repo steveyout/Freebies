@@ -277,7 +277,7 @@ export const Header: React.FC<HeaderProps> = ({
                             Markdown Editor Studio
                           </div>
                           <div className="text-[11px] text-slate-500 dark:text-zinc-400">
-                            Edit and download FMHY markdown
+                            Edit and download markdown
                           </div>
                         </div>
                       </button>
