@@ -192,24 +192,81 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
       }
     });
 
-    const subsWithOverrides = rawSubs.map((sub) => {
-      const mergedItems = (sub?.items || []).map((item) => {
+    const subsWithOverrides = rawSubs.map((sub) => ({
+      ...sub,
+      items: [] as LinkItem[],
+    }));
+    const reassignedItems: LinkItem[] = [];
+
+    for (const sub of rawSubs) {
+      const targetSub = subsWithOverrides.find((s) => s.id === sub.id)!;
+      for (const item of sub?.items || []) {
         seenIds.add(item.id);
         const normUrl = normalizeUrl(item.url);
         if (normUrl) seenUrls.add(normUrl);
+
         const override = dynamicOverrides.get(item.id) || (normUrl ? overridesByUrl.get(normUrl) : undefined);
-        if (!override) return item;
-        return {
+        if (!override) {
+          targetSub.items.push(item);
+          continue;
+        }
+
+        // If admin moved this resource to another category, skip it here
+        if (
+          override.category &&
+          override.category !== category.id &&
+          override.category !== category.slug
+        ) {
+          continue;
+        }
+
+        const mergedItem: LinkItem = {
           ...item,
+          title: override.title ?? item.title,
+          url: override.url ?? item.url,
+          description: override.description ?? item.description,
+          category: override.category ?? item.category,
+          subcategory: override.subcategory ?? item.subcategory,
+          safetyRating: override.safetyRating ?? item.safetyRating,
+          isOpenSource: override.isOpenSource !== undefined ? Boolean(override.isOpenSource) : item.isOpenSource,
           isSuperStarred: override.isSuperStarred !== undefined ? Boolean(override.isSuperStarred) : Boolean(item.isSuperStarred),
           isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : Boolean(item.isStarred),
           score: override.score !== undefined ? override.score : item.score,
           upvotesCount: override.upvotesCount !== undefined ? override.upvotesCount : item.upvotesCount,
           downvotesCount: override.downvotesCount !== undefined ? override.downvotesCount : item.downvotesCount,
         };
-      });
-      return { ...sub, items: mergedItems };
-    });
+
+        const overrideSubName = (override.subcategory || '').trim().toLowerCase();
+        if (
+          overrideSubName &&
+          overrideSubName !== sub.name.toLowerCase() &&
+          overrideSubName !== sub.id.toLowerCase()
+        ) {
+          reassignedItems.push(mergedItem);
+        } else {
+          targetSub.items.push(mergedItem);
+        }
+      }
+    }
+
+    const placeIntoSubcategory = (itemToPlace: LinkItem) => {
+      const targetSubName = (itemToPlace.subcategory || 'General').trim().toLowerCase();
+      const targetSub = subsWithOverrides.find(
+        (s) => s.name.toLowerCase() === targetSubName || s.id.toLowerCase() === targetSubName
+      );
+      if (targetSub) {
+        targetSub.items.push(itemToPlace);
+      } else {
+        const newSub = {
+          id: `${category.id}-${targetSubName.replace(/[^a-z0-9]+/g, '-')}`,
+          name: itemToPlace.subcategory || 'General',
+          items: [itemToPlace],
+        };
+        subsWithOverrides.push(newSub);
+      }
+    };
+
+    reassignedItems.forEach(placeIntoSubcategory);
 
     // Append any DB resources not present in static subcategories
     dynamicOverrides.forEach((dbItem) => {
@@ -217,20 +274,15 @@ export const CategoryContentClient: React.FC<CategoryContentClientProps> = ({
       if (seenIds.has(dbItem.id)) return;
       const normDbUrl = normalizeUrl(dbItem.url);
       if (normDbUrl && seenUrls.has(normDbUrl)) return;
-
-      const targetSubName = (dbItem.subcategory || 'General').toLowerCase();
-      const targetSub = subsWithOverrides.find((s) => s.name.toLowerCase() === targetSubName);
-      if (targetSub) {
-        targetSub.items.push(dbItem);
-      } else if (subsWithOverrides.length > 0) {
-        subsWithOverrides[0].items.push(dbItem);
-      } else {
-        subsWithOverrides.push({
-          id: `${category.id}-${targetSubName.replace(/[^a-z0-9]+/g, '-')}`,
-          name: dbItem.subcategory || 'General',
-          items: [dbItem],
-        });
+      if (
+        dbItem.category &&
+        dbItem.category !== category.id &&
+        dbItem.category !== category.slug
+      ) {
+        return;
       }
+
+      placeIntoSubcategory(dbItem);
       seenIds.add(dbItem.id);
     });
 

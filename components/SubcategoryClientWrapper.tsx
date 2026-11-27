@@ -83,18 +83,52 @@ export const SubcategoryClientWrapper: React.FC<SubcategoryClientWrapperProps> =
       }
     });
 
-    const baseItems: LinkItem[] = (subcategory?.items || []).map((item) => {
+    const seenIds = new Set<string>();
+    const seenUrls = new Set<string>();
+    const subNameLower = subcategory.name.toLowerCase();
+    const subIdLower = subcategory.id.toLowerCase();
+
+    const baseItems: LinkItem[] = [];
+    for (const item of subcategory?.items || []) {
+      seenIds.add(item.id);
       const norm = normalizeUrl(item.url);
+      if (norm) seenUrls.add(norm);
       const override = dynamicOverrides.get(item.id) || (norm ? overridesByUrl.get(norm) : undefined);
-      if (!override) return item;
-      return {
+      if (!override) {
+        baseItems.push(item);
+        continue;
+      }
+      const overrideSub = (override.subcategory || '').trim().toLowerCase();
+      if (overrideSub && overrideSub !== subNameLower && overrideSub !== subIdLower) {
+        continue; // Moved to a different subcategory
+      }
+      baseItems.push({
         ...item,
+        title: override.title ?? item.title,
+        url: override.url ?? item.url,
+        description: override.description ?? item.description,
+        category: override.category ?? item.category,
+        subcategory: override.subcategory ?? item.subcategory,
+        safetyRating: override.safetyRating ?? item.safetyRating,
+        isOpenSource: override.isOpenSource !== undefined ? Boolean(override.isOpenSource) : item.isOpenSource,
         isSuperStarred: override.isSuperStarred !== undefined ? Boolean(override.isSuperStarred) : Boolean(item.isSuperStarred),
         isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : Boolean(item.isStarred),
         score: override.score !== undefined ? override.score : item.score,
         upvotesCount: override.upvotesCount !== undefined ? override.upvotesCount : item.upvotesCount,
         downvotesCount: override.downvotesCount !== undefined ? override.downvotesCount : item.downvotesCount,
-      };
+      });
+    }
+
+    // Include DB resources assigned to this subcategory
+    dynamicOverrides.forEach((dbItem) => {
+      if (!dbItem?.id || seenIds.has(dbItem.id)) return;
+      const norm = normalizeUrl(dbItem.url);
+      if (norm && seenUrls.has(norm)) return;
+      const dbSub = (dbItem.subcategory || '').trim().toLowerCase();
+      if (dbSub === subNameLower || dbSub === subIdLower) {
+        baseItems.push(dbItem);
+        seenIds.add(dbItem.id);
+      }
     });
 
     return [...baseItems].sort((a, b) => {

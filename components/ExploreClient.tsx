@@ -170,6 +170,13 @@ export const ExploreClient: React.FC<ExploreClientProps> = ({
       if (!override) return link;
       return {
         ...link,
+        title: override.title ?? link.title,
+        url: override.url ?? link.url,
+        description: override.description ?? link.description,
+        category: override.category ?? link.category,
+        subcategory: override.subcategory ?? link.subcategory,
+        safetyRating: override.safetyRating ?? link.safetyRating,
+        isOpenSource: override.isOpenSource !== undefined ? Boolean(override.isOpenSource) : link.isOpenSource,
         isSuperStarred: override.isSuperStarred !== undefined ? Boolean(override.isSuperStarred) : Boolean(link.isSuperStarred),
         isStarred: override.isStarred !== undefined ? Boolean(override.isStarred) : link.isStarred,
         score: override.score !== undefined ? override.score : link.score,
