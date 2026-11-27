@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
@@ -8,6 +9,7 @@ import { ModalProvider } from '@/context/ModalContext';
 import { NavigationHeader } from '@/components/NavigationHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { ScrollProgressBar } from '@/components/ScrollProgressBar';
+import { NavigationProgressBar } from '@/components/NavigationProgressBar';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { constructMetadata, getWebsiteJsonLd } from '@/lib/seo';
 import { GA_TRACKING_ID } from '@/lib/gtag';
@@ -79,6 +81,9 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <ModalProvider>
+              <Suspense fallback={null}>
+                <NavigationProgressBar />
+              </Suspense>
               <ScrollProgressBar />
               <NavigationHeader />
               <div className="flex flex-col min-h-[calc(100vh-4rem)]">
